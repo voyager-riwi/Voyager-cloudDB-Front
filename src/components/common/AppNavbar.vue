@@ -1,0 +1,33 @@
+<template>
+  <header
+    class="sticky top-0 z-50 flex items-center justify-between bg-background-light/80 p-4 pb-2 backdrop-blur-sm dark:bg-background-dark/80"
+  >
+    <div class="flex size-12 shrink-0 items-center text-primary dark:text-primary">
+      <span class="material-symbols-outlined text-4xl">database</span>
+    </div>
+    <h2
+      class="flex-1 text-lg font-bold leading-tight tracking-[-0.015em] text-zinc-900 dark:text-white"
+    >
+      CCD
+    </h2>
+    <div class="flex items-center justify-end gap-4">
+      <a
+        class="text-sm font-bold leading-normal tracking-[0.015em] text-zinc-600 dark:text-zinc-300 hover:text-primary transition-colors"
+        href="#"
+        >Login</a
+      >
+      <a
+        class="flex h-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-4 text-sm font-bold leading-normal tracking-[0.015em] text-white hover:bg-blue-600 transition-colors"
+        href="#"
+      >
+        <span class="truncate">Register</span>
+      </a>
+    </div>
+  </header>
+</template>
+
+<script>
+export default {
+  name: 'TopAppBar',
+}
+</script>
