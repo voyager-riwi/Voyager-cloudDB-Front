@@ -1,7 +1,10 @@
 <template>
   <div class="relative flex min-h-screen w-full flex-col bg-[#101c22] text-white">
-    <!-- Top App Bar -->
-    <header class="flex shrink-0 items-center border-b border-gray-700 bg-[#101c22] p-4">
+    <!-- Top App Bar - Solo mostrar en modo standalone -->
+    <header
+      v-if="isStandalone"
+      class="flex shrink-0 items-center border-b border-gray-700 bg-[#101c22] p-4"
+    >
       <button
         @click="goBack"
         class="flex size-10 shrink-0 items-center justify-center rounded-full text-white hover:bg-white/10"
@@ -9,14 +12,53 @@
         <span class="material-symbols-outlined text-2xl">arrow_back</span>
       </button>
       <h1 class="ml-2 text-lg font-bold leading-tight tracking-tight text-white">
-        Change Password
+        {{ isResetFlow ? 'Change Password' : 'Update Password' }}
       </h1>
     </header>
 
     <!-- Main Content -->
-    <main class="flex flex-1 items-center justify-center p-4 sm:p-6 lg:p-8">
+    <main
+      class="flex flex-1 items-center justify-center p-4 sm:p-6 lg:p-8"
+      :class="{ 'pt-4': !isStandalone }"
+    >
       <div class="w-full max-w-md space-y-8">
+        <!-- Título para modo embed -->
+        <div v-if="!isStandalone" class="text-center">
+          <h1 class="text-2xl font-bold leading-tight tracking-tight text-white mb-2">
+            Update Password
+          </h1>
+          <p class="text-gray-400 text-sm">Create a new strong password for your account</p>
+        </div>
+
         <div class="space-y-6">
+          <!-- Current Password Field - Solo en modo dashboard -->
+          <label v-if="!isResetFlow" class="flex flex-col">
+            <p class="pb-2 text-sm font-medium leading-normal text-white">Current Password</p>
+            <div class="relative flex w-full flex-1 items-stretch">
+              <input
+                v-model="form.currentPassword"
+                :type="showCurrentPassword ? 'text' : 'password'"
+                class="h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-600 bg-[#192b33] p-3 text-base font-normal leading-normal text-white placeholder:text-gray-400 focus:border-blue-500 focus:outline-0 focus:ring-2 focus:ring-blue-500/20"
+                placeholder="Enter your current password"
+                :class="{ 'border-red-500': errors.currentPassword }"
+              />
+              <div class="absolute right-3 top-0 flex h-full items-center justify-center">
+                <button
+                  type="button"
+                  @click="showCurrentPassword = !showCurrentPassword"
+                  class="text-gray-400 hover:text-white"
+                >
+                  <span class="material-symbols-outlined text-2xl">
+                    {{ showCurrentPassword ? 'visibility' : 'visibility_off' }}
+                  </span>
+                </button>
+              </div>
+            </div>
+            <p v-if="errors.currentPassword" class="mt-1.5 text-sm text-red-400">
+              {{ errors.currentPassword }}
+            </p>
+          </label>
+
           <!-- New Password Field -->
           <label class="flex flex-col">
             <p class="pb-2 text-sm font-medium leading-normal text-white">New Password</p>
@@ -121,18 +163,30 @@
           </ul>
         </div>
 
-        <!-- Action Button -->
-        <button
-          @click="updatePassword"
-          :disabled="!isFormValid || loading"
-          class="flex h-12 w-full items-center justify-center rounded-lg bg-blue-500 px-6 text-base font-bold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-blue-500/50"
-        >
-          <span v-if="loading" class="flex items-center gap-2">
-            <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            Updating...
-          </span>
-          <span v-else>Update Password</span>
-        </button>
+        <!-- Action Buttons -->
+        <div class="space-y-3">
+          <button
+            @click="updatePassword"
+            :disabled="!isFormValid || loading"
+            class="flex h-12 w-full items-center justify-center rounded-lg bg-blue-500 px-6 text-base font-bold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-blue-500/50"
+          >
+            <span v-if="loading" class="flex items-center gap-2">
+              <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              {{ isResetFlow ? 'Updating...' : 'Changing...' }}
+            </span>
+            <span v-else>{{ isResetFlow ? 'Update Password' : 'Change Password' }}</span>
+          </button>
+
+          <!-- Botón cancelar para modo embed -->
+          <button
+            v-if="!isStandalone"
+            @click="$emit('cancel')"
+            :disabled="loading"
+            class="flex h-12 w-full items-center justify-center rounded-lg border border-gray-600 px-6 text-base font-bold text-gray-300 transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        </div>
 
         <!-- Toast Notifications -->
         <div
@@ -155,30 +209,48 @@ import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 
+// Props
+const props = defineProps({
+  isStandalone: {
+    type: Boolean,
+    default: true,
+  },
+})
+
+const emit = defineEmits(['success', 'cancel'])
+
 const router = useRouter()
 
 // Estados reactivos
 const form = reactive({
+  currentPassword: '',
   newPassword: '',
   confirmPassword: '',
 })
 
 const errors = reactive({
+  currentPassword: '',
   newPassword: '',
   confirmPassword: '',
 })
 
+const showCurrentPassword = ref(false)
 const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 const loading = ref(false)
 
 const toast = reactive({
   show: false,
-  type: 'success', // 'success' or 'error'
+  type: 'success',
   message: '',
 })
 
 // Computed properties
+const isResetFlow = computed(() => {
+  const requiresChange = localStorage.getItem('requiresPasswordChange')
+  return !!requiresChange && requiresChange !== 'null'
+})
+
 const passwordRequirements = computed(() => {
   const password = form.newPassword
   return {
@@ -194,7 +266,19 @@ const isPasswordValid = computed(() => {
 })
 
 const isFormValid = computed(() => {
+  if (isResetFlow.value) {
+    // Para flujo de recuperación
+    return (
+      form.newPassword &&
+      form.confirmPassword &&
+      isPasswordValid.value &&
+      form.newPassword === form.confirmPassword
+    )
+  }
+
+  // Para flujo normal desde dashboard
   return (
+    form.currentPassword &&
     form.newPassword &&
     form.confirmPassword &&
     isPasswordValid.value &&
@@ -204,20 +288,21 @@ const isFormValid = computed(() => {
 
 // Métodos
 const goBack = () => {
-  router.back()
+  if (props.isStandalone) {
+    router.back()
+  } else {
+    emit('cancel')
+  }
 }
 
 const validatePassword = () => {
-  // Limpiar errores previos
   errors.newPassword = ''
   errors.confirmPassword = ''
 
-  // Validar nueva contraseña
   if (form.newPassword && !isPasswordValid.value) {
     errors.newPassword = 'Password does not meet requirements'
   }
 
-  // Validar confirmación
   if (form.confirmPassword && form.newPassword !== form.confirmPassword) {
     errors.confirmPassword = 'Passwords do not match'
   }
@@ -234,7 +319,6 @@ const showToast = (type, message, duration = 3000) => {
 }
 
 const updatePassword = async () => {
-  // Validación final
   if (!isFormValid.value) {
     showToast('error', 'Please fix the errors before submitting')
     return
@@ -243,106 +327,176 @@ const updatePassword = async () => {
   loading.value = true
 
   try {
-    const userEmail = localStorage.getItem('verifiedEmail')
-    const requiresChange = localStorage.getItem('requiresPasswordChange')
-
-    console.log('=== CHANGE PASSWORD DEBUG ===')
-    console.log('📧 Email from localStorage:', userEmail)
-    console.log('🔐 Token from localStorage:', requiresChange)
-
-    // Verificación mejorada del flujo de recuperación
-    if (!requiresChange || requiresChange === 'null' || !userEmail) {
-      console.log('❌ Invalid reset flow')
-      showToast('error', 'Please complete the verification process first')
-      setTimeout(() => {
-        router.push('/forgot-password')
-      }, 2000)
-      return
-    }
-
-    // Preparar los datos EXACTAMENTE como los espera la API
-    const resetData = {
-      token: requiresChange,
-      newPassword: form.newPassword,
-      confirmNewPassword: form.confirmPassword,
-    }
-
-    console.log('📤 Sending reset data:', resetData)
-
-    // Llamar a la API de reset-password
-    let response
-    if (api.auth && api.auth.resetPassword) {
-      response = await api.auth.resetPassword(resetData)
+    if (isResetFlow.value) {
+      await handleResetPassword()
     } else {
-      response = await api.post('/api/Auth/reset-password', resetData)
+      await handleRegularPasswordChange()
     }
-
-    console.log('✅ Password reset successful:', response.data)
-
-    // Éxito - limpiar localStorage completamente
-    localStorage.removeItem('verifiedEmail')
-    localStorage.removeItem('requiresPasswordChange')
-    localStorage.removeItem('resetEmail') // Limpiar también el email inicial
-
-    // Limpiar el formulario
-    form.newPassword = ''
-    form.confirmPassword = ''
-
-    showToast('success', 'Password updated successfully! You will be redirected to login.')
-
-    // Redirigir al login después de 2 segundos
-    setTimeout(() => {
-      router.push('/login')
-    }, 2000)
   } catch (error) {
-    console.error('❌ Password update error:', error)
-    console.log('Error response:', error.response)
-    console.log('Error data:', error.response?.data)
-
-    // Manejo específico de errores de la API
-    let errorMessage = 'Failed to update password. Please try the recovery process again.'
-
-    if (error.response) {
-      // Error de respuesta de la API
-      const apiError = error.response.data
-      if (apiError.message) {
-        errorMessage = apiError.message
-      } else if (apiError.errors) {
-        // Si hay múltiples errores, tomar el primero
-        const firstError = Object.values(apiError.errors)[0]
-        errorMessage = Array.isArray(firstError) ? firstError[0] : firstError
-      }
-    } else if (error.request) {
-      // Error de red
-      errorMessage = 'Network error. Please check your connection and try again.'
-    } else {
-      // Error de la llamada API
-      errorMessage = error.message || 'Failed to update password.'
-    }
-
-    showToast('error', errorMessage)
+    console.error('Password update error:', error)
+    handleUpdateError(error)
   } finally {
     loading.value = false
   }
 }
 
-// Verificar al montar el componente si viene del flujo correcto
-const verifyResetFlow = () => {
+const handleResetPassword = async () => {
   const userEmail = localStorage.getItem('verifiedEmail')
   const requiresChange = localStorage.getItem('requiresPasswordChange')
 
-  console.log('🔍 Verifying reset flow on mount:')
-  console.log('  - User Email:', userEmail)
-  console.log('  - Token:', requiresChange)
+  console.log('=== RESET PASSWORD FLOW ===')
+  console.log('📧 Email:', userEmail)
+  console.log('🔐 Token:', requiresChange)
 
   if (!requiresChange || requiresChange === 'null' || !userEmail) {
-    console.log('❌ Invalid reset flow detected - redirecting to forgot-password')
-    showToast('error', 'Invalid reset password flow. Redirecting...')
+    showToast('error', 'Please complete the verification process first')
     setTimeout(() => {
       router.push('/forgot-password')
-    }, 3000)
+    }, 2000)
+    return
+  }
+
+  const resetData = {
+    token: requiresChange,
+    newPassword: form.newPassword,
+    confirmNewPassword: form.confirmPassword,
+  }
+
+  console.log('📤 Sending reset data:', resetData)
+
+  // CORRECCIÓN: Usar api.auth.resetPassword en lugar de api.post
+  const response = await api.auth.resetPassword(resetData)
+  console.log('✅ Password reset successful:', response.data)
+
+  // Limpiar localStorage
+  localStorage.removeItem('verifiedEmail')
+  localStorage.removeItem('requiresPasswordChange')
+  localStorage.removeItem('resetEmail')
+
+  showToast('success', 'Password updated successfully!')
+
+  if (props.isStandalone) {
+    setTimeout(() => {
+      router.push('/login')
+    }, 2000)
   } else {
-    console.log('✅ Valid reset flow detected')
+    emit('success')
+    form.newPassword = ''
+    form.confirmPassword = ''
+  }
+}
+
+const handleRegularPasswordChange = async () => {
+  console.log('=== REGULAR PASSWORD CHANGE ===')
+
+  try {
+    // 1. Obtener email del usuario
+    const userEmail = localStorage.getItem('userEmail')
+    if (!userEmail) {
+      throw new Error('User email not found. Please log out and log in again.')
+    }
+
+    console.log('📧 User:', userEmail)
+
+    // 2. Validar contraseña actual
+    console.log('🔐 Validating current password...')
+    await api.auth.login({
+      email: userEmail,
+      password: form.currentPassword,
+    })
+
+    console.log('✅ Current password correct')
+
+    // 3. Cambiar contraseña usando el endpoint correcto
+    const changeData = {
+      currentPassword: form.currentPassword,
+      newPassword: form.newPassword,
+      confirmNewPassword: form.confirmPassword,
+    }
+
+    console.log('📤 Changing password via /api/Users/change-password...')
+
+    // USAR FETCH DIRECTAMENTE CON EL ENDPOINT CORRECTO
+    const response = await fetch(
+      'https://service.voyager.andrescortes.dev/api/Users/change-password',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify(changeData),
+      },
+    )
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+    }
+
+    const result = await response.json()
+    console.log('✅ Password changed successfully:', result)
+
+    showToast('success', 'Password changed successfully!')
+
+    // Limpiar formulario
+    form.currentPassword = ''
+    form.newPassword = ''
+    form.confirmPassword = ''
+
+    emit('success')
+  } catch (error) {
+    console.error('❌ Password change error:', error)
+
+    // Manejo específico de errores
+    if (error.response?.status === 401) {
+      throw new Error('Current password is incorrect')
+    } else if (error.response?.data?.message) {
+      throw new Error(error.response.data.message)
+    } else if (error.message?.includes('Network Error')) {
+      throw new Error('Network error. Please check your connection and try again.')
+    } else {
+      throw new Error(error.message || 'Failed to change password. Please try again.')
+    }
+  }
+}
+
+const handleUpdateError = (error) => {
+  let errorMessage = 'Failed to update password. Please try again.'
+
+  if (error.response) {
+    const apiError = error.response.data
+    if (apiError.message) {
+      errorMessage = apiError.message
+    } else if (apiError.errors) {
+      const firstError = Object.values(apiError.errors)[0]
+      errorMessage = Array.isArray(firstError) ? firstError[0] : firstError
+    }
+  } else if (error.request) {
+    errorMessage = 'Network error. Please check your connection and try again.'
+  } else {
+    errorMessage = error.message || 'Failed to update password. Please try again.'
+  }
+
+  showToast('error', errorMessage)
+}
+
+const verifyResetFlow = () => {
+  if (isResetFlow.value && props.isStandalone) {
+    const userEmail = localStorage.getItem('verifiedEmail')
+    const requiresChange = localStorage.getItem('requiresPasswordChange')
+
+    console.log('🔍 Verifying reset flow:')
+    console.log('  - Email:', userEmail)
+    console.log('  - Token:', requiresChange)
+
+    if (!requiresChange || requiresChange === 'null' || !userEmail) {
+      console.log('❌ Invalid reset flow - redirecting')
+      showToast('error', 'Invalid reset password flow. Redirecting...')
+      setTimeout(() => {
+        router.push('/forgot-password')
+      }, 3000)
+    }
   }
 }
 
@@ -352,7 +506,9 @@ watch(() => form.confirmPassword, validatePassword)
 
 // Lifecycle hooks
 onMounted(() => {
-  verifyResetFlow()
+  if (props.isStandalone) {
+    verifyResetFlow()
+  }
 })
 </script>
 

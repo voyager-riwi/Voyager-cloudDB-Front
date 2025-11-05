@@ -157,6 +157,7 @@ const handleLogin = async () => {
     if (response.data?.token) {
       localStorage.setItem('authToken', response.data.token)
       localStorage.setItem('user', JSON.stringify(response.data))
+      localStorage.setItem('userEmail', email.value)
     }
 
     // Redirigir al dashboard

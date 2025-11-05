@@ -88,8 +88,15 @@ const router = createRouter({
     },
     {
       path: '/change-password',
-      name: 'changePassword',
-      component: ChangePassword,
+      name: 'ChangePassword',
+      component: () => import('@/views/ChangePasswordView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/databases/:id',
+      name: 'DatabaseDetails',
+      component: () => import('@/views/DatabaseDetailsView.vue'),
+      meta: { requiresAuth: true },
     },
   ],
 })

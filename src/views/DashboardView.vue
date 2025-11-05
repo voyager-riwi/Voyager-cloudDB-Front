@@ -30,9 +30,19 @@
             <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
               <p class="font-medium">{{ userData?.fullName || 'Usuario' }}</p>
               <p class="text-gray-500 dark:text-gray-400 text-xs">
-                {{ userData?.email || 'user@example.com' }}
+                {{ userData?.email || 'example@gmail.com' }}
               </p>
             </div>
+
+            <!--change password-->
+            <!-- En el dropdown del usuario -->
+            <button
+              @click="showChangePasswordModal = true"
+              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+            >
+              <span class="material-symbols-outlined text-base">lock</span>
+              Change Password
+            </button>
             <div class="border-t border-gray-200 dark:border-gray-700"></div>
             <button
               @click="logout"
@@ -267,6 +277,20 @@
 
     <!-- Backdrop for dropdown -->
   </div>
+
+  <!-- Modal para cambiar contraseña -->
+  <div
+    v-if="showChangePasswordModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+  >
+    <div class="w-full max-w-md mx-4">
+      <ChangePassword
+        :is-standalone="false"
+        @success="handlePasswordChangeSuccess"
+        @cancel="showChangePasswordModal = false"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -275,6 +299,15 @@ import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import env from '@/config/env'
 import CreateDatabaseModal from '@/components/databases/CreateDatabaseModal.vue'
+import ChangePassword from '@/components/common/ChangePassword.vue'
+
+const showChangePasswordModal = ref(false)
+
+const handlePasswordChangeSuccess = () => {
+  showChangePasswordModal.value = false
+  // Opcional: mostrar mensaje de éxito
+  console.log('Password changed successfully')
+}
 
 const router = useRouter()
 
@@ -446,8 +479,7 @@ const logout = () => {
 }
 
 const openDatabase = (db) => {
-  console.log('Opening database:', db.name)
-  // router.push(`/databases/${db.id}`)
+  router.push(`/databases/${db.id}`)
 }
 
 const createDatabase = () => {

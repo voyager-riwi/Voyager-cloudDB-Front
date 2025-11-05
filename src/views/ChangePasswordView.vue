@@ -1,14 +1,7 @@
 <template>
-  <ChangePassword />
+  <ChangePassword :is-standalone="true" />
 </template>
 
-<script>
+<script setup>
 import ChangePassword from '@/components/common/ChangePassword.vue'
-
-export default {
-  name: 'ChangePasswordView',
-  components: {
-    ChangePassword,
-  },
-}
 </script>
