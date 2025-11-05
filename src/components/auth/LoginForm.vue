@@ -1,18 +1,17 @@
 <!--min-h-screen flex items-center justify-center p-4 font-display bg-background-light dark:bg-background-dark font-display -->
 <template>
   <div
-    class="min-h-screen flex items-center justify-center p-4 font-display bg-background-light dark:bg-background-dark font-display"
+    class="min-h-screen flex items-center justify-center p-4 font-display bg-black dark:bg-background-dark font-display"
   >
     <div class="w-full max-w-md">
       <!-- Logo y título -->
       <div class="text-center mb-12">
         <!-- Logo -->
         <div class="flex justify-center mb-8">
-          <img
-            src="../../assets/images/cloud_logo.png"
-            alt="CrudCloudDb"
-            class="h-16 object-contain"
-          />
+          <div class="symbol">
+            <div class="deathly"></div>
+            <div class="hallows"></div>
+          </div>
         </div>
 
         <!-- Título con elementos decorativos -->
@@ -88,7 +87,10 @@
 
         <!-- Enlace de contraseña olvidada -->
         <div class="text-center">
-          <a href="#" class="text-white text-base underline hover:text-gray-300 transition-colors">
+          <a
+            @click="$router.push('/reset')"
+            class="text-white text-base underline hover:text-gray-300 transition-colors"
+          >
             ¿Has olvidado tu contraseña?
           </a>
         </div>
@@ -133,97 +135,34 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import api from '@/services/api'
 
 const router = useRouter()
 const email = ref('')
 const password = ref('')
-const showPassword = ref(false)
 const loading = ref(false)
 const error = ref('')
-const success = ref('')
 
 const handleLogin = async () => {
-  // Reset messages
-  error.value = ''
-  success.value = ''
   loading.value = true
+  error.value = ''
 
   try {
-    // Validación básica
-    if (!email.value || !password.value) {
-      throw new Error('Por favor completa todos los campos')
-    }
-
-    if (!email.value.includes('@')) {
-      throw new Error('Por favor ingresa un email válido')
-    }
-
-    console.log('Enviando credenciales:', {
+    const response = await api.auth.login({
       email: email.value,
-      password: '***',
+      password: password.value,
     })
 
-    const response = await fetch('https://service.voyager.andrescortes.dev/api/Auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        email: email.value.trim(),
-        password: password.value,
-      }),
-    })
-
-    console.log('Response status:', response.status)
-
-    const data = await response.json()
-    console.log('Response data completa:', data)
-
-    if (!response.ok) {
-      // Manejar error 401
-      if (response.status === 401) {
-        throw new Error(data.message || 'Email o contraseña incorrectos')
-      } else if (response.status === 400) {
-        throw new Error('Datos inválidos. Verifica el formato de tu email.')
-      } else {
-        throw new Error(data.message || 'Error al iniciar sesión')
-      }
+    // Guardar token y datos de usuario
+    if (response.data?.token) {
+      localStorage.setItem('authToken', response.data.token)
+      localStorage.setItem('user', JSON.stringify(response.data))
     }
 
-    // Verificar si el login fue exitoso según la estructura de la API
-    if (data.succeeded === true) {
-      success.value = data.message || '¡Inicio de sesión exitoso!'
-
-      // Guardar datos del usuario según la estructura de la respuesta
-      if (data.data) {
-        // Guardar token
-        if (data.data.token) {
-          localStorage.setItem('authToken', data.data.token)
-          console.log('Token guardado:', data.data.token.substring(0, 20) + '...')
-        }
-
-        // Guardar información del usuario
-        const userData = {
-          userId: data.data.userId,
-          fullName: data.data.fullName,
-          email: data.data.email,
-        }
-        localStorage.setItem('user', JSON.stringify(userData))
-        console.log('Datos de usuario guardados:', userData)
-      }
-
-      // Redirigir después de un breve delay
-      setTimeout(() => {
-        router.push('/dashboard')
-      }, 1500)
-    } else {
-      // Si succeeded es false pero el status HTTP es 200
-      throw new Error(data.message || 'Error en el inicio de sesión')
-    }
+    // Redirigir al dashboard
+    router.push('/dashboard')
   } catch (err) {
     error.value = err.message
-    console.error('Login error:', err)
   } finally {
     loading.value = false
   }

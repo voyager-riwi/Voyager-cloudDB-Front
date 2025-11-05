@@ -1,5 +1,5 @@
 <template>
-  <header
+  <div
     class="sticky top-0 z-10 flex items-center bg-background-light/80 dark:bg-background-dark/80 p-4 pb-2 justify-between backdrop-blur-sm"
   >
     <div class="flex size-12 shrink-0 items-center justify-start text-gray-800 dark:text-white">
@@ -13,7 +13,7 @@
       About CrudCloudDb
     </h1>
     <div class="size-12 shrink-0"></div>
-  </header>
+  </div>
 </template>
 
 <script>

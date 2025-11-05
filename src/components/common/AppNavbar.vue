@@ -11,23 +11,18 @@
       CCD
     </h2>
     <div class="flex items-center justify-end gap-4">
-      <a
+      <router-link
+        to="/login"
         class="text-sm font-bold leading-normal tracking-[0.015em] text-zinc-600 dark:text-zinc-300 hover:text-primary transition-colors"
-        href="#"
-        >Login</a
       >
-      <a
+        Login
+      </router-link>
+      <router-link
+        to="/register"
         class="flex h-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-4 text-sm font-bold leading-normal tracking-[0.015em] text-white hover:bg-blue-600 transition-colors"
-        href="#"
       >
         <span class="truncate">Register</span>
-      </a>
+      </router-link>
     </div>
   </header>
 </template>
-
-<script>
-export default {
-  name: 'TopAppBar',
-}
-</script>

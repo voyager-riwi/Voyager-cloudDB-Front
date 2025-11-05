@@ -1,9 +1,12 @@
+@import './base.css';
+@import './logo.scss';
+@import 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined';
+@import 'tailwindcss';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap';
-@import 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined';
 
 .material-symbols-outlined {
   font-variation-settings:
@@ -14,7 +17,7 @@
 }
 
 body {
-  /* min-height: max(884px, 100dvh);*/
+  min-height: max(100dvh);
   font-family: 'Inter', sans-serif;
 }
 

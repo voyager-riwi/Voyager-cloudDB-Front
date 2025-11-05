@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-background-light dark:bg-background-dark font-display"
+    class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-black dark:bg-background-dark font-display"
   >
     <!-- Top App Bar -->
     <div class="flex items-center p-4 pb-2 bg-background-light dark:bg-background-dark">
@@ -234,172 +234,34 @@
   </div>
 </template>
 
-<script>
-import { ref, computed, watch } from 'vue'
+<script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import api from '@/services/api'
 
-export default {
-  name: 'RegisterForm',
-  components: {
-    LoadingSpinner,
-  },
-  setup() {
-    const router = useRouter()
+const router = useRouter()
+const form = ref({
+  first_name: '',
+  last_name: '',
+  email: '',
+  password: '',
+})
+const loading = ref(false)
+const error = ref('')
 
-    const form = ref({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      agreeToTerms: false,
-    })
+const handleRegister = async () => {
+  loading.value = true
+  error.value = ''
 
-    const showPassword = ref(false)
-    const showConfirmPassword = ref(false)
-    const isSubmitting = ref(false)
-    const showSuccess = ref(false)
-    const error = ref('')
-    const success = ref('')
+  try {
+    await api.auth.register(form.value)
 
-    const passwordMismatch = computed(() => {
-      return (
-        form.value.password &&
-        form.value.confirmPassword &&
-        form.value.password !== form.value.confirmPassword
-      )
-    })
-
-    // Watch for password changes to clear mismatch error
-    watch([() => form.value.password, () => form.value.confirmPassword], () => {
-      if (form.value.password === form.value.confirmPassword) {
-        error.value = ''
-      }
-    })
-
-    const togglePasswordVisibility = () => {
-      showPassword.value = !showPassword.value
-    }
-
-    const toggleConfirmPasswordVisibility = () => {
-      showConfirmPassword.value = !showConfirmPassword.value
-    }
-
-    const handleSubmit = async () => {
-      if (passwordMismatch.value) {
-        error.value = 'Passwords do not match'
-        return
-      }
-
-      if (!form.value.agreeToTerms) {
-        error.value = 'Please agree to the terms and conditions'
-        return
-      }
-
-      // Reset messages
-      error.value = ''
-      success.value = ''
-      isSubmitting.value = true
-
-      try {
-        console.log('Sending registration data:', {
-          firstName: form.value.firstName,
-          lastName: form.value.lastName,
-          email: form.value.email,
-          password: '***', // Don't log actual password
-        })
-
-        const response = await fetch('https://service.voyager.andrescortes.dev/api/Auth/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            firstName: form.value.firstName.trim(),
-            lastName: form.value.lastName.trim(),
-            email: form.value.email.trim(),
-            password: form.value.password,
-          }),
-        })
-
-        console.log('Response status:', response.status)
-
-        const data = await response.json()
-        console.log('Response data:', data)
-
-        if (!response.ok) {
-          // Handle different types of errors
-          if (response.status === 400) {
-            throw new Error(data.message || 'Invalid data. Please check your information.')
-          } else if (response.status === 409) {
-            throw new Error('An account with this email already exists.')
-          } else if (response.status === 500) {
-            throw new Error('Server error. Please try again later.')
-          } else {
-            const errorMessage = data.message || data.error || 'Registration failed'
-            throw new Error(errorMessage)
-          }
-        }
-
-        // Registration successful
-        success.value = 'Account created successfully! Please check your email for verification.'
-
-        // Show success overlay
-        showSuccess.value = true
-
-        // Store user data if provided
-        if (data.user) {
-          localStorage.setItem('user', JSON.stringify(data.user))
-        }
-      } catch (err) {
-        error.value = err.message
-        console.error('Registration error:', err)
-      } finally {
-        isSubmitting.value = false
-      }
-    }
-
-    const goBack = () => {
-      router.back()
-    }
-
-    const navigateToLogin = () => {
-      router.push('/login')
-    }
-
-    const navigateToTerms = () => {
-      // Navigate to terms page or open modal
-      router.push('/terms')
-    }
-
-    const navigateToPrivacy = () => {
-      // Navigate to privacy policy page or open modal
-      router.push('/privacy')
-    }
-
-    return {
-      form,
-      showPassword,
-      showConfirmPassword,
-      isSubmitting,
-      showSuccess,
-      error,
-      success,
-      passwordMismatch,
-      togglePasswordVisibility,
-      toggleConfirmPasswordVisibility,
-      handleSubmit,
-      goBack,
-      navigateToLogin,
-      navigateToTerms,
-      navigateToPrivacy,
-    }
-  },
+    // Redirigir al login después del registro
+    router.push('/login?registered=true')
+  } catch (err) {
+    error.value = err.message
+  } finally {
+    loading.value = false
+  }
 }
 </script>
-
-<style scoped>
-/* Estilos específicos del componente si son necesarios */
-</style>
