@@ -440,7 +440,7 @@ const handleRotateError = (error) => {
 }
 
 const deleteDatabase = async () => {
-  if (!confirm('Are you sure you want to delete this database? This action cannot be undone.')) {
+  if (!confirm('Are you sure you want to sleep this database?')) {
     return
   }
 
