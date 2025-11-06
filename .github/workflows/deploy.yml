@@ -1,36 +1,103 @@
-- name: Simple Deploy
-  uses: appleboy/ssh-action@v1.1.0
-  with:
-    host: ${{ secrets.SERVER_HOST }}
-    username: ${{ secrets.SERVER_USER }}
-    key: ${{ secrets.SSH_PRIVATE_KEY }}
-    script: |
-      set -e
-      cd /root/app
+name: Deploy Vue Frontend to Server
 
-      # Clonar directamente desde GitHub
-      echo "📥 Clonando repositorio..."
-      rm -rf Voyager-cloudDB-Front
-      git clone https://github.com/tu-usuario/Voyager-cloudDB-Front.git
-      cd Voyager-cloudDB-Front
+on:
+  push:
+    branches:
+      - main
 
-      echo "🔨 Instalando y construyendo..."
-      npm ci
-      cat > .env << EOF
-      VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
-      VITE_APP_NAME=${{ secrets.VITE_APP_NAME }}
-      VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }}
-      VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}
-      VITE_DEBUG=${{ secrets.VITE_DEBUG }}
-      EOF
-      npm run build
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-      echo "🐳 Construyendo Docker..."
-      docker build -t vue-frontend .
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      echo "🎯 Iniciando contenedor..."
-      docker stop frontend || true
-      docker rm frontend || true
-      docker run -d -p 80:80 --name frontend vue-frontend
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-      echo "✅ ¡Listo!"
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          cat > .env << EOF
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          VITE_APP_NAME=${{ secrets.VITE_APP_NAME }}
+          VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }}
+          VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}
+          VITE_DEBUG=${{ secrets.VITE_DEBUG }}
+          EOF
+          npm run build
+
+      - name: Verify build
+        run: |
+          echo "📁 Verificando build:"
+          ls -la dist/ || exit 1
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            echo "🚀 Iniciando despliegue..."
+
+            # Crear directorio temporal
+            mkdir -p /tmp/deploy
+            cd /tmp/deploy
+
+            # Crear estructura del proyecto
+            mkdir -p voyager-app
+            cd voyager-app
+          script_stop: true
+
+      - name: Upload files via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: '.,!node_modules'
+          target: '/tmp/deploy/voyager-app'
+          strip_components: 1
+          debug: true
+
+      - name: Execute deployment
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            echo "🔨 Ejecutando despliegue..."
+
+            # Mover a directorio final
+            mkdir -p /root/app
+            cp -r /tmp/deploy/voyager-app/* /root/app/
+            cd /root/app
+
+            echo "📁 Archivos en /root/app:"
+            ls -la
+
+            echo "🐳 Construyendo imagen Docker..."
+            docker build -t vue-frontend .
+
+            echo "🎯 Iniciando contenedor..."
+            docker stop frontend || true
+            docker rm frontend || true
+            docker run -d \
+              -p 80:80 \
+              --name frontend \
+              --restart unless-stopped \
+              vue-frontend
+
+            # Limpiar
+            rm -rf /tmp/deploy
+
+            echo "✅ ¡Despliegue completado!"
+            echo "🌐 App disponible en: http://82.98.12.128"
