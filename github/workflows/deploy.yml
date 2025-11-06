@@ -22,4 +22,34 @@ jobs:
         run: |
           npm ci
           echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" >> .env
-          echo "VITE_APP_NAME=${{ secrets.VIT
+          echo "VITE_APP_NAME=${{ secrets.VITE_APP_NAME }}" >> .env
+          echo "VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }}" >> .env
+          echo "VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}" >> .env
+          echo "VITE_DEBUG=${{ secrets.VITE_DEBUG }}" >> .env
+          npm run build
+
+      - name: Compress build folder
+        run: tar -czf dist.tar.gz dist Dockerfile
+
+      - name: Copy files to remote server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: 'dist.tar.gz'
+          target: '/root/app'
+
+      - name: Deploy on remote server
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/app
+            tar -xzf dist.tar.gz
+            docker stop frontend || true
+            docker rm frontend || true
+            docker build -t vue-frontend .
+            docker run -d -p 80:80 --name frontend vue-frontend
