@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -30,7 +30,22 @@ jobs:
           EOF
           npm run build
 
-      - name: Deploy to production
+      - name: Verify build
+        run: |
+          echo "📁 Verificando archivos built:"
+          ls -la dist/
+          echo "📄 Verificando Dockerfile:"
+          ls -la Dockerfile
+
+      - name: Create deployment package
+        run: |
+          # Crear un tar con solo los archivos necesarios
+          tar -czf deployment.tar.gz \
+            dist/ \
+            Dockerfile \
+            nginx.conf 2>/dev/null || true
+
+      - name: Deploy to server
         uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -38,50 +53,49 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            echo "🚀 Iniciando despliegue en voyager.andrescortes.dev"
+            echo "🚀 Recibiendo despliegue..."
 
-            # Crear directorio temporal
-            mkdir -p /tmp/deploy
-            cd /tmp/deploy
-
-            # Clonar el repositorio directamente
-            echo "📥 Clonando repositorio..."
-            rm -rf Voyager-cloudDB-Front
-            git clone https://github.com/${{ github.repository }}.git
-            cd Voyager-cloudDB-Front
-
-            # Buildear la aplicación en el servidor
-            echo "🔨 Instalando dependencias..."
-            npm ci
-
-            echo "📝 Configurando variables de entorno..."
-            cat > .env << ENV_EOF
-            VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
-            VITE_APP_NAME=${{ secrets.VITE_APP_NAME }}
-            VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }}
-            VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}
-            VITE_DEBUG=${{ secrets.VITE_DEBUG }}
-            ENV_EOF
-
-            echo "🏗️ Construyendo aplicación..."
-            npm run build
-
-            # Mover a directorio final
-            echo "📦 Preparando despliegue..."
+            # Crear directorio de trabajo
             mkdir -p /root/app
-            cp -r dist Dockerfile /root/app/
             cd /root/app
+
+            # Recibir el archivo tar
+            echo "📦 Recibiendo archivos..."
+            cat > deployment.tar.gz
+
+            # Verificar que llegó el archivo
+            if [ ! -f "deployment.tar.gz" ]; then
+              echo "❌ ERROR: No se recibió deployment.tar.gz"
+              exit 1
+            fi
+
+            echo "📁 Extrayendo archivos..."
+            tar -xzf deployment.tar.gz --overwrite
+
+            echo "📄 Archivos extraídos:"
+            ls -la
+
+            # Verificar que tenemos los archivos necesarios
+            if [ ! -d "dist" ]; then
+              echo "❌ ERROR: No se encontró directorio dist/"
+              exit 1
+            fi
+
+            if [ ! -f "Dockerfile" ]; then
+              echo "❌ ERROR: No se encontró Dockerfile"
+              exit 1
+            fi
 
             # Detener servicios en puerto 80
             echo "🔧 Liberando puerto 80..."
             systemctl stop nginx || true
             docker stop nginx frontend || true
 
-            # Construir y ejecutar contenedor
+            # Construir y desplegar
             echo "🐳 Construyendo imagen Docker..."
             docker build -t vue-frontend .
 
-            echo "🎯 Desplegando en producción..."
+            echo "🎯 Iniciando contenedor..."
             docker rm -f frontend || true
             docker run -d \
               -p 80:80 \
@@ -90,9 +104,12 @@ jobs:
               vue-frontend
 
             # Limpieza
-            rm -rf /tmp/deploy
+            rm -f deployment.tar.gz
             docker system prune -f
 
             echo "✅ ¡Despliegue exitoso!"
             echo "🌐 Aplicación disponible en: https://voyager.andrescortes.dev"
-            echo "📊 Ver logs: docker logs frontend"
+            echo "📊 Para ver logs: docker logs frontend"
+          script_stop: true
+        envs: |
+          TAR_CONTENT: ${{ github.workspace }}/deployment.tar.gz
