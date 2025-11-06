@@ -133,12 +133,6 @@ jobs:
                 gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
             }
 
-            # Redirección para www (opcional)
-            server {
-                listen 80;
-                server_name www.voyager.andrescortes.dev;
-                return 301 http://voyager.andrescortes.dev$request_uri;
-            }
             EOF
 
             # Remover configuración por defecto y activar nuestra configuración
