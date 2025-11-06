@@ -42,10 +42,19 @@ jobs:
           # Crear un tar con solo los archivos necesarios
           tar -czf deployment.tar.gz \
             dist/ \
-            Dockerfile \
-            nginx.conf 2>/dev/null || true
+            Dockerfile
 
-      - name: Deploy to server
+      - name: Upload files via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: 'deployment.tar.gz'
+          target: '/root/app'
+          overwrite: true
+
+      - name: Deploy on server
         uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -53,29 +62,25 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            echo "🚀 Recibiendo despliegue..."
+            echo "🚀 Iniciando despliegue..."
 
-            # Crear directorio de trabajo
-            mkdir -p /root/app
             cd /root/app
 
-            # Recibir el archivo tar
-            echo "📦 Recibiendo archivos..."
-            cat > deployment.tar.gz
-
-            # Verificar que llegó el archivo
+            # Verificar que el archivo existe
             if [ ! -f "deployment.tar.gz" ]; then
-              echo "❌ ERROR: No se recibió deployment.tar.gz"
+              echo "❌ ERROR: deployment.tar.gz no encontrado"
+              echo "📁 Contenido actual:"
+              ls -la
               exit 1
             fi
 
-            echo "📁 Extrayendo archivos..."
+            echo "📦 Extrayendo archivos..."
             tar -xzf deployment.tar.gz --overwrite
 
             echo "📄 Archivos extraídos:"
             ls -la
 
-            # Verificar que tenemos los archivos necesarios
+            # Verificar archivos esenciales
             if [ ! -d "dist" ]; then
               echo "❌ ERROR: No se encontró directorio dist/"
               exit 1
@@ -91,7 +96,6 @@ jobs:
             systemctl stop nginx || true
             docker stop nginx frontend || true
 
-            # Construir y desplegar
             echo "🐳 Construyendo imagen Docker..."
             docker build -t vue-frontend .
 
@@ -110,6 +114,3 @@ jobs:
             echo "✅ ¡Despliegue exitoso!"
             echo "🌐 Aplicación disponible en: https://voyager.andrescortes.dev"
             echo "📊 Para ver logs: docker logs frontend"
-          script_stop: true
-        envs: |
-          TAR_CONTENT: ${{ github.workspace }}/deployment.tar.gz
