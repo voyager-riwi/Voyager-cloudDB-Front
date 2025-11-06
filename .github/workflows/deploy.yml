@@ -1,56 +1,36 @@
-name: Deploy Vue Frontend to Server
+- name: Simple Deploy
+  uses: appleboy/ssh-action@v1.1.0
+  with:
+    host: ${{ secrets.SERVER_HOST }}
+    username: ${{ secrets.SERVER_USER }}
+    key: ${{ secrets.SSH_PRIVATE_KEY }}
+    script: |
+      set -e
+      cd /root/app
 
-on:
-  push:
-    branches:
-      - main
+      # Clonar directamente desde GitHub
+      echo "📥 Clonando repositorio..."
+      rm -rf Voyager-cloudDB-Front
+      git clone https://github.com/tu-usuario/Voyager-cloudDB-Front.git
+      cd Voyager-cloudDB-Front
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+      echo "🔨 Instalando y construyendo..."
+      npm ci
+      cat > .env << EOF
+      VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+      VITE_APP_NAME=${{ secrets.VITE_APP_NAME }}
+      VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }}
+      VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}
+      VITE_DEBUG=${{ secrets.VITE_DEBUG }}
+      EOF
+      npm run build
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      echo "🐳 Construyendo Docker..."
+      docker build -t vue-frontend .
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
+      echo "🎯 Iniciando contenedor..."
+      docker stop frontend || true
+      docker rm frontend || true
+      docker run -d -p 80:80 --name frontend vue-frontend
 
-      - name: Install dependencies and build
-        run: |
-          npm ci
-          cat > .env << EOF
-          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
-          VITE_APP_NAME=${{ secrets.VITE_APP_NAME }}
-          VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }}
-          VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}
-          VITE_DEBUG=${{ secrets.VITE_DEBUG }}
-          EOF
-          npm run build
-
-      - name: Compress build artifacts
-        run: tar -czf dist.tar.gz dist Dockerfile
-
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@v1.1.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            # Crear directorio si no existe
-            mkdir -p /root/app
-
-            # Copiar archivo (usamos SCP integrado)
-            scp -o StrictHostKeyChecking=no ${{ github.workspace }}/dist.tar.gz root@82.98.12.128:/root/app/ || true
-
-            # Desplegar
-            cd /root/app
-            tar -xzf dist.tar.gz --overwrite
-            docker stop frontend || true
-            docker rm frontend || true
-            docker build -t vue-frontend .
-            docker run -d -p 80:80 --name frontend vue-frontend
+      echo "✅ ¡Listo!"
