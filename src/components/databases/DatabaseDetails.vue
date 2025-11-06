@@ -336,6 +336,7 @@ const formatDate = (dateString) => {
 }
 
 const rotateCredentials = async () => {
+  const databaseId = route.params.id
   if (loading.value) return
 
   // Confirmación antes de rotar credenciales
@@ -353,7 +354,7 @@ const rotateCredentials = async () => {
     console.log('🔄 Rotating credentials for database:', database.value.id)
 
     // Llamar al endpoint correcto según tu configuración
-    const response = await api.databases.resetPassword(database.value.id)
+    const response = await api.databases.resetPassword(databaseId)
     console.log('✅ API Response:', response.data)
 
     // Manejar diferentes estructuras de respuesta
@@ -440,6 +441,7 @@ const handleRotateError = (error) => {
 }
 
 const deleteDatabase = async () => {
+  const databaseId = route.params.id
   if (!confirm('Are you sure you want to sleep this database?')) {
     return
   }
@@ -447,7 +449,7 @@ const deleteDatabase = async () => {
   loading.value = true
   try {
     // Llamar a la API para eliminar la base de datos
-    await api.databases.delete(database.value.id)
+    await api.databases.delete(databaseId)
     console.log('Database deleted successfully')
 
     // Redirigir al dashboard
