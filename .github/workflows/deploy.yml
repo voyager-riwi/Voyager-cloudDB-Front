@@ -59,7 +59,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            echo "🚀 Iniciando despliegue con Nginx reverse proxy..."
+            echo "🚀 Desplegando solo frontend en voyager.andrescortes.dev..."
 
             cd /root/app
 
@@ -75,25 +75,29 @@ jobs:
             echo "🐳 Construyendo imagen Docker..."
             docker build -t vue-frontend .
 
-            echo "🎯 Iniciando contenedor en puerto interno..."
+            echo "🎯 Iniciando contenedor del frontend..."
             docker stop frontend 2>/dev/null || true
             docker rm frontend 2>/dev/null || true
             docker run -d -p 3011:80 --name frontend --restart unless-stopped vue-frontend
 
-            echo "🔧 Configurando Nginx como reverse proxy..."
+            echo "🔧 Configurando Nginx para el frontend..."
 
+            # Instalar nginx si no está instalado
             if ! command -v nginx &> /dev/null; then
               echo "📥 Instalando Nginx..."
               apt update && apt install -y nginx
             fi
 
+            # Detener nginx temporalmente para configurar
             systemctl stop nginx 2>/dev/null || true
 
+            # Crear configuración Nginx SOLO para el frontend
             cat > /etc/nginx/sites-available/voyager << 'EOF'
             server {
                 listen 80;
                 server_name voyager.andrescortes.dev;
                 
+                # Configuración para Single Page Application (Vue.js)
                 location / {
                     proxy_pass http://localhost:3011;
                     proxy_http_version 1.1;
@@ -104,56 +108,80 @@ jobs:
                     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                     proxy_set_header X-Forwarded-Proto $scheme;
                     proxy_cache_bypass $http_upgrade;
+                    
+                    # Importante para SPAs - maneja rutas del cliente
                     try_files $uri $uri/ /index.html;
                 }
                 
-                location /api/ {
-                    proxy_pass http://localhost:80;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection 'upgrade';
-                    proxy_set_header Host $host;
-                    proxy_set_header X-Real-IP $remote_addr;
-                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                    proxy_set_header X-Forwarded-Proto $scheme;
-                    proxy_cache_bypass $http_upgrade;
-                    proxy_set_header X-Forwarded-Host $host;
-                    proxy_set_header X-Forwarded-Server $host;
-                }
-                
-                location /assets/ {
-                    proxy_pass http://localhost:3000;
+                # Cache para archivos estáticos
+                location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+                    proxy_pass http://localhost:3011;
                     expires 1y;
                     add_header Cache-Control "public, immutable";
+                    add_header Vary "Accept-Encoding";
                 }
+                
+                # Configuración de seguridad
+                add_header X-Frame-Options "SAMEORIGIN" always;
+                add_header X-XSS-Protection "1; mode=block" always;
+                add_header X-Content-Type-Options "nosniff" always;
+                
+                # Configuración de performance
+                gzip on;
+                gzip_vary on;
+                gzip_min_length 1024;
+                gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
+            }
+
+            # Redirección para www (opcional)
+            server {
+                listen 80;
+                server_name www.voyager.andrescortes.dev;
+                return 301 http://voyager.andrescortes.dev$request_uri;
             }
             EOF
 
+            # Remover configuración por defecto y activar nuestra configuración
             rm -f /etc/nginx/sites-enabled/default
             ln -sf /etc/nginx/sites-available/voyager /etc/nginx/sites-enabled/
 
+            # Testear configuración Nginx
             echo "🧪 Verificando configuración Nginx..."
             nginx -t
 
+            # Iniciar/reiniciar nginx
             echo "🔄 Iniciando Nginx..."
             systemctl start nginx 2>/dev/null || true
             systemctl enable nginx 2>/dev/null || true
             systemctl reload nginx 2>/dev/null || true
 
+            # Configurar firewall para permitir tráfico HTTP/HTTPS
             echo "🔥 Configurando firewall..."
             ufw allow 80/tcp 2>/dev/null || true
             ufw allow 443/tcp 2>/dev/null || true
 
+            # Verificar que todo está funcionando
             echo "🔍 Verificando despliegue..."
-            sleep 5
-            echo "🐳 Contenedores activos:"
-            docker ps
+            sleep 3
+            echo "🐳 Contenedor frontend:"
+            docker ps | grep frontend || echo "❌ Contenedor no está corriendo"
             echo "🌐 Nginx status:"
-            systemctl status nginx --no-pager || echo "Nginx no está corriendo"
+            systemctl is-active nginx && echo "✅ Nginx activo" || echo "❌ Nginx inactivo"
+            echo "🔗 Probando conectividad interna..."
+            curl -s -o /dev/null -w "Frontend responde con: %{http_code}\n" http://localhost:3011 || echo "❌ Frontend no responde"
+            curl -s -o /dev/null -w "Nginx responde con: %{http_code}\n" http://localhost:80 || echo "❌ Nginx no responde"
 
+            # Limpieza
             rm -f deployment.tar.gz
             docker system prune -f
 
-            echo "✅ ¡Despliegue exitoso con Nginx!"
-            echo "🌐 Frontend disponible en: https://voyager.andrescortes.dev"
-            echo "🔧 API disponible en: https://voyager.andrescortes.dev/api/"
+            echo ""
+            echo "✅ ¡DESPLIEGUE EXITOSO!"
+            echo "🌐 TU FRONTEND ESTÁ DISPONIBLE EN:"
+            echo "   https://voyager.andrescortes.dev"
+            echo ""
+            echo "📊 Comandos útiles:"
+            echo "   Ver logs del frontend: docker logs frontend"
+            echo "   Ver logs de Nginx: journalctl -u nginx -f"
+            echo "   Reiniciar frontend: docker restart frontend"
+            echo "   Estado de servicios: docker ps && systemctl status nginx"
