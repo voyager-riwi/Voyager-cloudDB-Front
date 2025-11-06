@@ -1,142 +1,159 @@
-- name: Deploy on server
-  uses: appleboy/ssh-action@v1.1.0
-  with:
-    host: ${{ secrets.SERVER_HOST }}
-    username: ${{ secrets.SERVER_USER }}
-    key: ${{ secrets.SSH_PRIVATE_KEY }}
-    script: |
-      set -e
-      echo "🚀 Iniciando despliegue con Nginx reverse proxy..."
+name: Deploy Vue Frontend to voyager.andrescortes.dev
 
-      cd /root/app
+on:
+  push:
+    branches:
+      - main
 
-      # Verificar que el archivo existe
-      if [ ! -f "deployment.tar.gz" ]; then
-        echo "❌ ERROR: deployment.tar.gz no encontrado"
-        echo "📁 Contenido actual:"
-        ls -la
-        exit 1
-      fi
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      echo "📦 Extrayendo archivos..."
-      tar -xzf deployment.tar.gz --overwrite
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-      echo "📄 Archivos extraídos:"
-      ls -la
+      - name: Install and build
+        run: |
+          npm ci
+          cat > .env << EOF
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          VITE_APP_NAME=${{ secrets.VITE_APP_NAME }}
+          VITE_APP_VERSION=${{ secrets.VITE_APP_VERSION }}
+          VITE_API_TIMEOUT=${{ secrets.VITE_API_TIMEOUT }}
+          VITE_DEBUG=${{ secrets.VITE_DEBUG }}
+          EOF
+          npm run build
 
-      # Verificar archivos esenciales
-      if [ ! -d "dist" ]; then
-        echo "❌ ERROR: No se encontró directorio dist/"
-        exit 1
-      fi
+      - name: Verify build
+        run: |
+          echo "📁 Verificando archivos built:"
+          ls -la dist/
+          echo "📄 Verificando Dockerfile:"
+          ls -la Dockerfile
 
-      if [ ! -f "Dockerfile" ]; then
-        echo "❌ ERROR: No se encontró Dockerfile"
-        exit 1
-      fi
+      - name: Create deployment package
+        run: |
+          tar -czf deployment.tar.gz dist/ Dockerfile
 
-      echo "🐳 Construyendo imagen Docker..."
-      docker build -t vue-frontend .
+      - name: Upload files via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: 'deployment.tar.gz'
+          target: '/root/app'
+          overwrite: true
 
-      echo "🎯 Iniciando contenedor en puerto interno..."
-      docker stop frontend 2>/dev/null || true
-      docker rm frontend 2>/dev/null || true
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            echo "🚀 Iniciando despliegue con Nginx reverse proxy..."
 
-      # Ejecutar contenedor en una sola línea para evitar problemas
-      docker run -d -p 3000:80 --name frontend --restart unless-stopped vue-frontend
+            cd /root/app
 
-      echo "🔧 Configurando Nginx como reverse proxy..."
+            if [ ! -f "deployment.tar.gz" ]; then
+              echo "❌ ERROR: deployment.tar.gz no encontrado"
+              ls -la
+              exit 1
+            fi
 
-      # Instalar nginx si no está instalado
-      if ! command -v nginx &> /dev/null; then
-        echo "📥 Instalando Nginx..."
-        apt update && apt install -y nginx
-      fi
+            echo "📦 Extrayendo archivos..."
+            tar -xzf deployment.tar.gz --overwrite
 
-      # Detener nginx temporalmente para configurar
-      systemctl stop nginx 2>/dev/null || true
+            echo "🐳 Construyendo imagen Docker..."
+            docker build -t vue-frontend .
 
-      # Crear configuración Nginx para el frontend
-      cat > /etc/nginx/sites-available/voyager << 'EOF'
-      server {
-          listen 80;
-          server_name voyager.andrescortes.dev;
-          
-          # Frontend Vue.js - sirve la aplicación
-          location / {
-              proxy_pass http://localhost:3000;
-              proxy_http_version 1.1;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header Connection 'upgrade';
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_cache_bypass $http_upgrade;
-              
-              # Configuraciones adicionales para SPA
-              try_files $uri $uri/ /index.html;
-          }
-          
-          # Backend API - redirige las llamadas API a tu backend existente
-          location /api/ {
-              proxy_pass http://localhost:80;  # Tu backend actual en puerto 80
-              proxy_http_version 1.1;
-              proxy_set_header Upgrade $http_upgrade;
-              proxy_set_header Connection 'upgrade';
-              proxy_set_header Host $host;
-              proxy_set_header X-Real-IP $remote_addr;
-              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-              proxy_set_header X-Forwarded-Proto $scheme;
-              proxy_cache_bypass $http_upgrade;
-              
-              # Configuraciones específicas para API
-              proxy_set_header X-Forwarded-Host $host;
-              proxy_set_header X-Forwarded-Server $host;
-          }
-          
-          # Archivos estáticos - mejora el performance
-          location /assets/ {
-              proxy_pass http://localhost:3000;
-              expires 1y;
-              add_header Cache-Control "public, immutable";
-          }
-      }
-      EOF
+            echo "🎯 Iniciando contenedor en puerto interno..."
+            docker stop frontend 2>/dev/null || true
+            docker rm frontend 2>/dev/null || true
+            docker run -d -p 3000:80 --name frontend --restart unless-stopped vue-frontend
 
-      # Remover configuración por defecto y activar nuestra configuración
-      rm -f /etc/nginx/sites-enabled/default
-      ln -sf /etc/nginx/sites-available/voyager /etc/nginx/sites-enabled/
+            echo "🔧 Configurando Nginx como reverse proxy..."
 
-      # Testear configuración Nginx
-      echo "🧪 Verificando configuración Nginx..."
-      nginx -t
+            if ! command -v nginx &> /dev/null; then
+              echo "📥 Instalando Nginx..."
+              apt update && apt install -y nginx
+            fi
 
-      # Iniciar/reiniciar nginx
-      echo "🔄 Iniciando Nginx..."
-      systemctl start nginx 2>/dev/null || true
-      systemctl enable nginx 2>/dev/null || true
-      systemctl reload nginx 2>/dev/null || true
+            systemctl stop nginx 2>/dev/null || true
 
-      # Configurar firewall para permitir tráfico
-      echo "🔥 Configurando firewall..."
-      ufw allow 80/tcp 2>/dev/null || true
-      ufw allow 443/tcp 2>/dev/null || true
+            cat > /etc/nginx/sites-available/voyager << 'EOF'
+            server {
+                listen 80;
+                server_name voyager.andrescortes.dev;
+                
+                location / {
+                    proxy_pass http://localhost:3000;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection 'upgrade';
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                    proxy_cache_bypass $http_upgrade;
+                    try_files $uri $uri/ /index.html;
+                }
+                
+                location /api/ {
+                    proxy_pass http://localhost:80;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection 'upgrade';
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                    proxy_cache_bypass $http_upgrade;
+                    proxy_set_header X-Forwarded-Host $host;
+                    proxy_set_header X-Forwarded-Server $host;
+                }
+                
+                location /assets/ {
+                    proxy_pass http://localhost:3000;
+                    expires 1y;
+                    add_header Cache-Control "public, immutable";
+                }
+            }
+            EOF
 
-      # Verificar que todo está funcionando
-      echo "🔍 Verificando despliegue..."
-      sleep 5
-      echo "🐳 Contenedores activos:"
-      docker ps
-      echo "🌐 Nginx status:"
-      systemctl status nginx --no-pager || echo "Nginx no está corriendo"
+            rm -f /etc/nginx/sites-enabled/default
+            ln -sf /etc/nginx/sites-available/voyager /etc/nginx/sites-enabled/
 
-      # Limpieza
-      rm -f deployment.tar.gz
-      docker system prune -f
+            echo "🧪 Verificando configuración Nginx..."
+            nginx -t
 
-      echo "✅ ¡Despliegue exitoso con Nginx!"
-      echo "🌐 Frontend disponible en: https://voyager.andrescortes.dev"
-      echo "🔧 API disponible en: https://voyager.andrescortes.dev/api/"
-      echo "📊 Logs del frontend: docker logs frontend"
-      echo "📊 Logs de Nginx: journalctl -u nginx -f"
+            echo "🔄 Iniciando Nginx..."
+            systemctl start nginx 2>/dev/null || true
+            systemctl enable nginx 2>/dev/null || true
+            systemctl reload nginx 2>/dev/null || true
+
+            echo "🔥 Configurando firewall..."
+            ufw allow 80/tcp 2>/dev/null || true
+            ufw allow 443/tcp 2>/dev/null || true
+
+            echo "🔍 Verificando despliegue..."
+            sleep 5
+            echo "🐳 Contenedores activos:"
+            docker ps
+            echo "🌐 Nginx status:"
+            systemctl status nginx --no-pager || echo "Nginx no está corriendo"
+
+            rm -f deployment.tar.gz
+            docker system prune -f
+
+            echo "✅ ¡Despliegue exitoso con Nginx!"
+            echo "🌐 Frontend disponible en: https://voyager.andrescortes.dev"
+            echo "🔧 API disponible en: https://voyager.andrescortes.dev/api/"
