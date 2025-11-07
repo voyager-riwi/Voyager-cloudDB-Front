@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Video Loading integrado - Modo Cinemática -->
+    <!-- Video Loading integrado - Modo Cinemática 
     <div
       v-if="showVideoLoading"
       class="video-cinematic"
@@ -30,7 +30,7 @@
         Tu navegador no soporta el elemento video.
       </video>
 
-      <!-- Controles de audio personalizados -->
+       Controles de audio personalizados 
       <div class="audio-controls" v-if="!videoError && !videoLoading">
         <button @click.stop="toggleMute" class="audio-btn">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="audio-icon">
@@ -87,11 +87,11 @@
         </button>
       </div>
 
-      <!-- Solo el texto para saltar, centrado en la parte inferior -->
+      Solo el texto para saltar, centrado en la parte inferior 
       <div class="skip-overlay" v-if="!videoError">
         <div class="skip-hint-cinematic">Click o presiona Escape para ir al dashboard</div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Contenedor Principal del Login -->
     <div
@@ -242,7 +242,7 @@ const loading = ref(false)
 const error = ref('')
 const success = ref('')
 
-// Estados del video loading
+/* Estados del video loading
 const showVideoLoading = ref(false)
 const isFading = ref(false)
 const videoLoading = ref(false)
@@ -261,7 +261,7 @@ const loadingVideoSrc = ref(
 )
 
 const loadingVideoSrcWebm = ref('')
-const loadingMessage = ref('Preparando tu experiencia...')
+const loadingMessage = ref('Preparando tu experiencia...')*/
 
 const handleLogin = async () => {
   loading.value = true
@@ -282,8 +282,9 @@ const handleLogin = async () => {
       success.value = '¡Login exitoso! Redirigiendo...'
 
       setTimeout(() => {
-        showVideoLoading.value = true
-        videoLoading.value = true
+        //showVideoLoading.value = true
+        //videoLoading.value = true
+        redirectToDashboard()
       }, 1000)
     } else {
       throw new Error('No se recibió token de autenticación')
@@ -294,7 +295,7 @@ const handleLogin = async () => {
     loading.value = false
   }
 }
-
+/*
 // Funciones del video loading
 const handleVideoLoaded = () => {
   console.log('Video cargado correctamente')
@@ -421,7 +422,7 @@ watch(showVideoLoading, (newVal) => {
       window.addEventListener('keydown', handleKeydown)
     })
   }
-})
+})*/
 
 // Redirigir al dashboard
 const redirectToDashboard = () => {
@@ -429,9 +430,9 @@ const redirectToDashboard = () => {
 }
 
 // Cleanup
-onUnmounted(() => {
+/*onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
-})
+})*/
 </script>
 
 <style scoped>
