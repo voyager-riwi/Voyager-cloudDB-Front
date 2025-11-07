@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 .env.local
+# Environment variables
+.env
+.env.local
+.env.*.local

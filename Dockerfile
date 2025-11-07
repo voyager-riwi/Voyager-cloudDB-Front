@@ -1,15 +1,21 @@
 # Etapa 1: construir la app
 FROM node:20-alpine AS build
 WORKDIR /app
+
+# Copiar package files
 COPY package*.json ./
 RUN npm ci
+
+# Copiar código fuente y archivo .env
 COPY . .
+
+# Build con las variables de entorno
 RUN npm run build
 
 # Etapa 2: servir con Nginx
 FROM nginx:alpine
 
-# Copiar archivos built
+# Copiar archivos construidos
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Configuración de nginx para Vue Router (SPA) en puerto 3011
@@ -36,3 +42,4 @@ RUN echo 'server { \
 
 EXPOSE 3011
 CMD ["nginx", "-g", "daemon off;"]
+
