@@ -268,6 +268,45 @@
       <span class="material-symbols-outlined text-3xl">add</span>
     </button>
 
+    <!-- Botón de mute en la esquina inferior izquierda -->
+    <button
+      @click="toggleBackgroundMusic"
+      class="music-control-btn"
+      :class="{ muted: isMusicMuted }"
+    >
+      <svg v-if="isMusicMuted" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 9V15H7L12 20V4L7 9H3Z" />
+        <path
+          d="M16 9L21 14M21 9L16 14"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 9V15H7L12 20V4L7 9H3Z" />
+        <path
+          d="M16 9C16.5 9.5 17 10.5 17 12C17 13.5 16.5 14.5 16 15"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+        <path
+          d="M19 6C20.5 7.5 21 10 21 12C21 14 20.5 16.5 19 18"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span class="music-label">{{ isMusicMuted ? 'Activar música' : 'Silenciar' }}</span>
+    </button>
+
+    <!-- Audio oculto para la música de fondo -->
+    <audio ref="backgroundMusic" loop :muted="isMusicMuted">
+      <source :src="backgroundMusicSrc" type="audio/mpeg" />
+      Tu navegador no soporta el elemento audio.
+    </audio>
+
     <!-- Modal de creación de base de datos -->
     <CreateDatabaseModal
       v-if="showCreateModal"
@@ -300,6 +339,11 @@ import api from '@/services/api'
 import env from '@/config/env'
 import CreateDatabaseModal from '@/components/databases/CreateDatabaseModal.vue'
 import ChangePassword from '@/components/common/ChangePassword.vue'
+
+// Estados para la música de fondo
+const backgroundMusic = ref(null)
+const isMusicMuted = ref(false)
+const backgroundMusicSrc = ref(new URL('@/assets/audio/background_music.mp3', import.meta.url).href)
 
 const showChangePasswordModal = ref(false)
 
@@ -340,6 +384,39 @@ const databaseLogos = {
   MySQL:
     'https://lh3.googleusercontent.com/aida-public/AB6AXuDOys6TO_yAB76x6tiDK73rbTKlY538p4O3TMZ2uQZQeGoWNkrATs23rfOsFJW6Wq21uni-5WOIIvmFAMnC-1pUWO8SrxrinY8Dh5SipD2askzTm5-NZ1u8oqmbZhUHqIy1R9kuFgq0Jw63a2L3p6WleWVNtOzDR6wVptg81EfR30eqOO6fuJOpi5LbqH2_jyjj8Ai48r_YONG8rb23WttosFZxN-_goAtk4h6GhXaB7dj9pr_AZJTZ_ohedqUK_D9LnPlO86sXJ_U',
 }
+
+// Métodos para controlar la música
+const toggleBackgroundMusic = async () => {
+  isMusicMuted.value = !isMusicMuted.value
+
+  if (backgroundMusic.value) {
+    if (isMusicMuted.value) {
+      backgroundMusic.value.pause()
+    } else {
+      try {
+        await backgroundMusic.value.play()
+      } catch (error) {
+        console.log('Error reproduciendo música:', error)
+      }
+    }
+  }
+}
+
+const startBackgroundMusic = async () => {
+  if (backgroundMusic.value && !isMusicMuted.value) {
+    try {
+      // Configurar volumen bajo para música de fondo
+      backgroundMusic.value.volume = 0.07
+      await backgroundMusic.value.play()
+    } catch (error) {
+      console.log('Autoplay bloqueado, el usuario debe interactuar primero')
+    }
+  }
+}
+
+onMounted(() => {
+  startBackgroundMusic()
+})
 
 // Computed
 const filteredDatabases = computed(() => {
@@ -508,6 +585,65 @@ onMounted(() => {
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
 
+.music-control-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  font-size: 14px;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+.music-control-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.music-control-btn.muted {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+.music-control-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.music-label {
+  white-space: nowrap;
+}
+
+/* Ocultar el elemento audio */
+audio {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .music-control-btn {
+    bottom: 15px;
+    left: 15px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .music-control-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
