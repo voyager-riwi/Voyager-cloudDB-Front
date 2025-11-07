@@ -1,9 +1,9 @@
 <template>
   <div>
-    <!-- Video Loading integrado -->
+    <!-- Video Loading integrado - Modo Cinemática -->
     <div
       v-if="showVideoLoading"
-      class="video-loading"
+      class="video-cinematic"
       :class="{ 'fade-out': isFading }"
       @click="skipVideo"
     >
@@ -16,7 +16,7 @@
       <video
         v-else
         ref="loadingVideoEl"
-        class="loading-video"
+        class="cinematic-video"
         preload="auto"
         @loadeddata="handleVideoLoaded"
         @ended="handleVideoEnd"
@@ -33,12 +33,8 @@
       <!-- Controles de audio personalizados -->
       <div class="audio-controls" v-if="!videoError && !videoLoading">
         <button @click.stop="toggleMute" class="audio-btn">
-          <!-- Mute/Unmute SVG con transición -->
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="audio-icon">
-            <!-- Altavoz base -->
             <path d="M3 9V15H7L12 20V4L7 9H3Z" fill="currentColor" class="speaker-base" />
-
-            <!-- Ondas de sonido para unmute -->
             <path
               v-if="!isMuted"
               d="M16 9C16.5 9.5 17 10.5 17 12C17 13.5 16.5 14.5 16 15"
@@ -55,8 +51,6 @@
               stroke-linecap="round"
               class="sound-wave-2"
             />
-
-            <!-- X para mute -->
             <path
               v-if="isMuted"
               d="M16 9L21 14M21 9L16 14"
@@ -69,12 +63,8 @@
         </button>
 
         <button @click.stop="togglePlay" class="audio-btn">
-          <!-- Play/Pause SVG con transición -->
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="audio-icon">
-            <!-- Play icon -->
             <path v-if="!isPlaying" d="M8 5V19L19 12L8 5Z" fill="currentColor" class="play-icon" />
-
-            <!-- Pause icon -->
             <rect
               v-if="isPlaying"
               x="6"
@@ -97,15 +87,9 @@
         </button>
       </div>
 
-      <div class="loading-content" :class="{ 'error-mode': videoError }">
-        <div class="loading-text">{{ loadingMessage }}</div>
-        <div class="skip-hint">(Click o presiona Escape para saltar)</div>
-
-        <!-- Spinner mientras carga el video -->
-        <div v-if="videoLoading" class="video-loading-spinner">
-          <div class="spinner"></div>
-          <div>Cargando video...</div>
-        </div>
+      <!-- Solo el texto para saltar, centrado en la parte inferior -->
+      <div class="skip-overlay" v-if="!videoError">
+        <div class="skip-hint-cinematic">Click o presiona Escape para ir al dashboard</div>
       </div>
     </div>
 
@@ -271,7 +255,9 @@ const isPlaying = ref(false)
 
 // Ruta del video
 const loadingVideoSrc = ref(
-  new URL('@/assets/videos/Journey_to_Hogwarts.mp4', import.meta.url).href,
+  //new URL('@/assets/videos/Journey_to_Hogwarts.mp4', import.meta.url).href,
+  //Video laargo
+  new URL('@/assets/videos/Journey_to_Hogwarts_large.mp4', import.meta.url).href,
 )
 
 const loadingVideoSrcWebm = ref('')
@@ -316,7 +302,7 @@ const handleVideoLoaded = () => {
 
   // Configurar volumen inicial
   if (loadingVideoEl.value) {
-    loadingVideoEl.value.volume = 0.7 // Volumen al 70%
+    loadingVideoEl.value.volume = 0.5 // Volumen al 50%
   }
 
   playVideo()
@@ -449,37 +435,69 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Estilos del video loading */
-.video-loading {
+.video-cinematic {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   z-index: 9999;
   cursor: pointer;
   transition: opacity 0.5s ease-in-out;
+  overflow: hidden;
 }
 
-.video-loading.fade-out {
+.video-cinematic.fade-out {
   opacity: 0;
 }
 
-.loading-video {
-  width: 80%;
-  max-width: 800px;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-  background: #111;
+/* Video a pantalla completa */
+.cinematic-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Asegura que el video cubra toda la pantalla */
+  object-position: center;
 }
 
-/* Controles de audio */
+/* Overlay para el texto de skip */
+.skip-overlay {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.skip-hint-cinematic {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  font-family: 'Source Sans Pro', sans-serif;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 12px 24px;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: pulse-hint 2s infinite;
+  text-align: center;
+}
+
+@keyframes pulse-hint {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* Controles de audio reposicionados */
 .audio-controls {
   position: absolute;
   top: 20px;
@@ -493,8 +511,8 @@ onUnmounted(() => {
   background: rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -508,60 +526,30 @@ onUnmounted(() => {
 .audio-btn:hover {
   background: rgba(0, 0, 0, 0.9);
   transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
-.loading-content {
-  text-align: center;
-  margin-top: 20px;
+.audio-icon {
+  transition: all 0.3s ease;
 }
 
-.loading-content.error-mode {
-  margin-top: 40px;
-}
-
-.loading-text {
-  color: white;
-  font-size: 1.5rem;
-  font-family: 'Source Sans Pro', sans-serif;
-  margin-bottom: 8px;
-}
-
-.skip-hint {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
-  font-family: 'Source Sans Pro', sans-serif;
-}
-
-/* Spinner para carga de video */
-.video-loading-spinner {
-  margin-top: 20px;
-  color: white;
-}
-
-.spinner {
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top: 3px solid white;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 10px;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+.audio-btn:hover .audio-icon {
+  transform: scale(1.1);
 }
 
 /* Estilos para error de video */
 .video-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
   color: white;
   padding: 40px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .error-icon {
@@ -590,6 +578,39 @@ onUnmounted(() => {
   background: #4a4ed8;
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+  .skip-hint-cinematic {
+    font-size: 0.9rem;
+    padding: 10px 20px;
+    bottom: 20px;
+  }
+
+  .audio-controls {
+    top: 10px;
+    right: 10px;
+  }
+
+  .audio-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Efectos de transición para los iconos de audio */
+.sound-wave-1,
+.sound-wave-2,
+.mute-x,
+.play-icon,
+.pause-bar-1,
+.pause-bar-2 {
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.speaker-base {
+  transition: fill 0.3s ease;
+}
 /* Estilos del login container con nubes */
 .login-container {
   position: relative;

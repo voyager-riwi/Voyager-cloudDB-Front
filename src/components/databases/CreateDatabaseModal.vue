@@ -196,6 +196,7 @@
 <script setup>
 import { ref, computed, reactive } from 'vue'
 import api from '@/services/api'
+import { DATABASE_ENGINES } from '@/utils/constants/databaseEngines'
 
 // Define los emits
 const emit = defineEmits(['close', 'success'])
@@ -213,45 +214,8 @@ const form = reactive({
   plan: '',
 })
 
-// Opciones disponibles
-const databaseEngines = ref([
-  {
-    id: 'mysql',
-    name: 'MySQL',
-    type: 'Relational',
-    logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDfMGhHvOBveRHHBPZCEx-KZnlJ3LdTakJs01-a7CZ67Ql_QzAqN0wjUtd_xz12DN6Uhuh4yBxZEm_KT_eLmPwiJIAaJN-gQgeYdKkJYoiRALEzXG3uYg74qXgR1xgfr75BQmUcKw5sS3EH9Zgw4pydV-04W81ivanAEsLtJUcXUk49bEyE-F5vAXUAxqC1SQIUZtvgkRkDsHGDAux6cDw5RVaZ5wzlpxwSBWB0ooNWpABfKE0p41kCBRkh8Qau6sBLH8UZjoB9GoM',
-  },
-  {
-    id: 'postgresql',
-    name: 'PostgreSQL',
-    type: 'Relational',
-    logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBBWT8iapa3ROGH30HXI9hDkvSMGpXAHVMa6X7EMIRzblQhvJQN8Ms78Td4dpjGTBYTNj3U_VUKOeU3HGgI17m7UNUt13xZEirJK9NXRxOCZ6TgCNVgA1NWUWBoSEwkpvGyozhKNKVMM3ntOjff-QG6aZw1URI57H7flYBspCQSuSDRd2EYgEKh64VmErZJsp6cc-dBjyLAif5KO8L9fALHBro9fHozpZ8-dJnE0Jnxfzj50X_Tur67p7K_PJB1sFGSjFn6Hc0cxls',
-  },
-  {
-    id: 'mongodb',
-    name: 'MongoDB',
-    type: 'NoSQL',
-    logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAZdKbakRoHsEn4y1FA_xHIRUd2bPpHCKl11cwM30UxjDq5Nhml9IxFqcbUttp9puujFRZ-RRY22Noz4xk2IVyTSkorkzItgV-R0ynNNUT7FOFeF__eAum9YjDtVbek4Pkkbzvv_40Fg4cpnlmqzuwcIlBAPjYh5fkAg8IeR0YOcqvrZUjdKbBeTkN9WvLegvsqBuz0b9-GtbEA57u0-N5Dk1klhYrJLPgNiCiKX2ysUX2FCbw1Nka3Vf5Tiqsz5oHETbYE2hDW0Tc',
-  },
-  {
-    id: 'sqlserver',
-    name: 'SQL Server',
-    type: 'Relational',
-    logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBT21Mkzk2AKo6zOGaJi03mvE6QPW94tQly6uqbpOS9tpytVCTgMlY7ad7hfvZ85VkNqqIPvokv9oKbtifMBYwOSrw9v-LVP_Ndba0_IX4Q9XZfv5MdE2hnad2QiwiG4wy1rqHlXi8Mm7KxBaSbAV1zSlYsiB2BJlva32u6UwBo1wcR-9oFT-sdxJ2dt4MNeQ1uvJmHzsjdpkoytBkU2KlxiQN7-5kehaDrPZtZ0OopB6pidiqJGtiScbCO0DHGOCaq5XksgmvQP7c',
-  },
-  {
-    id: 'redis',
-    name: 'Redis',
-    type: 'In-Memory',
-    logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDUPso19-nbEqIa8R94cU6ymggqRVlzaBfJpi80jrjEuyfPrt9VL0RJgB6EEkKnkz319NyBbPiFZsAkl8fui1hyZRCsiXckRHIT5eWXeihJiZHXna9Dk2fvwZMjYTTXUKy_ajnC76xxdOLNlew9GO8lHvz2SEiZCYMrWGOpsdOKz83GazxUAZbszPOlbvG_BLb3O0oDKIT6ySPAvId8xUC0SoKeYiE2GiO5IrQTLv5Yh6pxobMbNzwNyFeD5qI4UGfQevAPL3N9ygM',
-  },
-  {
-    id: 'cassandra',
-    name: 'Cassandra',
-    type: 'NoSQL',
-    logo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBDJXKhC6lWmg9UfSMwbVyl530J28RnzkuE6ptHWHJL1gzuwYp4bS4RKsMJQsb9VtgD-GjTIFlxt9IqwNqkkzJhEvRq2Jyu6471qIkLo5dB9rPBc0i6MdutrqrG8ymWBaH8kie7GsqH6s3YCQ2FTrwzNDFqlSLAYeeS4Aefcn0663dkAdQ9yvYTYpennHar7llpiMd1Hfy2Rrbm9zdvC3846ylG2cyZEcQ_1qLeRWJsNb7gYNdCcRw5Egdr-2EQsuID13xmAt2fLQ0',
-  },
-])
+// Usar los engines desde las constantes
+const databaseEngines = ref(DATABASE_ENGINES)
 
 const regions = ref([
   { id: 'us-east-1', name: 'US-East-1 (N. Virginia)' },
@@ -292,6 +256,11 @@ const isFormValid = computed(() => {
   return form.engine && form.name && form.region && form.plan
 })
 
+// Obtener el motor seleccionado para mostrar información adicional
+const selectedEngineInfo = computed(() => {
+  return databaseEngines.value.find((engine) => engine.id === form.engine)
+})
+
 // Métodos
 const selectEngine = (engine) => {
   form.engine = engine.id
@@ -318,20 +287,40 @@ const createDatabase = async () => {
   try {
     // Obtener los detalles del plan seleccionado
     const selectedPlan = plans.value.find((p) => p.id === form.plan)
+    const selectedEngine = databaseEngines.value.find((e) => e.id === form.engine)
 
     const databaseData = {
       engine: form.engine,
+      engine_name: selectedEngine?.name,
+      engine_type: selectedEngine?.type,
+      name: form.name,
+      region: form.region,
+      plan: form.plan,
+      cpu: selectedPlan?.cpu,
+      ram: selectedPlan?.ram,
+      storage: selectedPlan?.storage,
+      port: selectedEngine?.defaultPort || 5432, // Usar puerto por defecto del engine
     }
 
-    console.log('Database data collected (NOT sent to API):', databaseData)
+    console.log('Database data collected:', databaseData)
 
+    // Llamar a la API para crear la base de datos
     console.log('Creating database with data:', databaseData)
     const response = await api.databases.create(databaseData)
-    success.value = `Database configuration ready! Type: ${form.engine}`
 
-    // Emitir el evento de éxito con los datos recopilados
+    success.value = `Database ${form.name} created successfully with ${selectedEngine?.name}!`
+
+    // Emitir el evento de éxito con los datos completos
     emit('success', {
-      type: form.engine,
+      id: response.data?.id || Date.now(), // ID temporal si la API no devuelve uno
+      name: form.name,
+      engine: form.engine,
+      engine_name: selectedEngine?.name,
+      engine_type: selectedEngine?.type,
+      region: form.region,
+      plan: form.plan,
+      status: 'creating',
+      created_at: new Date().toISOString(),
     })
 
     // Cerrar el modal después de 2 segundos
@@ -339,17 +328,26 @@ const createDatabase = async () => {
       closeModal()
     }, 2000)
   } catch (err) {
-    // Este catch ahora solo capturaría errores en la lógica local
-    error.value = 'Error processing database configuration. Please try again.'
-    console.error('Error in database configuration:', err)
+    error.value = err.response?.data?.message || 'Error creating database. Please try again.'
+    console.error('Error creating database:', err)
   } finally {
     loading.value = false
   }
 }
 
+// Manejar error de imagen del logo
+const handleImageError = (event) => {
+  const target = event.target
+  target.src =
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zMCAxOEMyMy4zNzMgMTggMTggMjMuMzczIDE4IDMwQzE4IDM2LjYyNyAyMy4zNzMgNDIgMzAgNDJDMzYuNjI3IDQyIDQyIDM2LjYyNyA0MiAzMEM0MiAyMy4zNzMgMzYuNjI3IDE4IDMwIDE4Wk0zMy41IDMzLjc1SDI2LjVWMjYuMjVIMzMuNVYzMy43NVpNMzAgMTVDMzMuODY2IDM0IDM0IDMzLjg2NiAzNCAzMEMzNCAyNi4xMzQgMzEuODY2IDI0IDI4IDI0QzI0LjEzNCAyNCAyMiAyNi4xMzQgMjIgMzBDMjIgMzMuODY2IDI0LjEzNCAzNiAyOCAzNkMzMS44NjYgMzYgMzQgMzMuODY2IDM0IDMwQzM0IDI2LjEzNCAzMS44NjYgMjQgMjggMjRaIiBmaWxsPSIjOEM5NkFCIi8+Cjwvc3ZnPgo='
+}
+
 // Inicializar valores por defecto
 form.region = regions.value[0].id
 form.plan = plans.value[1].id // Production por defecto
+
+// Si quieres seleccionar un engine por defecto, puedes hacerlo así:
+// form.engine = databaseEngines.value[0].id // MySQL por defecto
 </script>
 
 <style scoped>
