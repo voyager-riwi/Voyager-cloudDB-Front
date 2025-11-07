@@ -1,3 +1,77 @@
+.login-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  background-image: url('https://images.pexels.com/photos/1367192/pexels-photo-1367192.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260');
+  background-position: left center;
+  background-size: cover;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #444;
+  overflow: hidden;
+}
+
+/* Nubes animadas */
+.login-container::before,
+.login-container::after {
+  position: absolute;
+  content: '';
+  width: 100%;
+  height: 50%;
+  background-size: cover;
+  z-index: 1;
+}
+
+.login-container::before {
+  top: 0;
+  left: 0;
+  background-image: url('https://github.com/joshuaward/codepen-images/blob/master/clouds-left.png?raw=true');
+  animation: clouds1 110s linear infinite;
+}
+
+.login-container::after {
+  bottom: 0;
+  left: 0;
+  background-image: url('https://github.com/joshuaward/codepen-images/blob/master/clouds-right.png?raw=true');
+  animation: clouds2 100s linear infinite;
+}
+
+/* Asegurar que el contenido esté por encima de las nubes */
+.login-container > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Animaciones */
+@keyframes clouds1 {
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes clouds2 {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Estilos del título */
+.login-container h1 {
+  color: white;
+  font-weight: 100;
+}
+
+.login-container h1 i {
+  margin: 0 5px;
+}
+
+/* Símbolo (opcional - si lo usas) */
 .symbol {
   position: relative;
   display: flex;
@@ -5,66 +79,65 @@
   justify-content: center;
   width: 250px;
   height: 210px;
-  //background-color: gray;
+}
 
-  .deathly {
-    position: absolute;
-    bottom: 7px;
-    left: 50%;
-    width: 230px;
-    height: 5px;
-    background-color: white;
-    border-radius: 7px;
-    box-shadow: 0 0 15px rgba(white, 0.5);
-    transform: translateX(-50%);
-    z-index: 10;
+.symbol .deathly {
+  position: absolute;
+  bottom: 7px;
+  left: 50%;
+  width: 230px;
+  height: 5px;
+  background-color: white;
+  border-radius: 7px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%);
+  z-index: 10;
+}
 
-    &:before,
-    &:after {
-      position: absolute;
-      content: '';
-      bottom: -14px;
-      width: 5px;
-      height: 224px;
-      background-color: white;
-      border-radius: 7px;
-      box-shadow: 0 0 15px rgba(white, 0.5);
-      z-index: 11;
-    }
+.symbol .deathly::before,
+.symbol .deathly::after {
+  position: absolute;
+  content: '';
+  bottom: -14px;
+  width: 5px;
+  height: 224px;
+  background-color: white;
+  border-radius: 7px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  z-index: 11;
+}
 
-    &:before {
-      left: 56px;
-      transform: rotate(30.75deg);
-    }
+.symbol .deathly::before {
+  left: 56px;
+  transform: rotate(30.75deg);
+}
 
-    &:after {
-      right: 56px;
-      transform: rotate(-30.5deg);
-    }
-  }
+.symbol .deathly::after {
+  right: 56px;
+  transform: rotate(-30.5deg);
+}
 
-  .hallows {
-    position: absolute;
-    bottom: 7px;
-    left: 50%;
-    width: 130px;
-    height: 130px;
-    border: 5px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 15px rgba(white, 0.5);
-    transform: translateX(-50%);
+.symbol .hallows {
+  position: absolute;
+  bottom: 7px;
+  left: 50%;
+  width: 130px;
+  height: 130px;
+  border: 5px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%);
+}
 
-    &:before {
-      position: absolute;
-      content: '';
-      top: -68px;
-      left: 50%;
-      width: 5px;
-      height: 190px;
-      background-color: white;
-      border-radius: 7px;
-      box-shadow: 0 0 15px rgba(white, 0.5);
-      transform: translateX(-50%);
-    }
-  }
+.symbol .hallows::before {
+  position: absolute;
+  content: '';
+  top: -68px;
+  left: 50%;
+  width: 5px;
+  height: 190px;
+  background-color: white;
+  border-radius: 7px;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  transform: translateX(-50%);
 }
