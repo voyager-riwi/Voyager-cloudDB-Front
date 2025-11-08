@@ -92,7 +92,6 @@
         <div class="skip-hint-cinematic">Click o presiona Escape para ir al dashboard</div>
       </div>
     </div>
-    -->
 
     <!-- Contenedor Principal del Login -->
     <div

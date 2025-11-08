@@ -26,3 +26,10 @@ export default {
   },
 }
 </script>
+
+<style>
+.sticky {
+  position: absolute;
+  width: 100%;
+}
+</style>
