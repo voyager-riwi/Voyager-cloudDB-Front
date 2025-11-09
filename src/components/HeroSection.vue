@@ -33,6 +33,21 @@
           left: posicionDelante.left,
         }"
       ></div>
+
+      <div
+        class="contenido-hero"
+        ref="contenidoEl"
+        :style="{
+          transform: `translate(${posiciones.texto.x}px, ${posiciones.texto.y}px)`,
+        }"
+      >
+        <div>
+          <img class="home_logo" src="../assets/images/PotterCloud_logo.png" alt="" />
+        </div>
+        <h1 class="titulo-hero">PotterCloud</h1>
+        <p class="descripcion-hero">Школа чародейства и волшебства</p>
+        <button class="boton-hero">Comencemos</button>
+      </div>
     </div>
   </div>
 </template>
@@ -52,7 +67,6 @@ export default {
 
     // Estado del viewport y debug
     const viewportWidth = ref(window.innerWidth)
-    const showDebug = ref(true) // Cambia a false para ocultar
 
     // Breakpoints actualizados con 600px
     const BREAKPOINTS = {
@@ -83,7 +97,6 @@ export default {
     const isSmallScreen = computed(
       () => viewportWidth.value >= BREAKPOINTS.small && viewportWidth.value < BREAKPOINTS.tablet,
     )
-    const isMobileScreen = computed(() => viewportWidth.value < BREAKPOINTS.small)
 
     // Posiciones reactivas de cada capa
     const posiciones = reactive({
@@ -344,12 +357,17 @@ export default {
     min-height: 45vh;
   }
 }
-
+.home_logo {
+  width: 20%;
+}
 .parallax-container {
   position: relative;
   width: 100%;
   min-height: 100vh;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   @media (max-width: 1000px) {
     height: 65vh;
@@ -376,6 +394,7 @@ export default {
 .medio {
   background-image: url('@/assets/images/home/bronw_dragon_home_image.png');
   background-size: cover;
+  z-index: 10000;
   @media (max-width: 1000px) {
     top: 63.5px;
   }
@@ -384,8 +403,86 @@ export default {
 .delante {
   background-image: url('@/assets/images/home/red_dragon_home_image.png');
   background-size: cover;
+  z-index: 10000;
   @media (max-width: 1000px) {
     top: 103.5px;
   }
+}
+/* Estilos para el contenido de texto */
+.contenido-hero {
+  position: relative;
+  z-index: 10;
+  text-align: left;
+  color: white;
+  max-width: 800px;
+  padding: 0 20px;
+  transition: transform 0.3s ease-out;
+}
+
+.titulo-hero {
+  font-size: 7rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  letter-spacing: 2px;
+
+  @media (max-width: 768px) {
+    font-size: 2.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2rem;
+  }
+}
+
+.descripcion-hero {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  line-height: 1.4;
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
+}
+
+.boton-hero {
+  background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+  @media (max-width: 768px) {
+    padding: 12px 30px;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 25px;
+    font-size: 0.9rem;
+  }
+}
+
+.boton-hero:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+}
+
+.boton-hero:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 </style>
