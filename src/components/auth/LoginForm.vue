@@ -111,7 +111,7 @@
           <!-- Título con elementos decorativos -->
           <div class="flex items-center justify-center gap-3 mb-4">
             <img src="@/assets/images/diamonds.svg" alt="" class="text-gray-500 w-5 h-5" />
-            <h1 class="text-2xl text-white font-serif tracking-wide">Iniciar sesión</h1>
+            <h2 class="text-2xl text-white text-7xl tracking-wide">INICIAR SESION</h2>
             <img src="@/assets/images/diamonds.svg" alt="" class="text-gray-500 w-5 h-5" />
           </div>
         </div>
@@ -160,7 +160,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 required
                 placeholder="Ingresa tu contraseña"
-                class="w-full bg-transparent border border-gray-600 text-white px-4 py-4 pr-12 rounded-none focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-500"
+                class="w-full font-sans bg-transparent border border-gray-600 text-white px-4 py-4 pr-12 rounded-none focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-500"
                 :disabled="loading"
               />
               <button

@@ -1,20 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import BillingView from '../views/BillingView.vue'
 import DashboardView from '@/views/DashboardView.vue'
-import DatabasesView from '../views/DatabasesView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
-import PlansView from '@/views/PlansView.vue'
-import ProfileView from '@/views/ProfileView.vue'
 import WebhooksView from '@/views/WebhooksView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import AboutView from '@/views/AboutView.vue'
 import RecoveryView from '@/views/RecoveryView.vue'
-import ChangePassword from '@/components/common/ChangePassword.vue'
-import MarketPayment from '@/views/MarketPayment.vue'
-import TestView from '@/views/TestView.vue'
 
 /*
     {
@@ -54,7 +47,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/about',
       name: 'home',
       component: HomeView,
     },
@@ -69,7 +62,7 @@ const router = createRouter({
       component: RecoveryView,
     },
     {
-      path: '/about',
+      path: '/',
       name: 'about',
       component: AboutView,
     },
@@ -99,11 +92,6 @@ const router = createRouter({
       name: 'DatabaseDetails',
       component: () => import('@/views/DatabaseDetailsView.vue'),
       meta: { requiresAuth: true },
-    },
-    {
-      path: '/test',
-      name: 'Test',
-      component: TestView,
     },
   ],
 })

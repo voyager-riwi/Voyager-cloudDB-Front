@@ -379,7 +379,7 @@ const databaseLogos = {
   PostgreSQL: DATABASE_ENGINES[1].logo, // postgresql
   MongoDB: DATABASE_ENGINES[2].logo, // mongodb
   MySQL: DATABASE_ENGINES[0].logo, // mysql
-  'SQL Server': DATABASE_ENGINES[3].logo, // sqlserver
+  SQLServer: DATABASE_ENGINES[3].logo, // sqlserver
   Redis: DATABASE_ENGINES[4].logo, // redis
   Cassandra: DATABASE_ENGINES[5].logo, // cassandra
 }
