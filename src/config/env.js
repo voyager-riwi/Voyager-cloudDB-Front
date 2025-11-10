@@ -18,12 +18,34 @@ const config = {
         get: (id) => `/api/Databases/${id}`,
         update: (id) => `/api/Databases/${id}`,
         delete: (id) => `/api/Databases/${id}`,
+        restore: (id) => `/api/Databases/${id}/restore`,
         resetPassword: (id) => `/api/Databases/${id}/reset-password`,
       },
       // Users endpoints
       users: {
         profile: '/api/Users/profile',
         update: '/api/Users/profile',
+        changePassword: '/api/Users/change-password',
+      },
+      // Plans endpoints
+      plans: {
+        list: '/api/Plans',
+        get: (id) => `/api/Plans/${id}`,
+      },
+      // Payments endpoints
+      payments: {
+        createPreference: '/api/Payments/create-preference',
+        configTest: '/api/Payments/config-test',
+        debugOrder: (orderId) => `/api/Payments/debug-order/${orderId}`,
+      },
+      // Webhooks endpoints
+      webhooks: {
+        mercadopago: '/api/Webhooks/mercadopago',
+      },
+      // Health check
+      health: {
+        check: '/api/Health',
+        error: '/api/Health/error',
       },
     },
   },

@@ -85,3 +85,41 @@ export const ENGINE_TYPES = {
   NOSQL: 'NoSQL',
   IN_MEMORY: 'In-Memory',
 }
+
+// Mapeo de IDs string a IDs numéricos del backend
+export const ENGINE_ID_MAP = {
+  postgresql: 1,
+  mysql: 2,
+  mongodb: 3,
+  sqlserver: 4,
+  redis: 5,
+  cassandra: 6,
+}
+
+// Mapeo inverso: número a string
+export const ENGINE_NAME_MAP = {
+  1: 'postgresql',
+  2: 'mysql',
+  3: 'mongodb',
+  4: 'sqlserver',
+  5: 'redis',
+  6: 'cassandra',
+}
+
+/**
+ * Convierte el ID string a número para el backend
+ * @param {string} engineId - ID del motor ('mysql', 'postgresql', etc.)
+ * @returns {number} ID numérico (1-6)
+ */
+export const getEngineNumericId = (engineId) => {
+  return ENGINE_ID_MAP[engineId] || 0
+}
+
+/**
+ * Convierte el ID numérico del backend a string
+ * @param {number} numericId - ID numérico (1-6)
+ * @returns {string} ID string ('mysql', 'postgresql', etc.)
+ */
+export const getEngineStringId = (numericId) => {
+  return ENGINE_NAME_MAP[numericId] || 'unknown'
+}

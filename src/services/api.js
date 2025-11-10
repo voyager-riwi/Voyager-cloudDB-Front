@@ -52,6 +52,7 @@ class ApiService {
       }
 
       const data = await response.json()
+      console.log('📦 Raw backend response:', data)
       return data
     } catch (error) {
       if (error.name === 'AbortError') {
@@ -120,7 +121,7 @@ class ApiService {
 
     /**
      * Crear nueva base de datos
-     * @param {Object} data - Datos de la base de datos
+     * @param {Object} data - { engine: 1=PostgreSQL, 2=MySQL, 3=MongoDB, 4=SQLServer }
      */
     create: (data) =>
       this.request(env.api.endpoints.databases.create, {
@@ -140,7 +141,7 @@ class ApiService {
       }),
 
     /**
-     * Eliminar base de datos
+     * Eliminar base de datos (Soft Delete - 30 días de gracia)
      * @param {string} id - ID de la base de datos
      */
     delete: (id) =>
@@ -149,14 +150,21 @@ class ApiService {
       }),
 
     /**
-     * Resetear password de base de datos
-     * @param {string} id - ID de la base de datos
-     * @param {Object} data - { email }
+     * Restaurar base de datos eliminada (solo si < 30 días)
+     * @param {string} id - ID de la base de datos eliminada
      */
-    resetPassword: (id, data) =>
+    restore: (id) =>
+      this.request(env.api.endpoints.databases.restore(id), {
+        method: 'POST',
+      }),
+
+    /**
+     * Resetear password de base de datos (nueva contraseña llega por email)
+     * @param {string} id - ID de la base de datos
+     */
+    resetPassword: (id) =>
       this.request(env.api.endpoints.databases.resetPassword(id), {
         method: 'POST',
-        body: data,
       }),
   }
 
@@ -169,13 +177,81 @@ class ApiService {
 
     /**
      * Actualizar perfil del usuario
-     * @param {Object} data - Datos del perfil
+     * @param {Object} data - { firstName, lastName }
      */
     updateProfile: (data) =>
       this.request(env.api.endpoints.users.update, {
         method: 'PUT',
         body: data,
       }),
+
+    /**
+     * Cambiar contraseña del usuario
+     * @param {Object} data - { currentPassword, newPassword }
+     */
+    changePassword: (data) =>
+      this.request(env.api.endpoints.users.changePassword, {
+        method: 'POST',
+        body: data,
+      }),
+  }
+
+  // ==================== PLANS ENDPOINTS ====================
+  plans = {
+    /**
+     * Obtener todos los planes disponibles
+     * No requiere autenticación
+     */
+    list: () => this.request(env.api.endpoints.plans.list),
+
+    /**
+     * Obtener un plan específico
+     * @param {string} id - ID del plan
+     * No requiere autenticación
+     */
+    get: (id) => this.request(env.api.endpoints.plans.get(id)),
+  }
+
+  // ==================== PAYMENTS ENDPOINTS ====================
+  payments = {
+    /**
+     * Crear preferencia de pago en MercadoPago
+     * @param {Object} data - { planId: GUID del plan }
+     * @returns {Object} { preferenceId, initPoint } - URL para redirigir al usuario
+     */
+    createPreference: (data) =>
+      this.request(env.api.endpoints.payments.createPreference, {
+        method: 'POST',
+        body: data,
+      }),
+
+    /**
+     * Verificar configuración de MercadoPago (debug)
+     * @returns {Object} Estado de configuración
+     */
+    getConfigTest: () => this.request(env.api.endpoints.payments.configTest),
+
+    /**
+     * Consultar estado de orden de MercadoPago (debug)
+     * @param {number} orderId - ID de la orden en MercadoPago
+     * @returns {Object} Estado detallado de la orden
+     */
+    debugOrder: (orderId) => this.request(env.api.endpoints.payments.debugOrder(orderId)),
+  }
+
+  // ==================== HEALTH CHECK ENDPOINTS ====================
+  health = {
+    /**
+     * Verificar estado del servidor
+     * No requiere autenticación
+     */
+    check: () => this.request(env.api.endpoints.health.check),
+
+    /**
+     * Probar manejo de errores (debug)
+     * No requiere autenticación
+     */
+    error: () => this.request(env.api.endpoints.health.error),
   }
 }
 

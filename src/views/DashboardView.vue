@@ -254,6 +254,77 @@
               </button>
             </div>
           </section>
+
+          <!-- Deactivated Databases Section -->
+          <section v-if="deactivatedDatabases.length > 0" class="mt-8">
+            <div class="flex flex-col gap-3 px-1 pb-3 pt-2">
+              <h2
+                class="text-xl font-bold leading-tight text-gray-900 dark:text-white flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-amber-500">warning</span>
+                Deactivated Databases
+                <span class="text-sm font-normal text-gray-500 ml-2"
+                  >({{ deactivatedDatabases.length }})</span
+                >
+              </h2>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                These databases are scheduled for permanent deletion after 30 days. Restore them to
+                reactivate with new credentials.
+              </p>
+            </div>
+
+            <div class="space-y-3">
+              <div
+                v-for="db in deactivatedDatabases"
+                :key="db.id"
+                class="group flex items-center gap-4 rounded-xl border border-amber-200/50 bg-amber-50/30 p-4 dark:border-amber-700/30 dark:bg-amber-900/10"
+              >
+                <div
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500/10 dark:bg-amber-500/20 grayscale opacity-60"
+                >
+                  <img :alt="`${db.engine} logo`" :src="getDatabaseLogo(db.engine)" />
+                </div>
+
+                <div class="flex-grow min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-semibold text-gray-900 dark:text-white truncate w-24">
+                      {{ db.engine }}
+                    </p>
+                    <p class="font-semibold text-gray-700 dark:text-gray-300 truncate">
+                      ID: {{ db.name }}
+                    </p>
+                    <span
+                      class="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400"
+                    >
+                      <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                      Deactivated
+                    </span>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1"
+                  >
+                    <span class="material-symbols-outlined text-xs">schedule</span>
+                    <span>Grace period: 30 days remaining</span>
+                  </div>
+                </div>
+
+                <button
+                  @click="restoreDatabaseFromList(db)"
+                  class="flex items-center justify-center gap-2 rounded-lg bg-green-500/20 px-4 py-2 text-sm font-medium text-green-600 hover:bg-green-500/30 transition-colors dark:text-green-400"
+                >
+                  <span class="material-symbols-outlined text-base">restore</span>
+                  <span>Restore</span>
+                </button>
+
+                <button
+                  @click="openDatabase(db)"
+                  class="flex items-center justify-center rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </main>
@@ -338,6 +409,7 @@ import env from '@/config/env'
 import CreateDatabaseModal from '@/components/databases/CreateDatabaseModal.vue'
 import ChangePassword from '@/components/common/ChangePassword.vue'
 import { DATABASE_ENGINES } from '@/utils/constants/databaseEngines'
+import { useMagicToast } from '@/composables/useMagicToast'
 
 // Estados para la música de fondo
 const backgroundMusic = ref(null)
@@ -346,10 +418,15 @@ const backgroundMusicSrc = ref(new URL('@/assets/audio/background_music.mp3', im
 
 const showChangePasswordModal = ref(false)
 
+// Magic Toast
+const toast = useMagicToast()
+
 const handlePasswordChangeSuccess = () => {
   showChangePasswordModal.value = false
-  // Opcional: mostrar mensaje de éxito
-  console.log('Password changed successfully')
+  toast.lumos('Password changed successfully! 🔐', {
+    title: '✨ Success',
+    duration: 4000,
+  })
 }
 
 const router = useRouter()
@@ -419,10 +496,14 @@ onMounted(() => {
 
 // Computed
 const filteredDatabases = computed(() => {
-  if (!searchQuery.value) return databases.value
+  if (!searchQuery.value)
+    return databases.value.filter((db) => db.status !== 'Deleted' && db.status !== 'Stopped')
 
   const query = searchQuery.value.toLowerCase()
   return databases.value.filter((db) => {
+    // Excluir bases de datos desactivadas de la lista principal
+    if (db.status === 'Deleted' || db.status === 'Stopped') return false
+
     // Verificar que todas las propiedades existan antes de usar .toLowerCase()
     const name = db.name || ''
     const type = db.type || ''
@@ -436,6 +517,26 @@ const filteredDatabases = computed(() => {
       region.toLowerCase().includes(query)
     )
   })
+})
+
+// Bases de datos desactivadas (solo para la sección separada)
+const deactivatedDatabases = computed(() => {
+  const deactivated = databases.value.filter(
+    (db) => db.status === 'Deleted' || db.status === 'Stopped',
+  )
+
+  console.log(
+    '📊 Deactivated databases:',
+    deactivated.map((db) => ({
+      id: db.id,
+      name: db.name,
+      engine: db.engine,
+      status: db.status,
+      deletedAt: db.deletedAt,
+    })),
+  )
+
+  return deactivated
 })
 
 const computedQuotas = computed(() => {
@@ -569,6 +670,48 @@ const createDatabase = () => {
   showCreateModal.value = true
 }
 
+const restoreDatabaseFromList = async (db) => {
+  loading.value = true
+  try {
+    console.log('🔄 Attempting to restore database:', {
+      id: db.id,
+      name: db.name,
+      engine: db.engine,
+      status: db.status,
+    })
+
+    // Call API to restore the database
+    const response = await api.databases.restore(db.id)
+    console.log('✅ Database restored, backend response:', response)
+
+    toast.lumos(
+      `✨ Database "${db.name || db.engine}" restored successfully!\n\nNew credentials have been sent to your email (${userData.value?.email || 'your inbox'}).`,
+      { title: '🔄 Database Restored', duration: 8000 },
+    )
+
+    // Refresh the database list to show updated status and new credentials
+    await fetchDatabases()
+  } catch (error) {
+    console.error('❌ Failed to restore database:', error)
+
+    // Manejar errores específicos
+    let errorMessage = error.message || 'Failed to restore database. Please try again later.'
+
+    if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+      errorMessage = 'Database not found or may have been permanently deleted after 30 days.'
+    } else if (errorMessage.includes('already active')) {
+      errorMessage = 'Database is already active. Try refreshing the page.'
+    }
+
+    toast.expelliarmus(errorMessage, {
+      title: '⚡ Restoration Error',
+      duration: 6000,
+    })
+  } finally {
+    loading.value = false
+  }
+}
+
 const manageSubscription = () => {
   console.log('Managing subscription')
   // router.push('/subscription')
@@ -576,9 +719,12 @@ const manageSubscription = () => {
 
 const handleDatabaseCreated = (newDatabase) => {
   console.log('Nueva base de datos creada:', newDatabase)
+  toast.spell('Database created successfully! ✨', {
+    title: '🪄 Database Magic',
+    duration: 4000,
+  })
   // Recargar la lista de bases de datos
   fetchDatabases()
-  // Opcional: Mostrar mensaje de éxito
 }
 
 // Ciclo de vida

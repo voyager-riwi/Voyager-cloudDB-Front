@@ -22,7 +22,7 @@
 
         <!-- Success Message Area -->
         <div class="mt-4 flex h-6 items-center justify-center">
-          <p v-if="success" class="text-sm text-green-400">{{ success }}</p>
+          <!-- Las notificaciones mágicas reemplazan este mensaje -->
         </div>
 
         <!-- Confirmation Code Input -->
@@ -87,19 +87,19 @@
 <script setup>
 import { ref, computed, nextTick, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useMagicToast } from '@/composables/useMagicToast'
 import api from '@/services/api'
-import env from '@/config/env'
 
 const router = useRouter()
+const toast = useMagicToast()
 
 // Estados reactivos
 const verificationCode = ref(['', '', '', '', '', ''])
 const codeInputs = ref([])
 const loading = ref(false)
 const error = ref('')
-const success = ref('')
 
-// Obtener el email del localStorage (asumiendo que se guardó en el paso anterior)
+// Obtener el email del localStorage
 const userEmail = ref(localStorage.getItem('resetEmail') || '')
 
 // Computed
@@ -186,7 +186,6 @@ const verifyCode = async () => {
 
   loading.value = true
   error.value = ''
-  success.value = ''
 
   try {
     const emailFromStorage = localStorage.getItem('resetEmail')
@@ -201,8 +200,7 @@ const verifyCode = async () => {
       return
     }
 
-    // ✅ SOLUCIÓN: Solo guardar los datos y redirigir
-    // La verificación real se hará en ChangePassword
+    // Guardar los datos para ChangePassword
     localStorage.setItem('requiresPasswordChange', verificationToken)
     localStorage.setItem('verifiedEmail', emailFromStorage)
 
@@ -211,7 +209,11 @@ const verifyCode = async () => {
     console.log('  - Email:', emailFromStorage)
 
     console.log('✅ Code accepted, redirecting to change password...')
-    success.value = 'Verification successful! Please set your new password.'
+
+    toast.lumos('Verification successful! Please set your new password. 🔐', {
+      title: '✅ Code Verified',
+      duration: 3000,
+    })
 
     setTimeout(() => {
       router.push('/change-password')
@@ -219,6 +221,12 @@ const verifyCode = async () => {
   } catch (err) {
     console.error('❌ Verification error:', err)
     error.value = 'Invalid verification code. Please try again.'
+
+    toast.expelliarmus('Invalid verification code. Please try again.', {
+      title: '⚡ Verification Failed',
+      duration: 4000,
+    })
+
     resetCode()
   } finally {
     loading.value = false
@@ -228,48 +236,54 @@ const verifyCode = async () => {
 const resendCode = async () => {
   loading.value = true
   error.value = ''
-  success.value = ''
 
   try {
-    // ✅ CORRECCIÓN: Usar SIEMPRE el email de localStorage
     const emailFromStorage = localStorage.getItem('resetEmail')
     console.log('📧 Email from localStorage:', emailFromStorage)
 
     if (!emailFromStorage) {
       error.value = 'No email found. Please start the process again.'
+      toast.expelliarmus('No email found. Please start the process again.', {
+        duration: 4000,
+      })
       return
     }
 
     console.log('🔄 Resending verification code to:', emailFromStorage)
 
     await api.auth.forgotPassword({
-      email: emailFromStorage, // ← Usar email de localStorage
+      email: emailFromStorage,
     })
 
     console.log('✅ Resend successful')
-    success.value = 'Verification code has been resent to your email.'
 
-    setTimeout(() => {
-      success.value = ''
-    }, 5000)
+    toast.lumos('Verification code has been resent to your email! 📧', {
+      title: '✉️ Code Resent',
+      duration: 5000,
+    })
 
     resetCode()
   } catch (err) {
     console.error('❌ Resend Error:', err)
-    console.log('Error response:', err.response)
-    console.log('Error data:', err.response?.data)
+
+    let errorMessage = 'Failed to resend code. Please try again.'
 
     if (err.response?.status === 429) {
-      error.value = 'Too many resend attempts. Please try again later.'
+      errorMessage = 'Too many resend attempts. Please try again later.'
     } else if (err.response?.status === 404) {
-      error.value = 'Email address not found.'
+      errorMessage = 'Email address not found.'
     } else if (err.response?.data?.message) {
-      error.value = err.response.data.message
+      errorMessage = err.response.data.message
     } else if (err.code === 'ERR_NETWORK') {
-      error.value = 'Network error. Please check your connection and try again.'
-    } else {
-      error.value = 'Failed to resend code. Please try again.'
+      errorMessage = 'Network error. Please check your connection and try again.'
     }
+
+    error.value = errorMessage
+
+    toast.expelliarmus(errorMessage, {
+      title: '⚡ Resend Failed',
+      duration: 5000,
+    })
   } finally {
     loading.value = false
   }
@@ -284,12 +298,15 @@ const resetCode = () => {
 
 // Lifecycle
 onMounted(() => {
-  // ✅ CORRECCIÓN: Usar localStorage directamente
   const emailFromStorage = localStorage.getItem('resetEmail')
   console.log('🔍 On mounted - Email from storage:', emailFromStorage)
 
   if (!emailFromStorage) {
     error.value = 'No email found. Please start the password reset process again.'
+    toast.expelliarmus('No email found. Please start the password reset process again.', {
+      title: '⚡ Missing Email',
+      duration: 5000,
+    })
     return
   }
 

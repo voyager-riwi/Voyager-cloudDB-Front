@@ -118,22 +118,6 @@
 
         <!-- Formulario de login -->
         <form @submit.prevent="handleLogin" class="space-y-8">
-          <!-- Mensaje de error -->
-          <div
-            v-if="error"
-            class="bg-red-500/20 border border-red-500 text-white px-4 py-3 rounded text-sm"
-          >
-            ❌ {{ error }}
-          </div>
-
-          <!-- Mensaje de éxito -->
-          <div
-            v-if="success"
-            class="bg-green-500/20 border border-green-500 text-white px-4 py-3 rounded text-sm"
-          >
-            ✅ {{ success }}
-          </div>
-
           <!-- Campo Email -->
           <div class="space-y-3">
             <label class="block text-white text-sm font-medium tracking-wider uppercase">
@@ -230,17 +214,18 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import api from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
+import { useMagicToast } from '@/composables/useMagicToast'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const toast = useMagicToast()
 
 // Estados del formulario
 const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 const loading = ref(false)
-const error = ref('')
-const success = ref('')
 
 // Estados del video loading
 const showVideoLoading = ref(false)
@@ -265,21 +250,18 @@ const loadingMessage = ref('Preparando tu experiencia...')
 
 const handleLogin = async () => {
   loading.value = true
-  error.value = ''
-  success.value = ''
 
   try {
-    const response = await api.auth.login({
+    const response = await authStore.login({
       email: email.value,
       password: password.value,
     })
 
-    if (response.data?.token) {
-      localStorage.setItem('authToken', response.data.token)
-      localStorage.setItem('user', JSON.stringify(response.data))
-      localStorage.setItem('userEmail', email.value)
-
-      success.value = '¡Login exitoso! Redirigiendo...'
+    if (response?.token) {
+      toast.lumos('¡Login exitoso! Redirigiendo al mundo mágico... ✨', {
+        title: '🪄 ¡Bienvenido!',
+        duration: 3000,
+      })
 
       setTimeout(() => {
         showVideoLoading.value = true
@@ -289,7 +271,15 @@ const handleLogin = async () => {
       throw new Error('No se recibió token de autenticación')
     }
   } catch (err) {
-    error.value = err.response?.data?.message || err.message || 'Error al iniciar sesión'
+    console.error('❌ Login error:', err)
+
+    const errorMessage =
+      err.response?.data?.message || err.message || 'Error al iniciar sesión. Verifica tus credenciales.'
+
+    toast.expelliarmus(errorMessage, {
+      title: '⚡ Error de Autenticación',
+      duration: 5000,
+    })
   } finally {
     loading.value = false
   }
