@@ -33,3 +33,38 @@ body {
   background-color: var(--background-light);
   color: #0f172a;
 }
+
+@font-face {
+  font-family: 'Beast';
+  src: url('@/assets/fonts/OnlineWebFonts_COM_cecafa31deb5ebc1ad83b80c15bb91bb/Beast/Beast.ttf')
+    format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'HarryP';
+  src: url('@/assets/fonts/HARRYP__.TTF') format('truetype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Osaka';
+  src: url('@/assets/fonts/osaka_sans_serif/osaka-re.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Wizard';
+  src: url('@/assets/fonts/Wizard World/WizardWorldSimplified.ttf') format('truetype');
+  font-display: swap;
+}
+
+@layer base {
+  * {
+    font-family: 'Wizard', sans-serif;
+  }
+
+  h2 {
+    font-family: 'HarryP', 'Beast', sans-serif;
+    letter-spacing: 0.05em;
+  }
+}

@@ -510,10 +510,4 @@ onMounted(() => {
     'GRAD' 0,
     'opsz' 24;
 }
-
-body {
-  min-height: max(884px, 100dvh);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
 </style>

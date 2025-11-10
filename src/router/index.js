@@ -13,6 +13,8 @@ import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import AboutView from '@/views/AboutView.vue'
 import RecoveryView from '@/views/RecoveryView.vue'
 import ChangePassword from '@/components/common/ChangePassword.vue'
+import MarketPayment from '@/views/MarketPayment.vue'
+import TestView from '@/views/TestView.vue'
 
 /*
     {
@@ -97,6 +99,11 @@ const router = createRouter({
       name: 'DatabaseDetails',
       component: () => import('@/views/DatabaseDetailsView.vue'),
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/test',
+      name: 'Test',
+      component: TestView,
     },
   ],
 })

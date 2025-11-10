@@ -513,21 +513,11 @@ onMounted(() => {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
-
 .material-symbols-outlined {
   font-variation-settings:
     'FILL' 0,
     'wght' 400,
     'GRAD' 0,
     'opsz' 24;
-}
-
-body {
-  min-height: max(884px, 100dvh);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #101c22;
 }
 </style>
