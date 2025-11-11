@@ -90,8 +90,6 @@ export const ENGINE_NAME_MAP = {
   2: 'mysql',
   3: 'mongodb',
   4: 'sqlserver',
-  5: 'redis',
-  6: 'cassandra',
 }
 
 /**

@@ -79,7 +79,7 @@
                 >
                   <!-- Logo -->
                   <div
-                    class="w-16 h-16 bg-center bg-no-repeat bg-contain rounded-lg"
+                    class="w-16 h-16 bg-center bg-no-repeat bg-cover rounded-lg"
                     :style="`background-image: url('${engine.logo}')`"
                   ></div>
 
@@ -131,7 +131,7 @@
               <div class="flex items-start gap-3">
                 <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">info</span>
                 <div class="text-sm text-blue-800 dark:text-blue-300">
-                  <p class="font-medium mb-1">✨ Auto-Configuration</p>
+                  <p class="font-medium mb-1">Auto-Configuration</p>
                   <p>
                     Your database will be created automatically with optimized settings. Connection
                     details will be sent to your email.
