@@ -91,6 +91,11 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/plans',
+      name: 'plans',
+      component: PlansView,
+    },
+    {
       path: '/databases/:id',
       name: 'DatabaseDetails',
       component: () => import('@/views/DatabaseDetailsView.vue'),

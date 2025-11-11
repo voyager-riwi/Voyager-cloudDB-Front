@@ -504,6 +504,10 @@ const subscription = ref({
   description: 'View and manage your subscription details.',
 })
 
+const goback = () => {
+  router.goback()
+}
+
 const databases = ref([])
 
 // URLs de logos
@@ -759,7 +763,7 @@ const restoreDatabaseFromList = async (db) => {
 }
 
 const manageSubscription = () => {
-  // router.push('/subscription')
+  router.push('/Plans')
 }
 
 const handleDatabaseCreated = (newDatabase) => {

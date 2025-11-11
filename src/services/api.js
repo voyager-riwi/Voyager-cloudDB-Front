@@ -293,6 +293,11 @@ class ApiService {
     debugOrder: (orderId) =>
       this.request(env.api.endpoints.payments?.debugOrder?.(orderId) || `/api/Payments/debug-order/${orderId}`),
   }
+
+  // ================== PLANS ENDPOINT =============================
+  plans = {
+    list: () => this.request(env.api.endpoints.plans.list),
+  }
 }
 
 // Exportar instancia única (Singleton)
