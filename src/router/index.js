@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 import PlansView from '@/views/PlansView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import WebhooksView from '@/views/WebhooksView.vue'
@@ -49,7 +50,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/about',
       name: 'home',
       component: HomeView,
     },
@@ -64,7 +65,7 @@ const router = createRouter({
       component: RecoveryView,
     },
     {
-      path: '/about',
+      path: '/',
       name: 'about',
       component: AboutView,
     },

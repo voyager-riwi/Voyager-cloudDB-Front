@@ -1,40 +1,3 @@
-<!--
-<template>
-  <div
-    class="min-h-screen bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200"
-  >
-    <AppBar />
-  
-      <AboutHeroSection />
-      <WhatWeOfferSection />
-      <ChooseUsSection />
-      <PhilosophySection />
-      <MeetTheTeamSection />
-    
-    <AboutFooter />
-    <FloatingCTA />
-  </div>
-</template>
-
-<script>
-
-
-export default {
-  name: 'AboutPage',
-  components: {
-    AppBar,
-    AboutHeroSection,
-    OfferSection,
-    ChooseUsSection,
-    PhilosophySection,
-    TeamSection,
-    AboutFooter,
-    FloatingCTA,
-  },
-}
-</script>
-
--->
 <template>
   <div
     class="min-h-screen bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200"
@@ -45,13 +8,15 @@ export default {
       <AppBar />
 
       <AboutHeroSection />
-      <OfferSection />
+      <!--
+            <OfferSection />
       <ChooseUsSection />
       <PhilosophySection />
       <TeamSection />
 
       <AboutFooter />
       <FloatingCTA />
+      -->
     </div>
   </div>
 </template>

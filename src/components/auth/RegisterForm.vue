@@ -192,7 +192,27 @@
             class="flex w-full items-center justify-center rounded-lg bg-primary h-14 text-white text-base font-bold leading-normal transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span v-if="isSubmitting" class="flex items-center gap-2">
-              <LoadingSpinner />
+              <!-- LoadingSpinner component removed since it's not defined -->
+              <svg
+                class="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
               Creating Account...
             </span>
             <span v-else>Create Account</span>
@@ -235,33 +255,103 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 
 const router = useRouter()
+
 const form = ref({
-  first_name: '',
-  last_name: '',
+  firstName: '',
+  lastName: '',
   email: '',
   password: '',
+  confirmPassword: '',
+  agreeToTerms: false,
 })
-const loading = ref(false)
-const error = ref('')
 
-const handleRegister = async () => {
-  loading.value = true
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+const isSubmitting = ref(false)
+const error = ref('')
+const success = ref('')
+const showSuccess = ref(false)
+
+const handleSubmit = async () => {
+  // Validación de contraseñas
+  if (form.value.password !== form.value.confirmPassword) {
+    error.value = 'Passwords do not match'
+    return
+  }
+
+  if (!form.value.agreeToTerms) {
+    error.value = 'You must agree to the terms and conditions'
+    return
+  }
+
+  isSubmitting.value = true
   error.value = ''
 
   try {
-    await api.auth.register(form.value)
+    const registerData = {
+      firstName: form.value.firstName,
+      lastName: form.value.lastName,
+      email: form.value.email,
+      password: form.value.password,
+    }
 
-    // Redirigir al login después del registro
-    router.push('/login?registered=true')
+    console.log('Sending registration data:', registerData)
+
+    const response = await api.auth.register(registerData)
+
+    console.log('Registration response:', response)
+
+    // Mostrar mensaje de éxito
+    success.value = 'Account created successfully! Please check your email for verification.'
+    showSuccess.value = true
+
+    setTimeout(() => {
+      router.push('/login?registered=true')
+    }, 3000)
   } catch (err) {
-    error.value = err.message
+    console.error('Registration error:', err)
+    error.value =
+      err.response?.data?.message || err.message || 'Registration failed. Please try again.'
   } finally {
-    loading.value = false
+    isSubmitting.value = false
   }
+}
+
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value
+}
+
+const toggleConfirmPasswordVisibility = () => {
+  showConfirmPassword.value = !showConfirmPassword.value
+}
+const passwordMismatch = computed(() => {
+  return (
+    form.value.password &&
+    form.value.confirmPassword &&
+    form.value.password !== form.value.confirmPassword
+  )
+})
+
+const goBack = () => {
+  router.back()
+}
+
+const navigateToLogin = () => {
+  router.push('/login')
+}
+
+const navigateToTerms = () => {
+  // Implementar navegación a términos y condiciones
+  console.log('Navigate to terms and conditions')
+}
+
+const navigateToPrivacy = () => {
+  // Implementar navegación a política de privacidad
+  console.log('Navigate to privacy policy')
 }
 </script>

@@ -5,7 +5,7 @@
 
     <!-- Contenido del modal -->
     <div
-      class="relative min-h-screen flex items-center justify-center p-4 bg-white/10 backdrop-blur-md"
+      class="modal relative min-h-screen flex items-center justify-center p-4 bg-white/10 backdrop-blur-md"
     >
       <div
         class="relative bg-[#192b33] dark:bg-background-dark rounded-xl w-full max-w-2xl max-h-[90vh] overflow-hidden"
@@ -120,7 +120,7 @@
           </div>
 
           <!-- Section 3: Select Plan -->
-          <div class="px-4">
+          <div class="px-4 mb-30">
             <h3
               class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] pb-2 pt-4"
             >
@@ -179,7 +179,7 @@
           <button
             @click="createDatabase"
             :disabled="!isFormValid || loading"
-            class="flex w-full items-center justify-center rounded-lg bg-primary h-12 text-white text-base font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90"
+            class="cursor-pointer flex w-full items-center justify-center rounded-lg bg-blue-50 h-12 text-black text-base font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90"
           >
             <span v-if="loading" class="flex items-center gap-2">
               <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -351,9 +351,9 @@ form.plan = plans.value[1].id // Production por defecto
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
-
+.modal {
+  background-image: url('../../assets/images/dashboard_profile_bg.jpg');
+}
 .material-symbols-outlined {
   font-variation-settings:
     'FILL' 0,

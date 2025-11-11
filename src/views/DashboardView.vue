@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative min-h-screen w-full bg-[#F4F7FA] dark:bg-[#101c22] font-sans text-gray-800 dark:text-gray-200"
+    class="relative min-h-screen w-full bg-[#F4F7FA] dashboard font-sans text-gray-800 dark:text-gray-200"
   >
     <!-- Top App Bar -->
     <header
@@ -57,7 +57,7 @@
     </header>
 
     <main class="p-4 pb-24 sm:p-6">
-      <div class="mx-auto max-w-4xl space-y-6">
+      <div class="mx-auto max-w-4xl space-y-6 mt-[10vh]">
         <!-- Loading State -->
         <div v-if="loading" class="flex flex-col items-center justify-center py-12">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A90E2] mb-4"></div>
@@ -108,7 +108,7 @@
           <!-- Database Quota Section -->
           <section>
             <h2
-              class="px-1 pb-3 pt-2 text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white"
+              class="px-1 pb-3 pt-2 text-xl font-bold leading-tight text-gray-900 dark:text-white"
             >
               Database Quota
             </h2>
@@ -146,9 +146,7 @@
             <div
               class="flex flex-col gap-3 px-1 pb-3 pt-2 sm:flex-row sm:items-center sm:justify-between"
             >
-              <h2
-                class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white"
-              >
+              <h2 class="text-xl font-bold leading-tight text-gray-900 dark:text-white">
                 Your Databases
                 <span class="text-sm font-normal text-gray-500 ml-2"
                   >({{ filteredDatabases.length }})</span
@@ -190,17 +188,17 @@
                 <div
                   class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#4A90E2]/10 dark:bg-[#4A90E2]/20"
                 >
-                  <img
-                    class="h-6 w-6"
-                    :alt="`${db.engine} logo`"
-                    :src="getDatabaseLogo(db.engine)"
-                  />
+                  <img :alt="`${db.engine} logo`" :src="getDatabaseLogo(db.engine)" />
                 </div>
                 <div class="flex-grow min-w-0">
                   <div class="flex items-center gap-2">
-                    <p class="font-semibold text-gray-900 dark:text-white truncate">
-                      {{ db.name }}
+                    <p class="font-semibold text-gray-900 dark:text-white truncate w-24">
+                      {{ db.engine }}
                     </p>
+                    <p class="font-semibold text-gray-900 dark:text-white truncate">
+                      ID: {{ db.name }}
+                    </p>
+
                     <span
                       v-if="db.status === 'Pending'"
                       class="inline-flex items-center gap-1 rounded-full bg-[#F5A623]/10 px-2 py-1 text-xs font-medium text-[#F5A623]"
@@ -268,6 +266,45 @@
       <span class="material-symbols-outlined text-3xl">add</span>
     </button>
 
+    <!-- Botón de mute en la esquina inferior izquierda -->
+    <button
+      @click="toggleBackgroundMusic"
+      class="music-control-btn"
+      :class="{ muted: isMusicMuted }"
+    >
+      <svg v-if="isMusicMuted" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 9V15H7L12 20V4L7 9H3Z" />
+        <path
+          d="M16 9L21 14M21 9L16 14"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 9V15H7L12 20V4L7 9H3Z" />
+        <path
+          d="M16 9C16.5 9.5 17 10.5 17 12C17 13.5 16.5 14.5 16 15"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+        <path
+          d="M19 6C20.5 7.5 21 10 21 12C21 14 20.5 16.5 19 18"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <span class="music-label">{{ isMusicMuted ? 'Activar música' : 'Silenciar' }}</span>
+    </button>
+
+    <!-- Audio oculto para la música de fondo -->
+    <audio ref="backgroundMusic" loop :muted="isMusicMuted">
+      <source :src="backgroundMusicSrc" type="audio/mpeg" />
+      Tu navegador no soporta el elemento audio.
+    </audio>
+
     <!-- Modal de creación de base de datos -->
     <CreateDatabaseModal
       v-if="showCreateModal"
@@ -300,6 +337,12 @@ import api from '@/services/api'
 import env from '@/config/env'
 import CreateDatabaseModal from '@/components/databases/CreateDatabaseModal.vue'
 import ChangePassword from '@/components/common/ChangePassword.vue'
+import { DATABASE_ENGINES } from '@/utils/constants/databaseEngines'
+
+// Estados para la música de fondo
+const backgroundMusic = ref(null)
+const isMusicMuted = ref(false)
+const backgroundMusicSrc = ref(new URL('@/assets/audio/background_music.mp3', import.meta.url).href)
 
 const showChangePasswordModal = ref(false)
 
@@ -333,26 +376,66 @@ const databases = ref([])
 
 // URLs de logos
 const databaseLogos = {
-  PostgreSQL:
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuC1cHlCOcmJzwdWHT-RR7XPlWil-1wHq5GVmJY_s9ztG1Ix18hFx4QgTLohwlDgVloqtwZ4H1KVA3Q_Zv3fw8VfX7V12Xwz32ulPtmNPQ93Fga5XZCPZPETEH1g9UYeFooomUp18C6nEjpiS_F17iri9UDEwjzxi243upG_ueWkqMJpOUQuUF4VGj2EKHU8afFuLc0iFWDYAAEI1QmCrcVwk-BknrcXEFGGGpQxiLjSRy3Uialxem57WrGliNZVlrtW7H-SQ-MkdL8',
-  MongoDB:
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuBFJYB_qJi7mmArp6NHsuLtYoVCRMwrQHZ2qpblJCo56h50WegBaZvY6tpGS8RdbH4IYAv-MXaJvznmySdwv6OsvPpTT_lfein5nY5mc7kqch8VIZh8lss1OCaoLUkxDcw9A7_TNNKRHPH42mrH2GuVS8WhD7ZTmfyUFc5OT-lTmMJj3vjciTUxnV2tmU7uExGCvZ8oSKsegLkdtknKl_h_qBHVg-EFQVnPDVBNufFl-MaBR7igT8JScvAPov8e9n-Jd1YShEq9Ugw',
-  MySQL:
-    'https://lh3.googleusercontent.com/aida-public/AB6AXuDOys6TO_yAB76x6tiDK73rbTKlY538p4O3TMZ2uQZQeGoWNkrATs23rfOsFJW6Wq21uni-5WOIIvmFAMnC-1pUWO8SrxrinY8Dh5SipD2askzTm5-NZ1u8oqmbZhUHqIy1R9kuFgq0Jw63a2L3p6WleWVNtOzDR6wVptg81EfR30eqOO6fuJOpi5LbqH2_jyjj8Ai48r_YONG8rb23WttosFZxN-_goAtk4h6GhXaB7dj9pr_AZJTZ_ohedqUK_D9LnPlO86sXJ_U',
+  PostgreSQL: DATABASE_ENGINES[1].logo, // postgresql
+  MongoDB: DATABASE_ENGINES[2].logo, // mongodb
+  MySQL: DATABASE_ENGINES[0].logo, // mysql
+  SQLServer: DATABASE_ENGINES[3].logo, // sqlserver
+  Redis: DATABASE_ENGINES[4].logo, // redis
+  Cassandra: DATABASE_ENGINES[5].logo, // cassandra
 }
+
+// Métodos para controlar la música
+const toggleBackgroundMusic = async () => {
+  isMusicMuted.value = !isMusicMuted.value
+
+  if (backgroundMusic.value) {
+    if (isMusicMuted.value) {
+      backgroundMusic.value.pause()
+    } else {
+      try {
+        await backgroundMusic.value.play()
+      } catch (error) {
+        console.log('Error reproduciendo música:', error)
+      }
+    }
+  }
+}
+
+const startBackgroundMusic = async () => {
+  if (backgroundMusic.value && !isMusicMuted.value) {
+    try {
+      // Configurar volumen bajo para música de fondo
+      backgroundMusic.value.volume = 0.07
+      await backgroundMusic.value.play()
+    } catch (error) {
+      console.log('Autoplay bloqueado, el usuario debe interactuar primero')
+    }
+  }
+}
+
+onMounted(() => {
+  startBackgroundMusic()
+})
 
 // Computed
 const filteredDatabases = computed(() => {
   if (!searchQuery.value) return databases.value
 
   const query = searchQuery.value.toLowerCase()
-  return databases.value.filter(
-    (db) =>
-      db.name.toLowerCase().includes(query) ||
-      db.type.toLowerCase().includes(query) ||
-      db.status.toLowerCase().includes(query) ||
-      db.region.toLowerCase().includes(query),
-  )
+  return databases.value.filter((db) => {
+    // Verificar que todas las propiedades existan antes de usar .toLowerCase()
+    const name = db.name || ''
+    const type = db.type || ''
+    const status = db.status || ''
+    const region = db.region || ''
+
+    return (
+      name.toLowerCase().includes(query) ||
+      type.toLowerCase().includes(query) ||
+      status.toLowerCase().includes(query) ||
+      region.toLowerCase().includes(query)
+    )
+  })
 })
 
 const computedQuotas = computed(() => {
@@ -505,9 +588,70 @@ onMounted(() => {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
+.dashboard {
+  background-image: url('@/assets/images/dashboard_bg.png');
+  background-position: center;
+  background-size: cover;
+}
+.music-control-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  font-size: 14px;
+  font-family: 'Source Sans Pro', sans-serif;
+}
 
+.music-control-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.music-control-btn.muted {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+.music-control-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.music-label {
+  white-space: nowrap;
+}
+
+/* Ocultar el elemento audio */
+audio {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .music-control-btn {
+    bottom: 15px;
+    left: 15px;
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .music-control-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;

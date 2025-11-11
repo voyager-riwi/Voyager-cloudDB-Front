@@ -5,11 +5,6 @@
     <div class="flex size-12 shrink-0 items-center text-primary dark:text-primary">
       <span class="material-symbols-outlined text-4xl">database</span>
     </div>
-    <h2
-      class="flex-1 text-lg font-bold leading-tight tracking-[-0.015em] text-zinc-900 dark:text-white"
-    >
-      CCD
-    </h2>
     <div class="flex items-center justify-end gap-4">
       <router-link
         to="/login"
