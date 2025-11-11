@@ -177,6 +177,46 @@ class ApiService {
         body: data,
       }),
   }
+
+  // ==================== PLANS ENDPOINTS ====================
+  plans = {
+    /**
+     * Obtener todos los planes disponibles
+     */
+    list: () => this.request(env.api.endpoints.plans?.list || '/api/Plans'),
+
+    /**
+     * Obtener un plan específico
+     * @param {string} id - GUID del plan
+     */
+    get: (id) => this.request(env.api.endpoints.plans?.get?.(id) || `/api/Plans/${id}`),
+  }
+
+  // ==================== PAYMENTS ENDPOINTS ====================
+  payments = {
+    /**
+     * Crear preferencia de pago en MercadoPago
+     * @param {Object} data - { planId }
+     */
+    createPreference: (data) =>
+      this.request(env.api.endpoints.payments?.createPreference || '/api/Payments/create-preference', {
+        method: 'POST',
+        body: data,
+      }),
+
+    /**
+     * Verificar configuración de MercadoPago (solo para debug)
+     */
+    getConfigTest: () =>
+      this.request(env.api.endpoints.payments?.configTest || '/api/Payments/config-test'),
+
+    /**
+     * Debug de orden de MercadoPago
+     * @param {number} orderId - ID de la orden
+     */
+    debugOrder: (orderId) =>
+      this.request(env.api.endpoints.payments?.debugOrder?.(orderId) || `/api/Payments/debug-order/${orderId}`),
+  }
 }
 
 // Exportar instancia única (Singleton)
