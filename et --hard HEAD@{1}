@@ -1,0 +1,35 @@
+[33mddaf08b[m[33m ([m[1;36mHEAD -> [m[1;32mtesting[m[33m)[m HEAD@{0}: commit (merge): fix:integrations frontend in testing branch
+[33m3f5247a[m[33m ([m[1;31morigin/testing[m[33m, [m[1;31morigin/feature/Miguel[m[33m, [m[1;31morigin/develop[m[33m, [m[1;32mmain[m[33m, [m[1;32mdevelop[m[33m)[m HEAD@{1}: checkout: moving from develop to testing
+[33m3f5247a[m[33m ([m[1;31morigin/testing[m[33m, [m[1;31morigin/feature/Miguel[m[33m, [m[1;31morigin/develop[m[33m, [m[1;32mmain[m[33m, [m[1;32mdevelop[m[33m)[m HEAD@{2}: checkout: moving from main to develop
+[33m3f5247a[m[33m ([m[1;31morigin/testing[m[33m, [m[1;31morigin/feature/Miguel[m[33m, [m[1;31morigin/develop[m[33m, [m[1;32mmain[m[33m, [m[1;32mdevelop[m[33m)[m HEAD@{3}: commit: feat: routing changes and refactorize frontend
+[33m559ccbc[m HEAD@{4}: commit: Fix: filteredDatabases function in DashboardView when type don't get databases and dont change the view
+[33mf2fda18[m HEAD@{5}: commit: feat: home harrypotter parallax
+[33m5fc003e[m HEAD@{6}: commit: hotfix: register functions and send information to the API
+[33m0798c33[m HEAD@{7}: commit: feat: changing cinematic and feat of dashboard audio
+[33md52b7ab[m HEAD@{8}: commit: fix: disable temporary video cinematic
+[33m3c06fef[m HEAD@{9}: commit: feat: added utils/constants/databseEngines.js to create const that you can re-use
+[33m655fb5f[m HEAD@{10}: commit: feat: inproving the visual of login
+[33m02f9b06[m HEAD@{11}: pull: Fast-forward
+[33me46447a[m HEAD@{12}: commit: hotfix: fixing .github/worflows/deploy.yml sintaxys and andres.cortes url
+[33m1f7733f[m HEAD@{13}: commit: fix: deleted server duplicate at deploy.yml
+[33mda50d02[m HEAD@{14}: commit: fix: fixing .github/worflows/deploy.yml sintaxys and andres.cortes url
+[33m8cd7050[m HEAD@{15}: commit: fix: localhost routing
+[33m4d68dcb[m HEAD@{16}: commit: fix: fixing .github/worflows/deploy.yml sintaxys
+[33mb327a70[m HEAD@{17}: commit: fix: fixing deploy.yml
+[33mdb75706[m HEAD@{18}: commit: fix: server url
+[33m0973d3a[m HEAD@{19}: commit: fix: fixing .github/worflows/deploy.yml sintaxys
+[33m8831cfa[m HEAD@{20}: commit: fix: fixing .github/worflows/deploy.yml
+[33md2565c8[m HEAD@{21}: commit: feat: adding nginx
+[33mccb6058[m HEAD@{22}: commit: feat: adding nginx
+[33m1432b9a[m HEAD@{23}: commit: fix: deploy.yml change to use scp
+[33m839b04a[m HEAD@{24}: commit: fix: changing deploy.yml
+[33m14f9a7c[m HEAD@{25}: commit: fix:.github route and deploy
+[33m8f99ca6[m HEAD@{26}: commit: feat: adding workflows using git actions and dokerfile to desploying the project
+[33mc64e332[m HEAD@{27}: commit: feat
+[33m1bc964c[m HEAD@{28}: commit: feat: creating CI/CD whithDocker y GitHub Actions to deploying the frontend
+[33m9eb250f[m HEAD@{29}: commit: feat: DatabasesDetails integration and fixing changePassword
+[33m554f751[m HEAD@{30}: commit: feate: adding and testing (forgot-password and reset-password) integration
+[33m30db48d[m[33m ([m[1;31morigin/feature/Vanessa[m[33m)[m HEAD@{31}: commit: feat: creating structure and first frontend draft
+[33m78b5a3d[m HEAD@{32}: Branch: renamed refs/heads/main to refs/heads/main
+[33m78b5a3d[m HEAD@{34}: Branch: renamed refs/heads/master to refs/heads/main
+[33m78b5a3d[m HEAD@{36}: commit (initial): first commit

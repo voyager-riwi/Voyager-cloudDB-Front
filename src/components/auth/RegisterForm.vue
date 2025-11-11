@@ -266,9 +266,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import api from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
+import { useMagicToast } from '@/composables/useMagicToast'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const toast = useMagicToast()
 
 const form = ref({
   firstName: '',
@@ -282,9 +285,6 @@ const form = ref({
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const isSubmitting = ref(false)
-const error = ref('')
-const success = ref('')
-const showSuccess = ref(false)
 
 const handleSubmit = async () => {
   // Validación de contraseñas
@@ -299,7 +299,6 @@ const handleSubmit = async () => {
   }
 
   isSubmitting.value = true
-  error.value = ''
 
   try {
     const registerData = {
@@ -311,7 +310,7 @@ const handleSubmit = async () => {
 
     console.log('Enviando datos de registro:', registerData)
 
-    const response = await api.auth.register(registerData)
+    const response = await authStore.register(registerData)
 
     console.log('Respuesta del registro:', response)
 

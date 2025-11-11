@@ -312,8 +312,8 @@ export default {
     })
 
     onUnmounted(() => {
-      window.oveEventListener('resize', updateViewport)
-      window.oveEventListener('load', updateViewport)
+      window.removeEventListener('resize', updateViewport)
+      window.removeEventListener('load', updateViewport)
     })
 
     return {

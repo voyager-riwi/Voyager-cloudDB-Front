@@ -4,11 +4,13 @@ import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 import WebhooksView from '@/views/WebhooksView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import AboutView from '@/views/AboutView.vue'
 import RecoveryView from '@/views/RecoveryView.vue'
 import PlansView from '@/views/PlansView.vue'
+import MarketPayment from '@/views/MarketPayment.vue'
 
 /*
     {
@@ -97,6 +99,30 @@ const router = createRouter({
       path: '/databases/:id',
       name: 'DatabaseDetails',
       component: () => import('@/views/DatabaseDetailsView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/plans',
+      name: 'plans',
+      component: PlansView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/payment/:planId',
+      name: 'MarketPayment',
+      component: MarketPayment,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/webhooks',
+      name: 'webhooks',
+      component: WebhooksView,
       meta: { requiresAuth: true },
     },
   ],
