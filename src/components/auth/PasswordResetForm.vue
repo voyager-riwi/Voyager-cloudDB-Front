@@ -5,13 +5,7 @@
       style="font-family: 'Inter', sans-serif"
     >
       <div class="w-full max-w-md space-y-8">
-        <!-- Mensajes de estado -->
-        <div
-          v-if="success"
-          class="bg-green-500/20 border border-green-500 text-green-700 dark:text-green-300 px-4 py-3 rounded text-sm text-center"
-        >
-          ✅ {{ success }}
-        </div>
+        <!-- Mensaje de error inline (solo para validaciones simples) -->
         <div
           v-if="error"
           class="bg-red-500/20 border border-red-500 text-red-700 dark:text-red-300 px-4 py-3 rounded text-sm text-center"
@@ -80,19 +74,24 @@
   </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useMagicToast } from '@/composables/useMagicToast'
 import api from '@/services/api'
 
 const router = useRouter()
+const toast = useMagicToast()
+
 const email = ref('')
 const loading = ref(false)
 const error = ref('')
-const success = ref('')
 
 const sendRecoveryEmail = async () => {
   if (!email.value) {
     error.value = 'Please enter your email address'
+    toast.expelliarmus('Please enter your email address', {
+      duration: 3000,
+    })
     return
   }
 
@@ -100,49 +99,60 @@ const sendRecoveryEmail = async () => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email.value)) {
     error.value = 'Please enter a valid email address'
+    toast.expelliarmus('Please enter a valid email address', {
+      duration: 3000,
+    })
     return
   }
 
   loading.value = true
   error.value = ''
-  success.value = ''
 
   try {
-    console.log('Sending recovery email to:', email.value)
+    console.log('✉️ Sending recovery email to:', email.value)
 
     // Enviar solicitud de recuperación
     const response = await api.auth.forgotPassword({
       email: email.value,
     })
 
-    console.log('Recovery email response:', response.data)
+    console.log('✅ Recovery email response:', response.data)
 
-    // ✅ CORRECCIÓN CRÍTICA: Guardar el email en localStorage ANTES de redirigir
+    // Guardar el email en localStorage ANTES de redirigir
     localStorage.setItem('resetEmail', email.value)
 
     // Limpiar cualquier token previo (por si es un reintento)
     localStorage.removeItem('requiresPasswordChange')
     localStorage.removeItem('verifiedEmail')
 
-    success.value = 'Recovery email sent! Please check your inbox.'
+    toast.lumos('Recovery email sent! Please check your inbox and enter the code. 📧', {
+      title: '✉️ Email Sent',
+      duration: 3000,
+    })
 
-    // Redirigir después de un breve delay para que el usuario vea el mensaje
+    // Redirigir después de un breve delay
     setTimeout(() => {
       router.push('/recovery')
     }, 1500)
   } catch (err) {
-    console.error('Error sending recovery email:', err)
+    console.error('❌ Error sending recovery email:', err)
 
-    // Manejo específico de errores
+    let errorMessage = 'Failed to send recovery email. Please try again.'
+
     if (err.response?.status === 404) {
-      error.value = 'Email address not found. Please check and try again.'
+      errorMessage = 'Email address not found. Please check and try again.'
     } else if (err.response?.status === 429) {
-      error.value = 'Too many attempts. Please try again later.'
+      errorMessage = 'Too many attempts. Please try again later.'
     } else if (err.response?.data?.message) {
-      error.value = err.response.data.message
-    } else {
-      error.value = 'Failed to send recovery email. Please try again.'
+      errorMessage = err.response.data.message
     }
+
+    error.value = errorMessage
+
+    toast.expelliarmus(errorMessage, {
+      title: '⚡ Error',
+      duration: 5000,
+    })
   } finally {
     loading.value = false
   }
@@ -152,9 +162,7 @@ const goBack = () => {
   router.push('/login')
 }
 
-// Opcional: Limpiar localStorage al montar el componente
-import { onMounted } from 'vue'
-
+// Limpiar localStorage al montar el componente
 onMounted(() => {
   // Limpiar estado previo al cargar el formulario
   localStorage.removeItem('resetEmail')

@@ -187,18 +187,6 @@
             Cancel
           </button>
         </div>
-
-        <!-- Toast Notifications -->
-        <div
-          v-if="toast.show"
-          class="fixed bottom-5 right-5 flex items-center gap-4 rounded-lg p-4 text-white shadow-lg z-50"
-          :class="toast.type === 'success' ? 'bg-green-600' : 'bg-red-600'"
-        >
-          <span class="material-symbols-outlined">
-            {{ toast.type === 'success' ? 'task_alt' : 'error' }}
-          </span>
-          <p class="text-sm font-medium">{{ toast.message }}</p>
-        </div>
       </div>
     </main>
   </div>
@@ -207,6 +195,8 @@
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { useMagicToast } from '@/composables/useMagicToast'
 import api from '@/services/api'
 
 // Props
@@ -220,6 +210,8 @@ const props = defineProps({
 const emit = defineEmits(['success', 'cancel'])
 
 const router = useRouter()
+const authStore = useAuthStore()
+const toast = useMagicToast()
 
 // Estados reactivos
 const form = reactive({
@@ -238,12 +230,6 @@ const showCurrentPassword = ref(false)
 const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 const loading = ref(false)
-
-const toast = reactive({
-  show: false,
-  type: 'success',
-  message: '',
-})
 
 // Computed properties
 const isResetFlow = computed(() => {
@@ -308,19 +294,11 @@ const validatePassword = () => {
   }
 }
 
-const showToast = (type, message, duration = 3000) => {
-  toast.type = type
-  toast.message = message
-  toast.show = true
-
-  setTimeout(() => {
-    toast.show = false
-  }, duration)
-}
-
 const updatePassword = async () => {
   if (!isFormValid.value) {
-    showToast('error', 'Please fix the errors before submitting')
+    toast.expelliarmus('Please fix the errors before submitting', {
+      duration: 4000,
+    })
     return
   }
 
@@ -349,7 +327,10 @@ const handleResetPassword = async () => {
   console.log('🔐 Token:', requiresChange)
 
   if (!requiresChange || requiresChange === 'null' || !userEmail) {
-    showToast('error', 'Please complete the verification process first')
+    toast.expelliarmus('Please complete the verification process first', {
+      title: '⚡ Verification Required',
+      duration: 4000,
+    })
     setTimeout(() => {
       router.push('/forgot-password')
     }, 2000)
@@ -364,7 +345,6 @@ const handleResetPassword = async () => {
 
   console.log('📤 Sending reset data:', resetData)
 
-  // CORRECCIÓN: Usar api.auth.resetPassword en lugar de api.post
   const response = await api.auth.resetPassword(resetData)
   console.log('✅ Password reset successful:', response.data)
 
@@ -373,7 +353,10 @@ const handleResetPassword = async () => {
   localStorage.removeItem('requiresPasswordChange')
   localStorage.removeItem('resetEmail')
 
-  showToast('success', 'Password updated successfully!')
+  toast.lumos('Password updated successfully! Redirecting to login... ✨', {
+    title: '🔐 Password Updated',
+    duration: 4000,
+  })
 
   if (props.isStandalone) {
     setTimeout(() => {
@@ -437,7 +420,10 @@ const handleRegularPasswordChange = async () => {
     const result = await response.json()
     console.log('✅ Password changed successfully:', result)
 
-    showToast('success', 'Password changed successfully!')
+    toast.lumos('Password changed successfully! 🎉', {
+      title: '🔐 Success',
+      duration: 4000,
+    })
 
     // Limpiar formulario
     form.currentPassword = ''
@@ -478,7 +464,10 @@ const handleUpdateError = (error) => {
     errorMessage = error.message || 'Failed to update password. Please try again.'
   }
 
-  showToast('error', errorMessage)
+  toast.expelliarmus(errorMessage, {
+    title: '⚡ Error',
+    duration: 5000,
+  })
 }
 
 const verifyResetFlow = () => {
@@ -492,7 +481,10 @@ const verifyResetFlow = () => {
 
     if (!requiresChange || requiresChange === 'null' || !userEmail) {
       console.log('❌ Invalid reset flow - redirecting')
-      showToast('error', 'Invalid reset password flow. Redirecting...')
+      toast.expelliarmus('Invalid reset password flow. Redirecting...', {
+        title: '⚡ Invalid Flow',
+        duration: 3000,
+      })
       setTimeout(() => {
         router.push('/forgot-password')
       }, 3000)

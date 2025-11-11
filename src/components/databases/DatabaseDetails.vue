@@ -414,11 +414,11 @@ const rotateCredentials = async () => {
   loading.value = true
 
   try {
-    console.log('🔄 Rotating credentials for database:', database.value.id)
+    console.log('Rotating credentials for database:', database.value.id)
 
     // Llamar al endpoint correcto según tu configuración
     const response = await api.databases.resetPassword(databaseId)
-    console.log('✅ API Response:', response.data)
+    console.log('API Response:', response.data)
 
     // Manejar diferentes estructuras de respuesta
     let newPassword = ''
@@ -430,7 +430,7 @@ const rotateCredentials = async () => {
     } else if (response.data.data?.password) {
       newPassword = response.data.data.password
     } else {
-      console.warn('⚠️ No password found in response:', response.data)
+      console.warn('No password found in response:', response.data)
       throw new Error('No new password received from server')
     }
 
@@ -438,9 +438,9 @@ const rotateCredentials = async () => {
     credentials.value.password = newPassword
     showPassword.value = false // Ocultar por seguridad
 
-    console.log('✅ Credentials rotated successfully')
+    console.log('Credentials rotated successfully')
   } catch (error) {
-    console.error('❌ Failed to rotate credentials:', error)
+    console.error('Failed to rotate credentials:', error)
     handleRotateError(error)
   } finally {
     loading.value = false
@@ -451,14 +451,14 @@ const rotateCredentials = async () => {
 const showToast = (type, message, duration = 4000) => {
   // Puedes implementar tu sistema de toasts aquí
   // Por ahora usaremos console.log y alert temporalmente
-  console.log(`📢 ${type.toUpperCase()}: ${message}`)
+  console.log(`${type.toUpperCase()}: ${message}`)
 
   // Temporal: usar alert para demostración
   // En producción, reemplaza con tu sistema de toasts
   if (type === 'error') {
-    alert(`❌ ${message}`)
+    alert(`${message}`)
   } else {
-    alert(`✅ ${message}`)
+    alert(`${message}`)
   }
 }
 

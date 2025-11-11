@@ -30,22 +30,6 @@
         Manage your cloud databases with ease.
       </p>
 
-      <!-- Error Message -->
-      <div
-        v-if="error"
-        class="bg-red-500/20 border border-red-500 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4 text-sm"
-      >
-        {{ error }}
-      </div>
-
-      <!-- Success Message -->
-      <div
-        v-if="success"
-        class="bg-green-500/20 border border-green-500 text-green-700 dark:text-green-300 px-4 py-3 rounded mb-4 text-sm"
-      >
-        {{ success }}
-      </div>
-
       <!-- Form -->
       <form @submit.prevent="handleSubmit" class="flex flex-col gap-4">
         <!-- First Name Field -->
@@ -257,9 +241,12 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import api from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
+import { useMagicToast } from '@/composables/useMagicToast'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const toast = useMagicToast()
 
 const form = ref({
   firstName: '',
@@ -273,24 +260,26 @@ const form = ref({
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const isSubmitting = ref(false)
-const error = ref('')
-const success = ref('')
-const showSuccess = ref(false)
 
 const handleSubmit = async () => {
   // Validación de contraseñas
   if (form.value.password !== form.value.confirmPassword) {
-    error.value = 'Passwords do not match'
+    toast.expelliarmus('Passwords do not match. Please try again.', {
+      title: '⚡ Validation Error',
+      duration: 4000,
+    })
     return
   }
 
   if (!form.value.agreeToTerms) {
-    error.value = 'You must agree to the terms and conditions'
+    toast.expelliarmus('You must agree to the terms and conditions to continue.', {
+      title: '📜 Terms Required',
+      duration: 4000,
+    })
     return
   }
 
   isSubmitting.value = true
-  error.value = ''
 
   try {
     const registerData = {
@@ -300,23 +289,34 @@ const handleSubmit = async () => {
       password: form.value.password,
     }
 
-    console.log('Sending registration data:', registerData)
+    console.log('✨ Sending registration data:', registerData)
 
-    const response = await api.auth.register(registerData)
+    const response = await authStore.register(registerData)
 
-    console.log('Registration response:', response)
+    console.log('✅ Registration response:', response)
 
-    // Mostrar mensaje de éxito
-    success.value = 'Account created successfully! Please check your email for verification.'
-    showSuccess.value = true
+    // Notificación mágica de éxito
+    toast.lumos(
+      'Account created successfully! Check your email for verification. 📧',
+      {
+        title: '🎉 ¡Bienvenido a CloudDB!',
+        duration: 6000,
+      },
+    )
 
     setTimeout(() => {
       router.push('/login?registered=true')
     }, 3000)
   } catch (err) {
-    console.error('Registration error:', err)
-    error.value =
+    console.error('❌ Registration error:', err)
+
+    const errorMessage =
       err.response?.data?.message || err.message || 'Registration failed. Please try again.'
+
+    toast.expelliarmus(errorMessage, {
+      title: '⚡ Registration Failed',
+      duration: 5000,
+    })
   } finally {
     isSubmitting.value = false
   }

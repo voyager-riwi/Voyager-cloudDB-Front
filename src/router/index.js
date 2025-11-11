@@ -8,6 +8,8 @@ import WebhooksView from '@/views/WebhooksView.vue'
 import ResetPasswordView from '@/views/ResetPasswordView.vue'
 import AboutView from '@/views/AboutView.vue'
 import RecoveryView from '@/views/RecoveryView.vue'
+import PlansView from '@/views/PlansView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
 /*
     {
@@ -92,6 +94,16 @@ const router = createRouter({
       name: 'DatabaseDetails',
       component: () => import('@/views/DatabaseDetailsView.vue'),
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/plans',
+      name: 'plans',
+      component: PlansView,
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
     },
   ],
 })

@@ -35,7 +35,6 @@
             </div>
 
             <!--change password-->
-            <!-- En el dropdown del usuario -->
             <button
               @click="showChangePasswordModal = true"
               class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -112,6 +111,23 @@
             >
               Database Quota
             </h2>
+
+            <!-- Limit Information Banner -->
+            <div
+              v-if="computedQuotas.some((q) => q.isLimitReached)"
+              class="mb-4 bg-amber-500/20 border border-amber-500 text-amber-700 dark:text-amber-300 px-4 py-3 rounded-lg text-sm"
+            >
+              <div class="flex items-start gap-2">
+                <div>
+                  <p class="font-medium">⚠️ Database Limits Reached</p>
+                  <p class="text-xs mt-1">
+                    Some database engines have reached their limit. You can restore deactivated
+                    databases or upgrade your plan.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <!-- Database Quota Cards -->
               <div
@@ -119,14 +135,19 @@
                 :key="quota.type"
                 class="flex flex-col gap-3 rounded-xl border border-gray-200/50 bg-white p-4 dark:border-gray-700/50 dark:bg-gray-800/20"
               >
+                <!-- Header with Status -->
                 <div class="flex items-center justify-between gap-6">
-                  <p class="text-base font-medium leading-normal text-gray-900 dark:text-white">
-                    {{ quota.type }}
-                  </p>
+                  <div class="flex items-center gap-2">
+                    <p class="text-base font-medium leading-normal text-gray-900 dark:text-white">
+                      {{ quota.type }}
+                    </p>
+                  </div>
                   <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
                     {{ quota.used }} of {{ quota.total }} used
                   </p>
                 </div>
+
+                <!-- Progress Bar -->
                 <div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
                   <div
                     class="h-2 rounded-full transition-all duration-500"
@@ -134,10 +155,47 @@
                     :style="{ width: `${quota.percentage}%` }"
                   ></div>
                 </div>
-                <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
-                  {{ quota.remaining }} remaining
-                </p>
+
+                <!-- Status Information -->
+                <div class="flex justify-between items-center">
+                  <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
+                    {{ quota.remaining }} remaining
+                  </p>
+
+                  <!-- Warning Message -->
+                  <div
+                    v-if="getLimitWarningForEngine(quota.engineId)"
+                    class="text-xs text-amber-600 dark:text-amber-400"
+                  >
+                    {{ getLimitWarningForEngine(quota.engineId) }}
+                  </div>
+
+                  <!-- Limit Reached Message -->
+                  <div
+                    v-if="quota.isLimitReached"
+                    class="text-xs text-red-600 dark:text-red-400 font-medium"
+                  >
+                    Limit reached
+                  </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div
+                  v-if="quota.isLimitReached"
+                  class="mt-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2"
+                >
+                  <p>Restore a deactivated database or upgrade your plan</p>
+                </div>
               </div>
+            </div>
+
+            <!-- Plan Information -->
+            <div class="mt-4 text-center">
+              <p class="text-sm text-gray-500 dark:text-gray-400">
+                Current plan:
+                <span class="font-medium capitalize">{{ authStore.userPlan || 'free' }}</span> •
+                Limit: {{ engineLimit }} databases per engine
+              </p>
             </div>
           </section>
 
@@ -254,6 +312,77 @@
               </button>
             </div>
           </section>
+
+          <!-- Deactivated Databases Section -->
+          <section v-if="deactivatedDatabases.length > 0" class="mt-8">
+            <div class="flex flex-col gap-3 px-1 pb-3 pt-2">
+              <h2
+                class="text-xl font-bold leading-tight text-gray-900 dark:text-white flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-amber-500">warning</span>
+                Deactivated Databases
+                <span class="text-sm font-normal text-gray-500 ml-2"
+                  >({{ deactivatedDatabases.length }})</span
+                >
+              </h2>
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                These databases are scheduled for permanent deletion after 30 days. Restore them to
+                reactivate with new credentials.
+              </p>
+            </div>
+
+            <div class="space-y-3">
+              <div
+                v-for="db in deactivatedDatabases"
+                :key="db.id"
+                class="group flex items-center gap-4 rounded-xl border border-amber-200/50 bg-amber-50/30 p-4 dark:border-amber-700/30 dark:bg-amber-900/10"
+              >
+                <div
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500/10 dark:bg-amber-500/20 grayscale opacity-60"
+                >
+                  <img :alt="`${db.engine} logo`" :src="getDatabaseLogo(db.engine)" />
+                </div>
+
+                <div class="flex-grow min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="font-semibold text-gray-900 dark:text-white truncate w-24">
+                      {{ db.engine }}
+                    </p>
+                    <p class="font-semibold text-gray-700 dark:text-gray-300 truncate">
+                      ID: {{ db.name }}
+                    </p>
+                    <span
+                      class="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400"
+                    >
+                      <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                      Deactivated
+                    </span>
+                  </div>
+                  <div
+                    class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1"
+                  >
+                    <span class="material-symbols-outlined text-xs">schedule</span>
+                    <span>Grace period: 30 days remaining</span>
+                  </div>
+                </div>
+
+                <button
+                  @click="restoreDatabaseFromList(db)"
+                  class="flex items-center justify-center gap-2 rounded-lg bg-green-500/20 px-4 py-2 text-sm font-medium text-green-600 hover:bg-green-500/30 transition-colors dark:text-green-400"
+                >
+                  <span class="material-symbols-outlined text-base">restore</span>
+                  <span>Restore</span>
+                </button>
+
+                <button
+                  @click="openDatabase(db)"
+                  class="flex items-center justify-center rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-colors"
+                >
+                  <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                </button>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </main>
@@ -313,6 +442,7 @@
     />
 
     <!-- Backdrop for dropdown -->
+    <div v-if="showUserMenu" class="fixed inset-0 z-0" @click="showUserMenu = false"></div>
   </div>
 
   <!-- Modal para cambiar contraseña -->
@@ -337,7 +467,17 @@ import api from '@/services/api'
 import env from '@/config/env'
 import CreateDatabaseModal from '@/components/databases/CreateDatabaseModal.vue'
 import ChangePassword from '@/components/common/ChangePassword.vue'
-import { DATABASE_ENGINES } from '@/utils/constants/databaseEngines'
+import { DATABASE_ENGINES, getEngineNumericId } from '@/utils/constants/databaseEngines'
+import { useMagicToast } from '@/composables/useMagicToast'
+import { useDatabaseStore } from '@/stores/databases'
+import { useAuthStore } from '@/stores/auth'
+import { getPlanLimit } from '@/utils/constants/database'
+
+// Stores
+const dbStore = useDatabaseStore()
+const authStore = useAuthStore()
+const toast = useMagicToast()
+const router = useRouter()
 
 // Estados para la música de fondo
 const backgroundMusic = ref(null)
@@ -346,22 +486,14 @@ const backgroundMusicSrc = ref(new URL('@/assets/audio/background_music.mp3', im
 
 const showChangePasswordModal = ref(false)
 
-const handlePasswordChangeSuccess = () => {
-  showChangePasswordModal.value = false
-  // Opcional: mostrar mensaje de éxito
-  console.log('Password changed successfully')
-}
-
-const router = useRouter()
-
-// Estado reactivo
+// Estados reactivos
 const loading = ref(true)
 const error = ref('')
 const refreshing = ref(false)
 const searchQuery = ref('')
 const showUserMenu = ref(false)
 const userData = ref(null)
-const showCreateModal = ref(false) // Nuevo estado para controlar el modal
+const showCreateModal = ref(false)
 
 // Datos desde environment variables
 const appName = env.app.name
@@ -376,53 +508,108 @@ const databases = ref([])
 
 // URLs de logos
 const databaseLogos = {
-  PostgreSQL: DATABASE_ENGINES[1].logo, // postgresql
-  MongoDB: DATABASE_ENGINES[2].logo, // mongodb
-  MySQL: DATABASE_ENGINES[0].logo, // mysql
-  SQLServer: DATABASE_ENGINES[3].logo, // sqlserver
-  Redis: DATABASE_ENGINES[4].logo, // redis
-  Cassandra: DATABASE_ENGINES[5].logo, // cassandra
+  PostgreSQL: DATABASE_ENGINES[1]?.logo || '',
+  MongoDB: DATABASE_ENGINES[2]?.logo || '',
+  MySQL: DATABASE_ENGINES[0]?.logo || '',
+  SQLServer: DATABASE_ENGINES[3]?.logo || '',
+  Redis: DATABASE_ENGINES[4]?.logo || '',
+  Cassandra: DATABASE_ENGINES[5]?.logo || '',
 }
 
-// Métodos para controlar la música
-const toggleBackgroundMusic = async () => {
-  isMusicMuted.value = !isMusicMuted.value
-
-  if (backgroundMusic.value) {
-    if (isMusicMuted.value) {
-      backgroundMusic.value.pause()
-    } else {
-      try {
-        await backgroundMusic.value.play()
-      } catch (error) {
-        console.log('Error reproduciendo música:', error)
-      }
-    }
-  }
-}
-
-const startBackgroundMusic = async () => {
-  if (backgroundMusic.value && !isMusicMuted.value) {
-    try {
-      // Configurar volumen bajo para música de fondo
-      backgroundMusic.value.volume = 0.07
-      await backgroundMusic.value.play()
-    } catch (error) {
-      console.log('Autoplay bloqueado, el usuario debe interactuar primero')
-    }
-  }
-}
-
-onMounted(() => {
-  startBackgroundMusic()
+// Límite del plan actual
+const engineLimit = computed(() => {
+  const planType = authStore.userPlan || 'free'
+  return getPlanLimit(planType)
 })
+
+// Función para contar bases de datos por motor
+const countDatabasesByEngine = () => {
+  const counts = {}
+
+  DATABASE_ENGINES.forEach((engine) => {
+    const numericId = getEngineNumericId(engine.id)
+    // Contar todas las bases de datos (activas + desactivadas) de este motor
+    const engineDatabases = databases.value.filter((db) => {
+      // Si la base de datos tiene engine como string, comparar con engine.name
+      if (typeof db.engine === 'string') {
+        return db.engine.toLowerCase() === engine.name.toLowerCase()
+      }
+      // Si tiene type, comparar con engine.name
+      if (db.type) {
+        return db.type.toLowerCase() === engine.name.toLowerCase()
+      }
+      // Si tiene engineId numérico, comparar con numericId
+      if (db.engineId) {
+        return db.engineId === numericId
+      }
+      return false
+    })
+
+    counts[numericId] = engineDatabases.length
+  })
+
+  return counts
+}
+
+// Calcular cuotas por motor de base de datos
+const computedQuotas = computed(() => {
+  const quotas = []
+  const engineCounts = countDatabasesByEngine()
+
+  DATABASE_ENGINES.forEach((engine) => {
+    const numericId = getEngineNumericId(engine.id)
+    const used = engineCounts[numericId] || 0
+    const total = engineLimit.value
+    const percentage = total > 0 ? Math.min(100, (used / total) * 100) : 0
+    const remaining = Math.max(0, total - used)
+
+    // Determinar color basado en el uso
+    let color = 'bg-green-300'
+    if (percentage >= 90 || used >= total) {
+      color = 'bg-red-300'
+    } else if (percentage >= 75) {
+      color = 'bg-yellow-300'
+    }
+
+    quotas.push({
+      type: engine.name,
+      engineId: engine.id,
+      used: used,
+      total: total,
+      percentage: percentage,
+      remaining: remaining,
+      color: color,
+      isLimitReached: used >= total,
+    })
+  })
+
+  return quotas
+})
+
+// Obtener advertencia de límite para un motor específico
+const getLimitWarningForEngine = (engineId) => {
+  const numericId = getEngineNumericId(engineId)
+  const engineCounts = countDatabasesByEngine()
+  const currentCount = engineCounts[numericId] || 0
+  const limit = engineLimit.value
+
+  if (currentCount === limit - 1) {
+    return `⚠️ Last slot! Next creation will reach the limit.`
+  }
+
+  return null
+}
 
 // Computed
 const filteredDatabases = computed(() => {
-  if (!searchQuery.value) return databases.value
+  if (!searchQuery.value)
+    return databases.value.filter((db) => db.status !== 'Deleted' && db.status !== 'Stopped')
 
   const query = searchQuery.value.toLowerCase()
   return databases.value.filter((db) => {
+    // Excluir bases de datos desactivadas de la lista principal
+    if (db.status === 'Deleted' || db.status === 'Stopped') return false
+
     // Verificar que todas las propiedades existan antes de usar .toLowerCase()
     const name = db.name || ''
     const type = db.type || ''
@@ -438,37 +625,9 @@ const filteredDatabases = computed(() => {
   })
 })
 
-const computedQuotas = computed(() => {
-  const postgresCount = databases.value.filter((db) => db.type === 'PostgreSQL').length
-  const mongoCount = databases.value.filter((db) => db.type === 'MongoDB').length
-  const mysqlCount = databases.value.filter((db) => db.type === 'MySQL').length
-
-  return [
-    {
-      type: 'PostgreSQL',
-      used: postgresCount,
-      total: 20,
-      remaining: 20 - postgresCount,
-      percentage: (postgresCount / 20) * 100,
-      color: postgresCount >= 18 ? 'bg-red-500' : 'bg-[#4A90E2]',
-    },
-    {
-      type: 'MongoDB',
-      used: mongoCount,
-      total: 10,
-      remaining: 10 - mongoCount,
-      percentage: (mongoCount / 10) * 100,
-      color: mongoCount >= 8 ? 'bg-red-500' : 'bg-green-500',
-    },
-    {
-      type: 'MySQL',
-      used: mysqlCount,
-      total: 15,
-      remaining: 15 - mysqlCount,
-      percentage: (mysqlCount / 15) * 100,
-      color: mysqlCount >= 13 ? 'bg-red-500' : 'bg-orange-500',
-    },
-  ].filter((quota) => quota.total > 0) // Solo mostrar cuotas con límites
+// Bases de datos desactivadas (solo para la sección separada)
+const deactivatedDatabases = computed(() => {
+  return databases.value.filter((db) => db.status === 'Deleted' || db.status === 'Stopped')
 })
 
 // Métodos
@@ -486,7 +645,7 @@ const fetchDatabases = async () => {
       const profile = await api.users.getProfile()
       userData.value = profile.data || profile
     } catch (profileError) {
-      console.warn('No se pudo cargar el perfil del usuario:', profileError)
+      // No se pudo cargar el perfil del usuario
     }
 
     // Cargar bases de datos usando el servicio API
@@ -494,7 +653,6 @@ const fetchDatabases = async () => {
     databases.value = response.data || response
   } catch (err) {
     error.value = err.message
-    console.error('Error fetching databases:', err)
 
     // Datos de ejemplo como fallback
     databases.value = [
@@ -502,6 +660,7 @@ const fetchDatabases = async () => {
         id: 1,
         name: 'Production-API-DB',
         type: 'PostgreSQL',
+        engine: 'PostgreSQL',
         status: 'Active',
         region: 'US-East',
         ram: '2GB RAM',
@@ -511,6 +670,7 @@ const fetchDatabases = async () => {
         id: 2,
         name: 'Staging-Analytics-DB',
         type: 'MongoDB',
+        engine: 'MongoDB',
         status: 'Active',
         region: 'EU-West',
         ram: '4GB RAM',
@@ -520,6 +680,7 @@ const fetchDatabases = async () => {
         id: 3,
         name: 'Dev-WebApp-DB',
         type: 'MySQL',
+        engine: 'MySQL',
         status: 'Pending',
         region: 'US-West',
         ram: '1GB RAM',
@@ -565,29 +726,96 @@ const openDatabase = (db) => {
   router.push(`/databases/${db.id}`)
 }
 
-const createDatabase = () => {
-  showCreateModal.value = true
+const restoreDatabaseFromList = async (db) => {
+  loading.value = true
+  try {
+    // Call API to restore the database
+    const response = await api.databases.restore(db.id)
+
+    toast.lumos(
+      `✨ Database "${db.name || db.engine}" restored successfully!\n\nNew credentials have been sent to your email (${userData.value?.email || 'your inbox'}).`,
+      { title: '🔄 Database Restored', duration: 8000 },
+    )
+
+    // Refresh the database list to show updated status and new credentials
+    await fetchDatabases()
+  } catch (error) {
+    // Manejar errores específicos
+    let errorMessage = error.message || 'Failed to restore database. Please try again later.'
+
+    if (errorMessage.includes('not found') || errorMessage.includes('404')) {
+      errorMessage = 'Database not found or may have been permanently deleted after 30 days.'
+    } else if (errorMessage.includes('already active')) {
+      errorMessage = 'Database is already active. Try refreshing the page.'
+    }
+
+    toast.expelliarmus(errorMessage, {
+      title: '⚡ Restoration Error',
+      duration: 6000,
+    })
+  } finally {
+    loading.value = false
+  }
 }
 
 const manageSubscription = () => {
-  console.log('Managing subscription')
   // router.push('/subscription')
 }
 
 const handleDatabaseCreated = (newDatabase) => {
-  console.log('Nueva base de datos creada:', newDatabase)
+  toast.spell('Database created successfully! ✨', {
+    title: '🪄 Database Magic',
+    duration: 4000,
+  })
   // Recargar la lista de bases de datos
   fetchDatabases()
-  // Opcional: Mostrar mensaje de éxito
+}
+
+const handlePasswordChangeSuccess = () => {
+  showChangePasswordModal.value = false
+  toast.lumos('Password changed successfully! 🔐', {
+    title: '✨ Success',
+    duration: 4000,
+  })
+}
+
+// Métodos para controlar la música
+const toggleBackgroundMusic = async () => {
+  isMusicMuted.value = !isMusicMuted.value
+
+  if (backgroundMusic.value) {
+    if (isMusicMuted.value) {
+      backgroundMusic.value.pause()
+    } else {
+      try {
+        await backgroundMusic.value.play()
+      } catch (error) {
+        // Error reproduciendo música
+      }
+    }
+  }
+}
+
+const startBackgroundMusic = async () => {
+  if (backgroundMusic.value && !isMusicMuted.value) {
+    try {
+      // Configurar volumen bajo para música de fondo
+      backgroundMusic.value.volume = 0.07
+      await backgroundMusic.value.play()
+    } catch (error) {
+      // Autoplay bloqueado, el usuario debe interactuar primero
+    }
+  }
 }
 
 // Ciclo de vida
 onMounted(() => {
   fetchDatabases()
+  startBackgroundMusic()
 })
 </script>
 
-<style>
+<style scoped>
 .dashboard {
   background-image: url('@/assets/images/dashboard_bg.png');
   background-position: center;
