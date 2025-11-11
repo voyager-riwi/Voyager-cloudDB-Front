@@ -25,6 +25,9 @@ const config = {
         profile: '/api/Users/profile',
         update: '/api/Users/profile',
       },
+      plans: {
+        list: '/api/Plans',
+      },
     },
   },
   app: {

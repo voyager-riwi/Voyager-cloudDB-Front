@@ -177,6 +177,11 @@ class ApiService {
         body: data,
       }),
   }
+
+  // ================== PLANS ENDPOINT =============================
+  plans = {
+    list: () => this.request(env.api.endpoints.plans.list),
+  }
 }
 
 // Exportar instancia única (Singleton)
