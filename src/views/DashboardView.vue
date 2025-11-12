@@ -57,13 +57,11 @@
 
     <main class="p-4 pb-24 sm:p-6">
       <div class="mx-auto max-w-4xl space-y-6 mt-[10vh]">
-        <!-- Loading State -->
         <div v-if="loading" class="flex flex-col items-center justify-center py-12">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A90E2] mb-4"></div>
           <p class="text-gray-500 dark:text-gray-400">Cargando bases de datos...</p>
         </div>
 
-        <!-- Error State -->
         <div
           v-else-if="error"
           class="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/20"

@@ -12,6 +12,9 @@ import AboutView from '@/views/AboutView.vue'
 import RecoveryView from '@/views/RecoveryView.vue'
 import PlansView from '@/views/PlansView.vue'
 import MarketPayment from '@/views/MarketPayment.vue'
+import PaymentSuccess from '@/views/PaymentSuccess.vue'
+import PaymentFailure from '@/views/PaymentFailure.vue'
+import PaymentPending from '@/views/PaymentPending.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -77,6 +80,21 @@ const router = createRouter({
       name: 'MarketPayment',
       component: MarketPayment,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/payment-success',
+      name: 'PaymentSuccess',
+      component: PaymentSuccess,
+    },
+    {
+      path: '/payment-failure',
+      name: 'PaymentFailure',
+      component: PaymentFailure,
+    },
+    {
+      path: '/payment-pending',
+      name: 'PaymentPending',
+      component: PaymentPending,
     },
     {
       path: '/profile',
