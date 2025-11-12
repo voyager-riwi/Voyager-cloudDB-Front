@@ -52,7 +52,7 @@ class ApiService {
       }
 
       const data = await response.json()
-      console.log('📦 Raw backend response:', data)
+      console.log('Raw backend response:', data)
       return data
     } catch (error) {
       if (error.name === 'AbortError') {
@@ -275,10 +275,13 @@ class ApiService {
      * @param {Object} data - { planId }
      */
     createPreference: (data) =>
-      this.request(env.api.endpoints.payments?.createPreference || '/api/Payments/create-preference', {
-        method: 'POST',
-        body: data,
-      }),
+      this.request(
+        env.api.endpoints.payments?.createPreference || '/api/Payments/create-preference',
+        {
+          method: 'POST',
+          body: data,
+        },
+      ),
 
     /**
      * Verificar configuración de MercadoPago (solo para debug)
@@ -291,7 +294,9 @@ class ApiService {
      * @param {number} orderId - ID de la orden
      */
     debugOrder: (orderId) =>
-      this.request(env.api.endpoints.payments?.debugOrder?.(orderId) || `/api/Payments/debug-order/${orderId}`),
+      this.request(
+        env.api.endpoints.payments?.debugOrder?.(orderId) || `/api/Payments/debug-order/${orderId}`,
+      ),
   }
 
   // ================== PLANS ENDPOINT =============================
