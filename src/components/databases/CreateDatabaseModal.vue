@@ -284,10 +284,6 @@ const createDatabase = async () => {
   loading.value = true
   try {
     const newDatabase = await dbStore.createDatabase(numericEngineId)
-    toast.lumos(
-      `¡Base de datos ${getEngineName(numericEngineId)} creada exitosamente! 🎉\nRecibirás las credenciales por correo.`,
-      { title: '✨ Database Created', duration: 6000 },
-    )
     emit('success', newDatabase)
     closeModal()
   } catch (err) {
