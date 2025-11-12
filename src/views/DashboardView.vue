@@ -531,22 +531,6 @@ const databaseLogos = {
   Cassandra: DATABASE_ENGINES[5]?.logo || '',
 }
 
-// Contar bases de datos por motor
-const countDatabasesByEngine = () => {
-  const counts = {}
-  DATABASE_ENGINES.forEach((engine) => {
-    const numericId = getEngineNumericId(engine.id)
-    const engineDatabases = databases.value.filter(
-      (db) =>
-        db.engine?.toLowerCase() === engine.name.toLowerCase() ||
-        db.type?.toLowerCase() === engine.name.toLowerCase() ||
-        db.engineId === numericId,
-    )
-    counts[numericId] = engineDatabases.length
-  })
-  return counts
-}
-
 // Calcular cuotas según el plan real del backend
 const computedQuotas = computed(() => {
   const limit = userProfile.value?.databaseLimitPerEngine || 0

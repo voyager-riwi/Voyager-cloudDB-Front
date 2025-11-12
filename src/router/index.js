@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth' // Asegúrate de importar tu store
 import HomeView from '../views/HomeView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -11,40 +12,6 @@ import AboutView from '@/views/AboutView.vue'
 import RecoveryView from '@/views/RecoveryView.vue'
 import PlansView from '@/views/PlansView.vue'
 import MarketPayment from '@/views/MarketPayment.vue'
-
-/*
-    {
-      path: '/billing',
-      name: 'billing',
-      component: BillingView,
-    },*/
-/*
-    {
-      path: '/databases',
-      name: 'databases',
-      component: DatabasesView,
-    },*/
-/*
-    {
-      path: '/notfound',
-      name: 'notfound',
-      component: NotFoundView,
-    },
-    {
-      path: '/plans',
-      name: 'plans',
-      component: PlansView,
-    },
-    {
-      path: '/profile',
-      name: 'profile',
-      component: ProfileView,
-    },
-    {
-      path: '/wehooks',
-      name: 'webhooks',
-      component: WebhooksView,
-    },*/
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -73,27 +40,25 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
+      meta: { requiresAuth: true }, // ✅ Agregar esta meta
     },
     {
       path: '/login',
       name: 'login',
       component: LoginView,
+      meta: { requiresGuest: true }, // ✅ Solo para no logueados
     },
     {
       path: '/register',
       name: 'register',
       component: RegisterView,
+      meta: { requiresGuest: true }, // ✅ Solo para no logueados
     },
     {
       path: '/change-password',
       name: 'ChangePassword',
       component: () => import('@/views/ChangePasswordView.vue'),
       meta: { requiresAuth: true },
-    },
-    {
-      path: '/plans',
-      name: 'plans',
-      component: PlansView,
     },
     {
       path: '/databases/:id',
@@ -126,6 +91,26 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    // Guardar la ruta que intentaba acceder
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath },
+    })
+    return
+  }
+
+  if (to.meta.requiresGuest && authStore.isAuthenticated) {
+    next('/dashboard')
+    return
+  }
+
+  next()
 })
 
 export default router

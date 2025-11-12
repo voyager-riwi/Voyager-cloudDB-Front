@@ -46,7 +46,7 @@
         </div>
         <h1 class="titulo-hero">PotterCloud</h1>
         <p class="descripcion-hero">Школа чародейства и волшебства</p>
-        <button class="boton-hero">Comencemos</button>
+        <button class="boton-hero" @click="$router.push('/login')">Comencemos</button>
       </div>
     </div>
   </div>

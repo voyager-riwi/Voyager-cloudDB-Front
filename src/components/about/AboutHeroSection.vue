@@ -91,7 +91,9 @@
               nivel.
             </p>
           </div>
-          <button class="btn-primary about-btn" @click="$router.push('/plans')">Ver planes</button>
+          <button class="btn-primary about-btn" @click="$router.push('/register')">
+            Registrarse
+          </button>
         </div>
       </div>
     </section>

@@ -5,18 +5,7 @@
     <div
       class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
     >
-      <AppBar />
-
       <AboutHeroSection />
-      <!--
-            <OfferSection />
-      <ChooseUsSection />
-      <PhilosophySection />
-      <TeamSection />
-
-      <AboutFooter />
-      <FloatingCTA />
-      -->
     </div>
   </div>
 </template>
