@@ -98,7 +98,7 @@
               @click="manageSubscription"
               class="flex h-9 w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#4A90E2]/10 px-4 text-sm font-medium leading-normal text-[#4A90E2] hover:bg-[#4A90E2]/20 dark:bg-[#4A90E2]/20 dark:hover:bg-[#4A90E2]/30 sm:w-auto transition-colors"
             >
-              <span>Manage Subscription</span>
+              <span class="text-white">Manage Subscription</span>
             </button>
           </div>
 
