@@ -2,12 +2,14 @@
   <div id="app">
     <!-- Sección parallax con background fijo y altura para scroll -->
     <section class="parallax-section" ref="parallaxSection">
-      <header :class="{ hidden: scrollPhase >= 1 }">
+      <header :class="{ hidden: currentPhase >= 1 }">
         <h2 class="about_h1">Bienvenidos a Potter Cloud.</h2>
         <p class="about_p">
-          Una pagina creada para sentir la experiencia y crear servicios en la nube
+          Una plataforma inspirada en la magia, creada para llevar tus proyectos a la nube. Explora
+          un entorno donde la tecnología y la imaginación se fusionan para crear experiencias
+          únicas.
         </p>
-        <div class="scroll-indicator">
+        <div class="scroll-indicator" :class="{ hidden: currentPhase >= 1 }">
           <svg
             width="30"
             height="30"
@@ -32,9 +34,9 @@
           alt="Segunda imagen"
           class="image image-2"
           :class="{
-            active: scrollPhase >= 1,
-            zoom: scrollPhase >= 2,
-            exit: scrollPhase >= 3,
+            active: currentPhase >= 1,
+            zoom: currentPhase >= 2,
+            exit: currentPhase >= 3,
           }"
         />
       </div>
@@ -44,8 +46,8 @@
           alt="Tercera imagen"
           class="image image-3"
           :class="{
-            active: scrollPhase >= 1,
-            exit: scrollPhase >= 2,
+            active: currentPhase >= 1,
+            exit: currentPhase >= 2,
           }"
         />
         <img
@@ -53,8 +55,8 @@
           alt="Cuarta imagen"
           class="image image-4"
           :class="{
-            active: scrollPhase >= 1,
-            exit: scrollPhase >= 2,
+            active: currentPhase >= 1,
+            exit: currentPhase >= 2,
           }"
         />
       </div>
@@ -64,19 +66,32 @@
           alt="Quinta imagen"
           class="image image-5"
           :class="{
-            active: scrollPhase >= 3,
+            active: currentPhase >= 3,
           }"
         />
-        <div class="final-text" :class="{ active: scrollPhase >= 1, hidden: scrollPhase >= 2 }">
-          <p class="about_p">Potter cloud</p>
+        <div class="final-text" :class="{ active: currentPhase === 1, hidden: currentPhase >= 2 }">
+          <p class="about_p">
+            En Potter Cloud creemos que cada idea tiene el poder de transformar el mundo. Da el
+            primer paso hacia tu próxima creación y descubre la magia de construir en la nube.
+          </p>
         </div>
-        <div class="final-text" :class="{ active: scrollPhase >= 2, hidden: scrollPhase >= 3 }">
-          <h2 class="about_h1">Texto al hacer zoom</h2>
-          <p class="about_p">Este es el texto</p>
+        <div class="final-text" :class="{ active: currentPhase === 2, hidden: currentPhase >= 3 }">
+          <p class="about_p">
+            Potter Cloud te permite desplegar, monitorear y administrar tus aplicaciones con la
+            facilidad de un hechizo. Desde proyectos personales hasta soluciones empresariales,
+            nuestra nube está lista para recibirte.
+          </p>
         </div>
-        <div class="final-text" :class="{ active: scrollPhase >= 3 }">
-          <h2 class="about_h1">Texto Final</h2>
-          <p class="about_p">Este es el texto que aparece con la imagen final</p>
+        <div class="final-text" :class="{ active: currentPhase >= 3 }">
+          <h2 class="about_h1 text-yellow">Crea y lanza tus servicios en la nube</h2>
+          <div>
+            <p class="about_p">
+              Maneja múltiples proyectos! en Potter Cloud encontrarás un plan que se adapta a ti.
+              Descubre nuestras opciones gratuitas y premium para llevar tu magia al siguiente
+              nivel.
+            </p>
+          </div>
+          <button class="btn-primary about-btn" @click="$router.push('/plans')">Ver planes</button>
         </div>
       </div>
     </section>
@@ -90,49 +105,175 @@ export default {
   name: 'ParallaxApp',
   setup() {
     const parallaxSection = ref(null)
-    const scrollPhase = ref(0)
-    const scrollProgress = ref(0)
+    const currentPhase = ref(0)
+    const isAnimating = ref(false)
+    const animationTimeout = ref(null)
+    const lastScrollTime = ref(0)
 
-    const handleScroll = () => {
-      const scrollY = window.scrollY
-      const windowHeight = window.innerHeight
-      const documentHeight = document.documentElement.scrollHeight - windowHeight
+    // Configuración
+    const TOTAL_PHASES = 4
+    const ANIMATION_DURATION = 1200 // ms para completar la animación
+    const MIN_SCROLL_INTERVAL = 500 // ms mínimo entre scrolls
+    const SCROLL_THRESHOLD = 50 // delta mínimo para considerar scroll
 
-      // Calculamos el progreso total del scroll (0% a 100%)
-      scrollProgress.value = (scrollY / documentHeight) * 100
+    const handleWheel = (event) => {
+      const now = Date.now()
 
-      // Calculamos el progreso específico para las fases del parallax
-      const parallaxProgress = scrollY / (windowHeight * 3)
-
-      // Ajustamos las fases para que se distribuyan mejor
-      if (parallaxProgress > 0.8) {
-        scrollPhase.value = 4
-      } else if (parallaxProgress > 0.6) {
-        scrollPhase.value = 3
-      } else if (parallaxProgress > 0.4) {
-        scrollPhase.value = 2
-      } else if (parallaxProgress > 0.1) {
-        scrollPhase.value = 1
-      } else {
-        scrollPhase.value = 0
+      // Prevenir scroll demasiado rápido
+      if (now - lastScrollTime.value < MIN_SCROLL_INTERVAL) {
+        event.preventDefault()
+        return
       }
 
-      console.log('Fase:', scrollPhase.value, 'Progreso:', Math.round(parallaxProgress * 100) + '%')
+      // Prevenir animación durante otra animación
+      if (isAnimating.value) {
+        event.preventDefault()
+        return
+      }
+
+      const delta = Math.sign(event.deltaY)
+
+      // Solo procesar si el scroll es significativo
+      if (Math.abs(event.deltaY) < SCROLL_THRESHOLD) {
+        return
+      }
+
+      if (delta > 0) {
+        // Scroll hacia abajo - siguiente fase
+        nextPhase()
+      } else if (delta < 0) {
+        // Scroll hacia arriba - fase anterior
+        prevPhase()
+      }
+
+      lastScrollTime.value = now
+      event.preventDefault()
+    }
+
+    const handleKeydown = (event) => {
+      if (isAnimating.value) {
+        event.preventDefault()
+        return
+      }
+
+      if (event.key === 'ArrowDown' || event.key === ' ') {
+        event.preventDefault()
+        nextPhase()
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        prevPhase()
+      }
+    }
+
+    const nextPhase = () => {
+      if (currentPhase.value < TOTAL_PHASES - 1 && !isAnimating.value) {
+        changePhase(currentPhase.value + 1)
+      }
+    }
+
+    const prevPhase = () => {
+      if (currentPhase.value > 0 && !isAnimating.value) {
+        changePhase(currentPhase.value - 1)
+      }
+    }
+
+    const changePhase = (newPhase) => {
+      isAnimating.value = true
+      const previousPhase = currentPhase.value
+      currentPhase.value = newPhase
+
+      // Scroll suave a la posición correspondiente
+      const targetScroll = newPhase * window.innerHeight
+
+      window.scrollTo({
+        top: targetScroll,
+        behavior: 'smooth',
+      })
+
+      // Calcular duración basada en la distancia
+      const phaseDistance = Math.abs(newPhase - previousPhase)
+      const animationTime = ANIMATION_DURATION * (1 + phaseDistance * 0.2)
+
+      // Limpiar timeout anterior
+      clearTimeout(animationTimeout.value)
+
+      // Permitir nueva animación después del tiempo calculado
+      animationTimeout.value = setTimeout(() => {
+        isAnimating.value = false
+      }, animationTime)
+    }
+
+    // Touch events para móviles
+    let touchStartY = 0
+    let touchStartTime = 0
+
+    const handleTouchStart = (event) => {
+      if (isAnimating.value) return
+
+      touchStartY = event.touches[0].clientY
+      touchStartTime = Date.now()
+    }
+
+    const handleTouchEnd = (event) => {
+      if (isAnimating.value) return
+
+      const touchEndY = event.changedTouches[0].clientY
+      const touchEndTime = Date.now()
+      const deltaY = touchStartY - touchEndY
+      const deltaTime = touchEndTime - touchStartTime
+
+      // Umbrales para considerar un swipe válido
+      const minSwipeDistance = 50
+      const maxSwipeTime = 500
+
+      if (Math.abs(deltaY) > minSwipeDistance && deltaTime < maxSwipeTime) {
+        if (deltaY > 0) {
+          // Swipe hacia arriba - siguiente fase
+          nextPhase()
+        } else {
+          // Swipe hacia abajo - fase anterior
+          prevPhase()
+        }
+      }
+    }
+
+    // También manejar el scroll nativo como fallback
+    const handleScroll = () => {
+      if (isAnimating.value) return
+
+      const scrollY = window.scrollY
+      const windowHeight = window.innerHeight
+      const expectedPhase = Math.round(scrollY / windowHeight)
+
+      // Solo corregir si hay una diferencia significativa
+      if (Math.abs(expectedPhase - currentPhase.value) >= 1) {
+        changePhase(expectedPhase)
+      }
     }
 
     onMounted(() => {
-      window.addEventListener('scroll', handleScroll)
-      handleScroll()
+      window.addEventListener('wheel', handleWheel, { passive: false })
+      window.addEventListener('keydown', handleKeydown)
+      window.addEventListener('touchstart', handleTouchStart, { passive: true })
+      window.addEventListener('touchend', handleTouchEnd, { passive: true })
+      window.addEventListener('scroll', handleScroll, { passive: true })
+
+      // Asegurar que empezamos en la fase 0
+      window.scrollTo({ top: 0, behavior: 'instant' })
     })
 
     onUnmounted(() => {
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('keydown', handleKeydown)
+      window.removeEventListener('touchstart', handleTouchStart)
+      window.removeEventListener('touchend', handleTouchEnd)
       window.removeEventListener('scroll', handleScroll)
+      clearTimeout(animationTimeout.value)
     })
 
     return {
       parallaxSection,
-      scrollPhase,
-      scrollProgress,
+      currentPhase,
     }
   },
 }
@@ -169,7 +310,7 @@ header.hidden {
 .about_h1 {
   font-size: 3.5rem;
   margin-bottom: 1rem;
-  color: #2c3e50;
+  color: #daa520;
   z-index: 10;
   position: relative;
   transition: opacity 0.8s ease-out;
@@ -183,6 +324,45 @@ header.hidden {
   position: relative;
 }
 
+.about-btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  background-color: transparent;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.about-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  transition: all 0.5s ease;
+}
+
+.about-btn:hover::before {
+  left: 100%;
+}
+
+.about-btn {
+  position: relative;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
 .scroll-indicator {
   position: fixed;
   bottom: 30px;
@@ -190,7 +370,12 @@ header.hidden {
   transform: translateX(-50%);
   animation: bounce 2s infinite;
   z-index: 10;
-  transition: opacity 2s ease-out;
+  transition: opacity 0.8s ease-out;
+}
+
+.scroll-indicator.hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 @keyframes bounce {
@@ -213,11 +398,11 @@ header.hidden {
 .parallax-section {
   position: relative;
   width: 100%;
-  height: 350vh; /* Altura suficiente para hacer scroll */
+  height: 400vh; /* 4 fases de 100vh cada una */
   background-image: url('../../assets/images/dashboard_bg.png');
   background-size: cover;
   background-position: center;
-  background-attachment: fixed; /* Efecto parallax en el background */
+  background-attachment: fixed;
   z-index: 1;
 }
 
@@ -244,7 +429,6 @@ header.hidden {
 .image {
   transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   pointer-events: none;
-  /* Eliminar bordes transparentes */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   backface-visibility: hidden;
@@ -266,7 +450,6 @@ header.hidden {
   z-index: 3;
   transform: translateX(-100%) scale(0.8);
   opacity: 0;
-  /* Ajustar para eliminar bordes */
   width: auto;
   height: 80vh;
   max-width: 30%;
@@ -276,7 +459,6 @@ header.hidden {
   z-index: 3;
   transform: translateX(100%) scale(0.8);
   opacity: 0;
-  /* Ajustar para eliminar bordes */
   width: auto;
   height: 80vh;
   max-width: 30%;
@@ -287,7 +469,6 @@ header.hidden {
   transform: scale(0.5) translateY(50px);
   opacity: 0;
   filter: blur(10px);
-  /* Ajustar para eliminar bordes */
   width: 100%;
   height: 100vh;
   object-fit: fill;
@@ -377,6 +558,11 @@ header.hidden {
   transform: translateY(0);
 }
 
+.final-text.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* Correcciones adicionales para bordes transparentes */
 .image::before {
   content: '';
@@ -400,5 +586,20 @@ header.hidden {
   padding: 0;
   border: none;
   outline: none;
+}
+
+/* Mejorar la experiencia de scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Deshabilitar scroll nativo cuando sea posible */
+body {
+  overflow-y: scroll;
+}
+
+/* Indicador visual de que está animando */
+.parallax-section.animating * {
+  pointer-events: none;
 }
 </style>

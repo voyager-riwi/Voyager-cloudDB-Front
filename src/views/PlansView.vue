@@ -31,7 +31,7 @@
         </div>
 
         <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A90E2] mb-4"></div>
+          <div class="animate-spin rounded-full h-12 border-b-2 border-[#4A90E2] mb-4"></div>
           <p class="text-gray-500 dark:text-gray-400">Cargando planes disponibles...</p>
         </div>
 

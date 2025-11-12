@@ -169,7 +169,6 @@
                   >
                     {{ getLimitWarningForEngine(quota.engineId) }}
                   </div>
-
                   <!-- Limit Reached Message -->
                   <div
                     v-if="quota.isLimitReached"
@@ -471,7 +470,6 @@ import { DATABASE_ENGINES, getEngineNumericId } from '@/utils/constants/database
 import { useMagicToast } from '@/composables/useMagicToast'
 import { useDatabaseStore } from '@/stores/databases'
 import { useAuthStore } from '@/stores/auth'
-import { getPlanLimit } from '@/utils/constants/database'
 
 // Stores
 const dbStore = useDatabaseStore()
@@ -479,14 +477,13 @@ const authStore = useAuthStore()
 const toast = useMagicToast()
 const router = useRouter()
 
-// Estados para la música de fondo
+// Estados de música de fondo
 const backgroundMusic = ref(null)
 const isMusicMuted = ref(false)
 const backgroundMusicSrc = ref(new URL('@/assets/audio/background_music.mp3', import.meta.url).href)
 
+// Estados UI
 const showChangePasswordModal = ref(false)
-
-// Estados reactivos
 const loading = ref(true)
 const error = ref('')
 const refreshing = ref(false)
@@ -495,22 +492,36 @@ const showUserMenu = ref(false)
 const userData = ref(null)
 const showCreateModal = ref(false)
 
+// Perfil de usuario
+const userProfile = ref(null)
+const loadingProfile = ref(true)
+
 // Datos desde environment variables
 const appName = env.app.name
 
-// Datos
-const subscription = ref({
-  plan: 'Pro Tier',
+// Datos del plan
+const subscription = computed(() => ({
+  plan: userProfile.value?.currentPlanName || 'Free Plan',
   description: 'View and manage your subscription details.',
-})
+}))
 
-const goback = () => {
-  router.goback()
+// Fetch perfil del usuario
+const fetchUserProfile = async () => {
+  try {
+    const response = await api.users.getProfile()
+    userProfile.value = response.data || response
+    authStore.userPlan = userProfile.value.currentPlanName
+  } catch (err) {
+    console.error('Error fetching user profile:', err)
+  } finally {
+    loadingProfile.value = false
+  }
 }
 
+// Lista de bases de datos
 const databases = ref([])
 
-// URLs de logos
+// Logos
 const databaseLogos = {
   PostgreSQL: DATABASE_ENGINES[1]?.logo || '',
   MongoDB: DATABASE_ENGINES[2]?.logo || '',
@@ -520,106 +531,69 @@ const databaseLogos = {
   Cassandra: DATABASE_ENGINES[5]?.logo || '',
 }
 
-// Límite del plan actual
-const engineLimit = computed(() => {
-  const planType = authStore.userPlan || 'free'
-  return getPlanLimit(planType)
-})
-
-// Función para contar bases de datos por motor
+// Contar bases de datos por motor
 const countDatabasesByEngine = () => {
   const counts = {}
-
   DATABASE_ENGINES.forEach((engine) => {
     const numericId = getEngineNumericId(engine.id)
-    // Contar todas las bases de datos (activas + desactivadas) de este motor
-    const engineDatabases = databases.value.filter((db) => {
-      // Si la base de datos tiene engine como string, comparar con engine.name
-      if (typeof db.engine === 'string') {
-        return db.engine.toLowerCase() === engine.name.toLowerCase()
-      }
-      // Si tiene type, comparar con engine.name
-      if (db.type) {
-        return db.type.toLowerCase() === engine.name.toLowerCase()
-      }
-      // Si tiene engineId numérico, comparar con numericId
-      if (db.engineId) {
-        return db.engineId === numericId
-      }
-      return false
-    })
-
+    const engineDatabases = databases.value.filter(
+      (db) =>
+        db.engine?.toLowerCase() === engine.name.toLowerCase() ||
+        db.type?.toLowerCase() === engine.name.toLowerCase() ||
+        db.engineId === numericId,
+    )
     counts[numericId] = engineDatabases.length
   })
-
   return counts
 }
 
-// Calcular cuotas por motor de base de datos
+// Calcular cuotas según el plan real del backend
 const computedQuotas = computed(() => {
-  const quotas = []
-  const engineCounts = countDatabasesByEngine()
+  const limit = userProfile.value?.databaseLimitPerEngine || 0
+  const dbs = databases.value || []
 
-  DATABASE_ENGINES.forEach((engine) => {
-    const numericId = getEngineNumericId(engine.id)
-    const used = engineCounts[numericId] || 0
-    const total = engineLimit.value
-    const percentage = total > 0 ? Math.min(100, (used / total) * 100) : 0
-    const remaining = Math.max(0, total - used)
+  if (!limit) return []
 
-    // Determinar color basado en el uso
-    let color = 'bg-green-300'
-    if (percentage >= 90 || used >= total) {
-      color = 'bg-red-300'
-    } else if (percentage >= 75) {
-      color = 'bg-yellow-300'
-    }
+  const engines = [...new Set(dbs.map((db) => db.engine))]
 
-    quotas.push({
-      type: engine.name,
-      engineId: engine.id,
-      used: used,
-      total: total,
-      percentage: percentage,
-      remaining: remaining,
-      color: color,
+  return engines.map((engine) => {
+    const used = dbs.filter((db) => db.engine === engine).length
+    const total = limit
+    const percentage = Math.min((used / total) * 100, 100)
+    const remaining = total - used
+
+    return {
+      engineId: engine,
+      type: engine,
+      used,
+      total,
+      remaining,
+      percentage,
+      color: percentage >= 90 ? 'bg-red-500' : percentage >= 70 ? 'bg-amber-500' : 'bg-green-500',
       isLimitReached: used >= total,
-    })
+    }
   })
-
-  return quotas
 })
 
-// Obtener advertencia de límite para un motor específico
+// Advertencias
 const getLimitWarningForEngine = (engineId) => {
-  const numericId = getEngineNumericId(engineId)
-  const engineCounts = countDatabasesByEngine()
-  const currentCount = engineCounts[numericId] || 0
-  const limit = engineLimit.value
-
-  if (currentCount === limit - 1) {
-    return `⚠️ Last slot! Next creation will reach the limit.`
-  }
-
-  return null
+  const quota = computedQuotas.value.find((q) => q.engineId === engineId)
+  if (quota.percentage > 70) return 'Almost at limit'
+  return ''
 }
 
-// Computed
+// Filtrar bases activas
 const filteredDatabases = computed(() => {
   if (!searchQuery.value)
     return databases.value.filter((db) => db.status !== 'Deleted' && db.status !== 'Stopped')
 
   const query = searchQuery.value.toLowerCase()
   return databases.value.filter((db) => {
-    // Excluir bases de datos desactivadas de la lista principal
     if (db.status === 'Deleted' || db.status === 'Stopped') return false
-
-    // Verificar que todas las propiedades existan antes de usar .toLowerCase()
     const name = db.name || ''
     const type = db.type || ''
     const status = db.status || ''
     const region = db.region || ''
-
     return (
       name.toLowerCase().includes(query) ||
       type.toLowerCase().includes(query) ||
@@ -629,82 +603,35 @@ const filteredDatabases = computed(() => {
   })
 })
 
-// Bases de datos desactivadas (solo para la sección separada)
-const deactivatedDatabases = computed(() => {
-  return databases.value.filter((db) => db.status === 'Deleted' || db.status === 'Stopped')
-})
+// Bases desactivadas
+const deactivatedDatabases = computed(() =>
+  databases.value.filter((db) => db.status === 'Deleted' || db.status === 'Stopped'),
+)
 
-// Métodos
+// Cargar bases de datos
 const fetchDatabases = async () => {
   try {
     loading.value = true
     error.value = ''
-
-    // Cargar datos del usuario
-    const user = localStorage.getItem('user')
-    userData.value = user ? JSON.parse(user) : null
-
-    // Cargar perfil del usuario usando el servicio API
-    try {
-      const profile = await api.users.getProfile()
-      userData.value = profile.data || profile
-    } catch (profileError) {
-      // No se pudo cargar el perfil del usuario
-    }
-
-    // Cargar bases de datos usando el servicio API
     const response = await api.databases.list()
     databases.value = response.data || response
   } catch (err) {
     error.value = err.message
-
-    // Datos de ejemplo como fallback
-    databases.value = [
-      {
-        id: 1,
-        name: 'Production-API-DB',
-        type: 'PostgreSQL',
-        engine: 'PostgreSQL',
-        status: 'Active',
-        region: 'US-East',
-        ram: '2GB RAM',
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 2,
-        name: 'Staging-Analytics-DB',
-        type: 'MongoDB',
-        engine: 'MongoDB',
-        status: 'Active',
-        region: 'EU-West',
-        ram: '4GB RAM',
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 3,
-        name: 'Dev-WebApp-DB',
-        type: 'MySQL',
-        engine: 'MySQL',
-        status: 'Pending',
-        region: 'US-West',
-        ram: '1GB RAM',
-        createdAt: new Date().toISOString(),
-      },
-    ]
+    databases.value = []
   } finally {
     loading.value = false
     refreshing.value = false
   }
 }
 
+// Refrescar
 const refreshDatabases = async () => {
   refreshing.value = true
   await fetchDatabases()
 }
 
-const getDatabaseLogo = (type) => {
-  return databaseLogos[type] || databaseLogos.PostgreSQL
-}
+// Logos
+const getDatabaseLogo = (type) => databaseLogos[type] || databaseLogos.PostgreSQL
 
 const getStatusColor = (status) => {
   const colors = {
@@ -716,65 +643,50 @@ const getStatusColor = (status) => {
   return colors[status] || 'bg-gray-400'
 }
 
-const toggleUserMenu = () => {
-  showUserMenu.value = !showUserMenu.value
-}
-
+// User menu
+const toggleUserMenu = () => (showUserMenu.value = !showUserMenu.value)
 const logout = () => {
   localStorage.removeItem('authToken')
   localStorage.removeItem('user')
   router.push('/login')
 }
 
-const openDatabase = (db) => {
-  router.push(`/databases/${db.id}`)
-}
+// Abrir detalles
+const openDatabase = (db) => router.push(`/databases/${db.id}`)
 
+// Restaurar DB
 const restoreDatabaseFromList = async (db) => {
   loading.value = true
   try {
-    // Call API to restore the database
-    const response = await api.databases.restore(db.id)
-
-    toast.lumos(
-      `✨ Database "${db.name || db.engine}" restored successfully!\n\nNew credentials have been sent to your email (${userData.value?.email || 'your inbox'}).`,
-      { title: '🔄 Database Restored', duration: 8000 },
-    )
-
-    // Refresh the database list to show updated status and new credentials
+    await api.databases.restore(db.id)
+    toast.lumos(`✨ Database "${db.name}" restored successfully! Credentials sent to your email.`, {
+      title: '🔄 Database Restored',
+      duration: 6000,
+    })
     await fetchDatabases()
   } catch (error) {
-    // Manejar errores específicos
-    let errorMessage = error.message || 'Failed to restore database. Please try again later.'
-
-    if (errorMessage.includes('not found') || errorMessage.includes('404')) {
-      errorMessage = 'Database not found or may have been permanently deleted after 30 days.'
-    } else if (errorMessage.includes('already active')) {
-      errorMessage = 'Database is already active. Try refreshing the page.'
-    }
-
-    toast.expelliarmus(errorMessage, {
-      title: '⚡ Restoration Error',
-      duration: 6000,
+    toast.expelliarmus(error.message || 'Failed to restore database.', {
+      title: '⚡ Error',
+      duration: 5000,
     })
   } finally {
     loading.value = false
   }
 }
 
-const manageSubscription = () => {
-  router.push('/Plans')
-}
+// Subscription
+const manageSubscription = () => router.push('/Plans')
 
-const handleDatabaseCreated = (newDatabase) => {
+// Creación
+const handleDatabaseCreated = () => {
   toast.spell('Database created successfully! ✨', {
-    title: '🪄 Database Magic',
+    title: '🪄 Success',
     duration: 4000,
   })
-  // Recargar la lista de bases de datos
   fetchDatabases()
 }
 
+// Cambio de contraseña
 const handlePasswordChangeSuccess = () => {
   showChangePasswordModal.value = false
   toast.lumos('Password changed successfully! 🔐', {
@@ -783,37 +695,24 @@ const handlePasswordChangeSuccess = () => {
   })
 }
 
-// Métodos para controlar la música
+// Música
 const toggleBackgroundMusic = async () => {
   isMusicMuted.value = !isMusicMuted.value
-
   if (backgroundMusic.value) {
-    if (isMusicMuted.value) {
-      backgroundMusic.value.pause()
-    } else {
-      try {
-        await backgroundMusic.value.play()
-      } catch (error) {
-        // Error reproduciendo música
-      }
-    }
+    if (isMusicMuted.value) backgroundMusic.value.pause()
+    else await backgroundMusic.value.play().catch(() => {})
   }
 }
-
 const startBackgroundMusic = async () => {
   if (backgroundMusic.value && !isMusicMuted.value) {
-    try {
-      // Configurar volumen bajo para música de fondo
-      backgroundMusic.value.volume = 0.07
-      await backgroundMusic.value.play()
-    } catch (error) {
-      // Autoplay bloqueado, el usuario debe interactuar primero
-    }
+    backgroundMusic.value.volume = 0.07
+    await backgroundMusic.value.play().catch(() => {})
   }
 }
 
-// Ciclo de vida
+// Lifecycle
 onMounted(() => {
+  fetchUserProfile()
   fetchDatabases()
   startBackgroundMusic()
 })

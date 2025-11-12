@@ -180,9 +180,10 @@ import { useDatabaseStore } from '@/stores/databases'
 import { useAuthStore } from '@/stores/auth'
 import { useMagicToast } from '@/composables/useMagicToast'
 import { DATABASE_ENGINES, getEngineNumericId } from '@/utils/constants/databaseEngines'
-import { getEngineName, getPlanLimit } from '@/utils/constants/database'
+import { getEngineName } from '@/utils/constants/database'
+import api from '@/services/api'
 
-// Define los emits
+// Emits
 const emit = defineEmits(['close', 'success'])
 
 // Stores
@@ -193,75 +194,76 @@ const toast = useMagicToast()
 // Estados
 const loading = ref(false)
 const selectedEngine = ref(null)
+const userProfile = ref(null)
+const loadingProfile = ref(true)
 
-// Engine seleccionado
+// Engines disponibles
 const databaseEngines = DATABASE_ENGINES
 
-// Cargar bases de datos al montar el componente
+// Cargar perfil y bases al montar
 onMounted(async () => {
   try {
+    await fetchUserProfile()
     await dbStore.fetchDatabases()
-    console.log('📊 Total databases:', dbStore.databases.length)
-    console.log('📊 Active (Running):', dbStore.activeDatabases.length)
-    console.log('📊 Deactivated (Deleted, grace period):', dbStore.deletedDatabases.length)
-    console.log('📊 Count by engine (all = active + deactivated):', dbStore.countByEngine)
-    console.log(
-      '💡 Note: Deactivated DBs still count against quota until permanently deleted after 30 days',
-    )
+    console.log('✅ Perfil y bases de datos cargados correctamente')
   } catch (err) {
-    console.error('❌ Error loading databases:', err)
+    console.error('❌ Error al cargar datos:', err)
   }
 })
 
-// Límite del plan actual
-const engineLimit = computed(() => {
-  const planType = authStore.userPlan || 'free'
-  return getPlanLimit(planType)
-})
+// Cargar perfil desde API
+const fetchUserProfile = async () => {
+  try {
+    const response = await api.users.getProfile()
+    userProfile.value = response.data || response
+    authStore.userPlan = userProfile.value?.currentPlanName || 'Free'
+  } catch (err) {
+    console.error('❌ Error al obtener perfil:', err)
+  } finally {
+    loadingProfile.value = false
+  }
+}
 
-// Warning si está cerca del límite
+// Límite del plan actual según backend
+const engineLimit = computed(() => userProfile.value?.databaseLimitPerEngine || 0)
+
+// Advertencia si está cerca del límite
 const limitWarning = computed(() => {
-  if (!selectedEngine.value) return null
-
+  if (!selectedEngine.value || !engineLimit.value) return null
   const numericId = getEngineNumericId(selectedEngine.value)
   const currentCount = dbStore.countByEngine[numericId] || 0
   const limit = engineLimit.value
 
   if (currentCount === limit - 1) {
-    return `⚠️ Last slot! Creating this will reach ${currentCount + 1}/${limit} ${getEngineName(numericId)} (active + deactivated count).`
+    return `⚠️ Last slot! Creating this will reach ${currentCount + 1}/${limit} ${getEngineName(
+      numericId,
+    )} databases.`
   }
-
   return null
 })
 
-// Puede crear base de datos
+// Verifica si puede crear base de datos
 const canCreateDatabase = computed(() => {
-  if (!selectedEngine.value) return false
-
+  if (!selectedEngine.value || !engineLimit.value) return false
   const numericId = getEngineNumericId(selectedEngine.value)
   const currentCount = dbStore.countByEngine[numericId] || 0
-  const limit = engineLimit.value
-
-  return currentCount < limit
+  return currentCount < engineLimit.value
 })
 
-// Seleccionar engine
+// Seleccionar motor
 const selectEngine = (engineId) => {
   selectedEngine.value = engineId
 }
 
 // Cerrar modal
 const closeModal = () => {
-  if (!loading.value) {
-    emit('close')
-  }
+  if (!loading.value) emit('close')
 }
 
 // Crear base de datos
 const createDatabase = async () => {
   if (!selectedEngine.value || !canCreateDatabase.value) return
 
-  // Validar límite del plan antes de crear
   const numericEngineId = getEngineNumericId(selectedEngine.value)
   const currentCount = dbStore.countByEngine[numericEngineId] || 0
   const limit = engineLimit.value
@@ -271,70 +273,32 @@ const createDatabase = async () => {
     const planName = authStore.userPlan || 'Free'
 
     toast.avadaKedavra(
-      `¡Has alcanzado el límite de bases de datos ${engineName}! (${currentCount}/${limit})\n\n` +
-        `Tu plan ${planName} permite hasta ${limit} bases de datos por motor.\n` +
-        `💡 Actualiza tu plan para crear más bases de datos y desbloquear nuevas funcionalidades.`,
-      {
-        title: `🚫 Límite Alcanzado - ${engineName}`,
-        duration: 8000,
-      },
+      `🚫 Has alcanzado el límite de bases de datos ${engineName} (${currentCount}/${limit}).\n\n` +
+        `Tu plan **${planName}** permite hasta ${limit} bases de datos por motor.\n` +
+        `✨ Restaura una desactivada, espera 30 días para liberar espacio o actualiza tu plan.`,
+      { title: `Limit Reached - ${engineName}`, duration: 9000 },
     )
     return
   }
 
   loading.value = true
-
   try {
-    console.log('✨ Creating database with engine:', selectedEngine.value)
-
-    // Convertir el ID string a número para el backend
-    const numericEngineId = getEngineNumericId(selectedEngine.value)
-    console.log('🔢 Numeric engine ID:', numericEngineId)
-
-    // Llamar al store para crear la BD (solo con engineId como número)
     const newDatabase = await dbStore.createDatabase(numericEngineId)
-
-    // Notificación de éxito
     toast.lumos(
-      `¡Base de datos ${getEngineName(numericEngineId)} creada exitosamente! 🎉\n\nRecibirás las credenciales por email.`,
-      {
-        title: '✨ Database Created',
-        duration: 6000,
-      },
+      `¡Base de datos ${getEngineName(numericEngineId)} creada exitosamente! 🎉\nRecibirás las credenciales por correo.`,
+      { title: '✨ Database Created', duration: 6000 },
     )
-
-    // Emitir evento de éxito
     emit('success', newDatabase)
-
-    // Cerrar modal
     closeModal()
   } catch (err) {
     console.error('❌ Error creating database:', err)
-
-    let errorMessage = err.message || 'Error al crear la base de datos'
-
-    // Mejorar mensaje si el error menciona límite alcanzado
-    if (
-      errorMessage.includes('maximum') ||
-      errorMessage.includes('limit') ||
-      errorMessage.includes('deactivated')
-    ) {
-      const engineName = getEngineName(getEngineNumericId(selectedEngine.value))
-      errorMessage =
-        `🚫 Database Limit Reached (${engineName})\n\n` +
-        `Has alcanzado el máximo de 2 bases de datos ${engineName} para tu plan Free.\n\n` +
-        `**¿Qué puedes hacer?**\n` +
-        `• ✨ **Restaurar**: Ve a "Databases", busca una desactivada y restáurala (recibirás nuevas credenciales)\n` +
-        `• ⏰ **Esperar**: Las desactivadas se eliminan permanentemente después de 30 días y liberan un slot\n` +
-        `• 🚀 **Upgrade**: Mejora tu plan para obtener más bases de datos (5 por motor en Intermediate, 10 en Advanced)\n\n` +
-        `Nota: Las bases de datos desactivadas siguen ocupando un slot hasta que se eliminan permanentemente.`
+    let message = err.message || 'Error al crear la base de datos.'
+    if (message.includes('limit') || message.includes('maximum')) {
+      message = `🚫 Límite alcanzado para ${getEngineName(
+        numericEngineId,
+      )}. Espera o actualiza tu plan.`
     }
-
-    // Notificación de error
-    toast.expelliarmus(errorMessage, {
-      title: '⚡ Límite Alcanzado',
-      duration: 12000, // Más tiempo para leer el mensaje completo
-    })
+    toast.expelliarmus(message, { title: '⚡ Error', duration: 8000 })
   } finally {
     loading.value = false
   }
