@@ -136,11 +136,18 @@
 
             <button
               @click="selectPlan(plan)"
-              :disabled="plan.planType === 'Intermediate'"
-              class="mt-auto h-11 w-full rounded-lg text-sm font-semibold shadow-md transition-all duration-200"
+              :disabled="
+                plan.planType === currentPlanType || !!processingPlanId || plan.planType === 'Free'
+              "
+              class="mt-auto flex h-11 w-full items-center justify-center rounded-lg text-sm font-semibold shadow-md transition-all duration-200"
               :class="getButtonClasses(plan.planType)"
             >
-              <template v-if="plan.planType === 'Intermediate'"> Plan Actual </template>
+              <template v-if="processingPlanId === plan.id">
+                <div class="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
+              </template>
+
+              <template v-else-if="plan.planType === currentPlanType"> Plan Actual </template>
+
               <template v-else> Elegir {{ plan.name }} </template>
             </button>
           </div>
@@ -161,8 +168,8 @@ const appName = env.app.name
 const plans = ref([])
 const loading = ref(true)
 const error = ref('')
-
-const currentPlanType = ref('Intermediate')
+const currentPlanType = ref(null)
+const processingPlanId = ref(null)
 
 const fetchPlans = async () => {
   loading.value = true
@@ -176,6 +183,34 @@ const fetchPlans = async () => {
   } catch (err) {
     console.error('Error fetching plans:', err)
     error.value = 'No se pudieron cargar los planes. Inténtalo de nuevo más tarde.'
+  } finally {
+    loading.value = false
+  }
+}
+
+const initializeData = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const [plansResponse, profileResponse] = await Promise.all([
+      api.plans.list(),
+      api.users.getProfile(),
+    ])
+    const allPlans = plansResponse.data || plansResponse
+    plans.value = allPlans
+    const order = { Free: 1, Intermediate: 2, Advanced: 3 }
+    plans.value.sort((a, b) => (order[a.planType] || 4) - (order[b.planType] || 4))
+    const userPlanName = profileResponse.data.currentPlanName
+    const currentUserPlanObject = allPlans.find((plan) => plan.name === userPlanName)
+    if (currentUserPlanObject) {
+      currentPlanType.value = currentUserPlanObject.planType
+    } else {
+      console.error(`El plan "${userPlanName}" del usuario no se encontró en la lista de planes.`)
+      throw new Error('No pudimos verificar tu plan actual.')
+    }
+  } catch (err) {
+    console.error('Error durante la inicialización:', err)
+    error.value = err.message || 'Ocurrió un error al cargar los datos.'
   } finally {
     loading.value = false
   }
@@ -208,12 +243,12 @@ const getBadgeClasses = (planType) => {
 }
 
 const getButtonClasses = (planType) => {
-  if (planType === currentPlanType.value) {
-    return 'bg-gray-400 text-white cursor-not-allowed opacity-80'
+  const isDisabled = planType === currentPlanType.value || planType === 'Free'
+
+  if (isDisabled) {
+    return 'bg-gray-400 text-white cursor-not-allowed opacity-80 shadow-none'
   }
-  if (planType === 'Free') {
-    return 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600'
-  }
+
   if (planType === 'Advanced') {
     return 'bg-green-500 text-white hover:bg-green-600'
   }
@@ -227,14 +262,37 @@ const getFeatureIconColor = (planType) => {
   return 'text-gray-400'
 }
 
-const selectPlan = (plan) => {
-  if (plan.planType === currentPlanType.value) {
-    alert(`Ya tienes el plan ${plan.name} activo.`)
+const selectPlan = async (plan) => {
+  if (plan.planType === currentPlanType.value || processingPlanId.value) {
     return
   }
 
-  console.log(`Seleccionado plan: ${plan.name} (${plan.id})`)
-  alert(`Iniciando proceso de actualización al plan ${plan.name}.`)
+  processingPlanId.value = plan.id
+
+  try {
+    console.log(`Iniciando pago para el plan: ${plan.name} (${plan.id})`)
+
+    // 1. Llamamos a la API. La variable 'response' contendrá el JSON que me mostraste.
+    const response = await api.payments.createPreference({
+      planId: plan.id,
+    })
+
+    // 2. --- ESTA ES LA LÓGICA CORREGIDA ---
+    //    Trabajamos directamente con 'response' porque ya es el objeto JSON principal.
+    if (response.succeeded && response.data && response.data.initPoint) {
+      // 3. Redirigimos al usuario usando el initPoint que está dentro de response.data
+      window.location.href = response.data.initPoint
+    } else {
+      const errorMessage = response.message || 'No se pudo generar el enlace de pago.'
+      console.error('Error controlado por la API:', errorMessage, response.errors)
+      alert(`Error: ${errorMessage}`)
+    }
+  } catch (err) {
+    console.error('Error de red o servidor en selectPlan:', err)
+    alert('Ocurrió un error inesperado. Por favor, inténtalo de nuevo más tarde.')
+  } finally {
+    processingPlanId.value = null
+  }
 }
 
 const goBack = () => {
@@ -242,18 +300,16 @@ const goBack = () => {
 }
 
 onMounted(() => {
-  fetchPlans()
+  initializeData()
 })
 </script>
 
 <style scoped>
-/* Estilos adicionales si fueran necesarios */
 .material-symbols-outlined {
-  font-size: 18px; /* Ajuste para iconos de características */
+  font-size: 18px;
 }
 
 .dashboard {
-  /* Reutiliza el fondo de tu dashboard */
   background-image: url('@/assets/images/dashboard_bg.png');
   background-position: center;
   background-size: cover;
