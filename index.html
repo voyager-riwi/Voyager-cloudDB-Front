@@ -6,41 +6,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Voyager CloudDB</title>
     
-    <!-- 🔧 SOLUCIÓN: Deshabilitar modo oscuro de raíz -->
+    <!-- 🎨 SOLUCIÓN DEFINITIVA: Forzar estilos claros -->
     <style>
-      /* Forzar modo claro siempre - sobrescribe las media queries de Tailwind */
-      @media (prefers-color-scheme: dark) {
-        html {
-          color-scheme: light;
-        }
-        
-        /* Anular TODAS las clases dark: de Tailwind */
-        .dark\:bg-gray-800,
-        .dark\:bg-gray-700,
-        .dark\:text-gray-200,
-        .dark\:text-gray-300,
-        .dark\:text-gray-400,
-        .dark\:text-white,
-        .dark\:border-gray-700,
-        .dark\:hover\:bg-gray-700,
-        .dark\:hover\:bg-gray-600,
-        [class*="dark:"] {
-          /* Resetear los estilos dark */
-          background-color: initial !important;
-          color: initial !important;
-          border-color: initial !important;
-        }
+      /* Prevenir que el HTML tenga clase dark */
+      html.dark,
+      html[class*="dark"] {
+        color-scheme: light !important;
+      }
+      
+      /* Forzar estilos claros en TODO el documento */
+      body,
+      #app,
+      #app * {
+        color-scheme: light !important;
+      }
+      
+      /* Sobrescribir colores de texto oscuros - forzar blancos/claros */
+      .text-gray-900,
+      .dark\:text-white,
+      .dark\:text-gray-200,
+      .dark\:text-gray-300 {
+        color: #ffffff !important;
+      }
+      
+      .text-gray-800 {
+        color: #f3f4f6 !important;
+      }
+      
+      .text-gray-500,
+      .text-gray-600,
+      .dark\:text-gray-400,
+      .dark\:text-gray-500 {
+        color: #d1d5db !important;
+      }
+      
+      /* Fondos de tarjetas - mantener blancos/claros */
+      .bg-white,
+      .dark\:bg-gray-800,
+      .dark\:bg-gray-700 {
+        background-color: #ffffff !important;
+      }
+      
+      .bg-gray-50,
+      .dark\:bg-gray-800\/20 {
+        background-color: rgba(255, 255, 255, 0.95) !important;
+      }
+      
+      /* Bordes claros */
+      .border-gray-200,
+      .dark\:border-gray-700 {
+        border-color: rgba(229, 231, 235, 0.5) !important;
+      }
+      
+      /* Iconos y elementos interactivos */
+      .text-gray-400,
+      .dark\:text-gray-400,
+      span.material-symbols-outlined {
+        color: #9ca3af !important;
+      }
+      
+      /* Header/AppBar */
+      .bg-\[#F4F7FA\] {
+        background-color: #F4F7FA !important;
+      }
+      
+      /* Inputs y controles */
+      input,
+      button,
+      select {
+        color: #1f2937 !important;
+      }
+      
+      input::placeholder {
+        color: #9ca3af !important;
+      }
+      
+      /* Texto en tarjetas debe ser oscuro para legibilidad */
+      .bg-white p,
+      .bg-white span:not(.material-symbols-outlined),
+      .bg-white h1,
+      .bg-white h2,
+      .bg-white h3 {
+        color: #1f2937 !important;
+      }
+      
+      /* Hover states */
+      .hover\:bg-gray-100:hover,
+      .dark\:hover\:bg-gray-700:hover {
+        background-color: #f3f4f6 !important;
       }
     </style>
     
     <script>
-      // Script adicional para forzar modo claro antes de cargar la app
+      // Prevenir modo oscuro ANTES de que Vue cargue
       (function() {
-        // Prevenir que Tailwind detecte preferencia de dark mode
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.classList.remove('dark');
-          document.documentElement.classList.add('light');
-        }
+        // Remover cualquier clase dark del HTML
+        document.documentElement.classList.remove('dark');
+        
+        // Prevenir que Tailwind agregue la clase dark
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'class') {
+              if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+              }
+            }
+          });
+        });
+        
+        observer.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
+        
+        // Forzar light mode
+        document.documentElement.style.colorScheme = 'light';
       })();
     </script>
   </head>
