@@ -661,10 +661,13 @@ const manageSubscription = () => router.push('/Plans')
 
 // Creación
 const handleDatabaseCreated = () => {
-  toast.spell('Database created successfully! ✨', {
-    title: '🪄 Success',
-    duration: 4000,
-  })
+  toast.spell(
+    'Database created successfully! Your credentials will be sent to your email address. ',
+    {
+      title: '🪄 Success',
+      duration: 4000,
+    },
+  )
   fetchDatabases()
 }
 
