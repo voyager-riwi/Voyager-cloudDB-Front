@@ -2,10 +2,8 @@
   <div
     class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 font-sans"
   >
-    <!-- Fondo decorativo -->
     <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
 
-    <!-- Header -->
     <header class="relative w-full py-8 px-4 flex flex-col items-center justify-center">
       <div
         class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-500 to-transparent opacity-40"
@@ -19,33 +17,14 @@
     >
       <span class="material-symbols-outlined text-lg">arrow_back</span>
     </button>
-    <!-- Contenido principal -->
+
     <main class="flex-1 px-6 py-8 flex flex-col max-w-md mx-auto w-full z-10">
-      <!-- Título del formulario -->
       <div class="text-center mb-10">
         <p class="text-gray-400 text-sm">Únete a nuestra plataforma de administración</p>
       </div>
 
-      <!-- Mensajes de estado -->
-      <div
-        v-if="error"
-        class="bg-red-900/30 border border-red-700/50 text-red-200 px-4 py-3 rounded-lg mb-6 text-sm font-medium backdrop-blur-sm"
-      >
-        {{ error }}
-      </div>
-
-      <div
-        v-if="success"
-        class="bg-green-900/30 border border-green-700/50 text-green-200 px-4 py-3 rounded-lg mb-6 text-sm font-medium backdrop-blur-sm"
-      >
-        {{ success }}
-      </div>
-
-      <!-- Formulario -->
       <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
-        <!-- Campos del formulario -->
         <div class="space-y-6">
-          <!-- Nombre y Apellido en una fila -->
           <div class="grid grid-cols-2 gap-4">
             <div class="flex flex-col">
               <label class="text-gray-300 text-sm font-medium mb-2"> Nombre </label>
@@ -74,7 +53,6 @@
             </div>
           </div>
 
-          <!-- Correo Electrónico -->
           <div class="flex flex-col">
             <label class="text-gray-300 text-sm font-medium mb-2"> Correo Electrónico </label>
             <input
@@ -88,7 +66,6 @@
             />
           </div>
 
-          <!-- Contraseña -->
           <div class="flex flex-col">
             <label class="text-gray-300 text-sm font-medium mb-2"> Contraseña </label>
             <div class="flex w-full items-stretch">
@@ -172,10 +149,8 @@
           </label>
         </div>
 
-        <!-- Espaciador -->
         <div class="flex-grow"></div>
 
-        <!-- Botón de Registro -->
         <div class="py-2">
           <button
             type="submit"
@@ -200,7 +175,8 @@
                 <path
                   class="opacity-75"
                   fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  d="M4 12a8 8
+ 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
               Creando Cuenta...
@@ -210,7 +186,6 @@
         </div>
       </form>
 
-      <!-- Enlace para iniciar sesión -->
       <p class="text-center text-gray-400 text-base font-normal leading-normal pb-6 pt-4">
         ¿Ya tienes una cuenta?
         <a class="font-bold text-gray-300 hover:underline cursor-pointer" @click="navigateToLogin">
@@ -219,35 +194,6 @@
       </p>
     </main>
 
-    <!-- Overlay de éxito -->
-    <div
-      v-if="showSuccess"
-      class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-900/95 backdrop-blur-sm p-6 text-center"
-    >
-      <div class="relative mb-8">
-        <div
-          class="absolute inset-0 bg-gray-500 rounded-full blur-md opacity-30 animate-pulse"
-        ></div>
-        <div
-          class="relative flex items-center justify-center size-24 rounded-full bg-gradient-to-br from-gray-700 to-gray-500 mb-2"
-        >
-          <span class="material-symbols-outlined text-4xl text-white">check_circle</span>
-        </div>
-      </div>
-      <h2 class="text-2xl font-bold text-gray-100 mb-4">¡Cuenta Creada!</h2>
-      <p class="text-gray-400 max-w-sm mb-8 leading-relaxed">
-        Hemos enviado un enlace de verificación a tu dirección de correo. Por favor, haz clic en el
-        enlace para activar tu cuenta.
-      </p>
-      <button
-        class="flex items-center justify-center rounded-lg bg-gradient-to-r from-gray-700 to-gray-600 h-12 px-8 text-white text-base font-bold transition-all hover:from-gray-600 hover:to-gray-500 shadow-lg"
-        @click="navigateToLogin"
-      >
-        Continuar al Login
-      </button>
-    </div>
-
-    <!-- Elementos decorativos -->
     <div
       class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none"
     ></div>
@@ -286,15 +232,21 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const isSubmitting = ref(false)
 
+const error = ref('')
+const success = ref('')
+const showSuccess = ref(false)
+
 const handleSubmit = async () => {
+  error.value = ''
+
   // Validación de contraseñas
   if (form.value.password !== form.value.confirmPassword) {
-    error.value = 'Las contraseñas no coinciden'
+    toast.expelliarmus('Las contraseñas no coinciden', { title: 'Error de Validación' })
     return
   }
 
   if (!form.value.agreeToTerms) {
-    error.value = 'Debes aceptar los términos y condiciones'
+    toast.expelliarmus('Debes aceptar los términos y condiciones', { title: 'Error de Validación' })
     return
   }
 
@@ -309,24 +261,27 @@ const handleSubmit = async () => {
     }
 
     console.log('Enviando datos de registro:', registerData)
-
     const response = await authStore.register(registerData)
-
     console.log('Respuesta del registro:', response)
 
-    // Mostrar mensaje de éxito
-    success.value = '¡Cuenta creada con éxito! Por favor, revisa tu correo para la verificación.'
-    showSuccess.value = true
-
+    toast.lumos('¡Cuenta creada con éxito! Redirigiendo al login...', {
+      title: '¡Registro Completo!',
+      duration: 3000,
+    })
     setTimeout(() => {
       router.push('/login?registered=true')
     }, 3000)
   } catch (err) {
     console.error('Error en el registro:', err)
-    error.value =
+
+    const errorMessage =
       err.response?.data?.message ||
       err.message ||
       'El registro falló. Por favor, inténtalo de nuevo.'
+
+    toast.expelliarmus(errorMessage, {
+      title: '⚡ Error de Registro',
+    })
   } finally {
     isSubmitting.value = false
   }
@@ -363,7 +318,7 @@ const navigateToPrivacy = () => {
 }
 
 const goHome = () => {
-  router.push('/about')
+  router.push('/about') // O a donde corresponda, ej: '/'
 }
 </script>
 
