@@ -23,10 +23,10 @@
       <div class="mx-auto max-w-6xl space-y-8 mt-16 md:mt-20">
         <div class="text-center">
           <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
-            Elige el Plan Perfecto
+            Choose the Perfect Plan
           </h2>
           <p class="mt-4 text-lg text-gray-500 dark:text-gray-400">
-            Escala tus bases de datos con el plan que mejor se adapte a tus necesidades.
+            Scale your databases with the plan that best suits your needs
           </p>
         </div>
 
@@ -79,12 +79,12 @@
               <span class="text-4xl font-extrabold tracking-tight">
                 {{ formatCurrency(plan.price) }}
               </span>
-              <span class="text-lg font-medium text-gray-500 dark:text-gray-400">/mes</span>
+              <span class="text-lg font-medium text-gray-500 dark:text-gray-400">/month</span>
               <p
                 v-if="plan.planType === 'Free'"
                 class="text-sm text-gray-500 dark:text-gray-400 mt-1.5"
               >
-                Ideal para empezar y probar la plataforma.
+                Ideal for getting started and trying out the platform.
               </p>
             </div>
 
@@ -102,7 +102,7 @@
                     >1 Base de Datos por Motor</template
                   >
                   <template v-else-if="plan.databaseLimitPerEngine > 1"
-                    >{{ plan.databaseLimitPerEngine }} Bases de Datos por Motor</template
+                    >{{ plan.databaseLimitPerEngine }} Databases by Engine.</template
                   >
                   <template v-else>Acceso limitado a Bases de Datos</template>
                 </span>
@@ -116,7 +116,7 @@
                   {{ plan.planType !== 'Free' ? 'check' : 'close' }}
                 </span>
                 <span class="text-gray-700 dark:text-gray-300 text-sm">
-                  {{ plan.planType !== 'Free' ? 'Soporte Prioritario' : 'Soporte Estándar' }}
+                  {{ plan.planType !== 'Free' ? 'Priority Support' : 'Standard Support' }}
                 </span>
               </li>
               <li class="flex items-center gap-2.5">
@@ -127,9 +127,7 @@
                   {{ plan.planType === 'Advanced' ? 'speed' : 'bolt' }}
                 </span>
                 <span class="text-gray-700 dark:text-gray-300 text-sm">
-                  {{
-                    plan.planType === 'Advanced' ? 'Alta Disponibilidad' : 'Disponibilidad Estándar'
-                  }}
+                  {{ plan.planType === 'Advanced' ? 'High Availability' : 'Standard Availability' }}
                 </span>
               </li>
             </ul>
@@ -146,9 +144,9 @@
                 <div class="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
               </template>
 
-              <template v-else-if="plan.planType === currentPlanType"> Plan Actual </template>
+              <template v-else-if="plan.planType === currentPlanType"> Current Plan </template>
 
-              <template v-else> Elegir {{ plan.name }} </template>
+              <template v-else> Choose {{ plan.name }} </template>
             </button>
           </div>
         </div>
@@ -217,7 +215,7 @@ const initializeData = async () => {
 }
 
 const formatCurrency = (price) => {
-  if (price === 0) return 'Gratis'
+  if (price === 0) return 'Free'
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
