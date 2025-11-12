@@ -1,12 +1,14 @@
 <template>
-  <div class="relative min-h-screen w-full bg-[#F4F7FA] dashboard font-sans text-gray-800">
+  <div
+    class="relative min-h-screen w-full bg-[#F4F7FA] dashboard font-sans text-gray-800 dark:text-gray-200"
+  >
     <!-- Top App Bar -->
     <header
-      class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/10 bg-[#F4F7FA]/80 p-4 backdrop-blur-sm"
+      class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/10 bg-[#F4F7FA]/80 p-4 backdrop-blur-sm dark:bg-[#101c22]/80"
     >
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-[#4A90E2] text-3xl">cloud_queue</span>
-        <h1 class="text-lg font-bold leading-tight tracking-tighter text-gray-900">
+        <h1 class="text-lg font-bold leading-tight tracking-tighter text-gray-900 dark:text-white">
           {{ appName }}
         </h1>
       </div>
@@ -15,7 +17,7 @@
         <div class="relative">
           <button
             @click="toggleUserMenu"
-            class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition-colors"
+            class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
           >
             <span class="material-symbols-outlined">person</span>
           </button>
@@ -23,11 +25,11 @@
           <!-- User Dropdown Menu -->
           <div
             v-if="showUserMenu"
-            class="absolute right-0 top-12 z-20 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-xl"
+            class="absolute right-0 top-12 z-20 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
           >
-            <div class="px-4 py-2 text-sm text-gray-700">
+            <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
               <p class="font-medium">{{ userData?.fullName || 'Usuario' }}</p>
-              <p class="text-gray-500 text-xs">
+              <p class="text-gray-500 dark:text-gray-400 text-xs">
                 {{ userData?.email || 'example@gmail.com' }}
               </p>
             </div>
@@ -35,7 +37,7 @@
             <!--change password-->
             <button
               @click="showChangePasswordModal = true"
-              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               <span class="material-symbols-outlined text-base">lock</span>
               Change Password
@@ -43,7 +45,7 @@
             <div class="border-t border-gray-200 dark:border-gray-700"></div>
             <button
               @click="logout"
-              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
             >
               <span class="material-symbols-outlined text-base">logout</span>
               Cerrar Sesión
@@ -57,13 +59,18 @@
       <div class="mx-auto max-w-4xl space-y-6 mt-[10vh]">
         <div v-if="loading" class="flex flex-col items-center justify-center py-12">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A90E2] mb-4"></div>
-          <p class="text-gray-500">Cargando bases de datos...</p>
+          <p class="text-gray-500 dark:text-gray-400">Cargando bases de datos...</p>
         </div>
 
-        <div v-else-if="error" class="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+        <div
+          v-else-if="error"
+          class="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/20"
+        >
           <span class="material-symbols-outlined text-red-500 text-4xl mb-3">error</span>
-          <h3 class="text-lg font-semibold text-red-800 mb-2">Error al cargar datos</h3>
-          <p class="text-red-600 mb-4">{{ error }}</p>
+          <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+            Error al cargar datos
+          </h3>
+          <p class="text-red-600 dark:text-red-300 mb-4">{{ error }}</p>
           <button
             @click="fetchDatabases"
             class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition-colors"
@@ -77,19 +84,19 @@
         <div v-else>
           <!-- Subscription Summary Card -->
           <div
-            class="flex flex-col items-start gap-4 rounded-xl border border-gray-200/50 bg-white p-5 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col items-start gap-4 rounded-xl border border-gray-200/50 bg-white p-5 dark:border-gray-700/50 dark:bg-gray-800/20 sm:flex-row sm:items-center sm:justify-between"
           >
             <div class="flex flex-col gap-1">
-              <p class="text-base font-bold leading-tight text-gray-900">
+              <p class="text-base font-bold leading-tight text-gray-900 dark:text-white">
                 Current Plan: {{ subscription.plan }}
               </p>
-              <p class="text-sm font-normal leading-normal text-gray-500">
+              <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
                 {{ subscription.description }}
               </p>
             </div>
             <button
               @click="manageSubscription"
-              class="flex h-9 w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#4A90E2]/10 px-4 text-sm font-medium leading-normal text-[#4A90E2] hover:bg-[#4A90E2]/20 sm:w-auto transition-colors"
+              class="flex h-9 w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#4A90E2]/10 px-4 text-sm font-medium leading-normal text-[#4A90E2] hover:bg-[#4A90E2]/20 dark:bg-[#4A90E2]/20 dark:hover:bg-[#4A90E2]/30 sm:w-auto transition-colors"
             >
               <span>Manage Subscription</span>
             </button>
@@ -97,14 +104,16 @@
 
           <!-- Database Quota Section -->
           <section>
-            <h2 class="px-1 pb-3 pt-2 text-xl font-bold leading-tight text-gray-900">
+            <h2
+              class="px-1 pb-3 pt-2 text-xl font-bold leading-tight text-gray-900 dark:text-white"
+            >
               Database Quota
             </h2>
 
             <!-- Limit Information Banner -->
             <div
               v-if="computedQuotas.some((q) => q.isLimitReached)"
-              class="mb-4 bg-amber-500/20 border border-amber-500 text-amber-700 px-4 py-3 rounded-lg text-sm"
+              class="mb-4 bg-amber-500/20 border border-amber-500 text-amber-700 dark:text-amber-300 px-4 py-3 rounded-lg text-sm"
             >
               <div class="flex items-start gap-2">
                 <div>
@@ -122,22 +131,22 @@
               <div
                 v-for="quota in computedQuotas"
                 :key="quota.type"
-                class="flex flex-col gap-3 rounded-xl border border-gray-200/50 bg-white p-4"
+                class="flex flex-col gap-3 rounded-xl border border-gray-200/50 bg-white p-4 dark:border-gray-700/50 dark:bg-gray-800/20"
               >
                 <!-- Header with Status -->
                 <div class="flex items-center justify-between gap-6">
                   <div class="flex items-center gap-2">
-                    <p class="text-base font-medium leading-normal text-gray-900">
+                    <p class="text-base font-medium leading-normal text-gray-900 dark:text-white">
                       {{ quota.type }}
                     </p>
                   </div>
-                  <p class="text-sm font-normal leading-normal text-gray-500">
+                  <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
                     {{ quota.used }} of {{ quota.total }} used
                   </p>
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="h-2 w-full rounded-full bg-gray-200">
+                <div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
                   <div
                     class="h-2 rounded-full transition-all duration-500"
                     :class="quota.color"
@@ -147,19 +156,22 @@
 
                 <!-- Status Information -->
                 <div class="flex justify-between items-center">
-                  <p class="text-sm font-normal leading-normal text-gray-500">
+                  <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
                     {{ quota.remaining }} remaining
                   </p>
 
                   <!-- Warning Message -->
                   <div
                     v-if="getLimitWarningForEngine(quota.engineId)"
-                    class="text-xs text-amber-600"
+                    class="text-xs text-amber-600 dark:text-amber-400"
                   >
                     {{ getLimitWarningForEngine(quota.engineId) }}
                   </div>
                   <!-- Limit Reached Message -->
-                  <div v-if="quota.isLimitReached" class="text-xs text-red-600 font-medium">
+                  <div
+                    v-if="quota.isLimitReached"
+                    class="text-xs text-red-600 dark:text-red-400 font-medium"
+                  >
                     Limit reached
                   </div>
                 </div>
@@ -167,7 +179,7 @@
                 <!-- Additional Info -->
                 <div
                   v-if="quota.isLimitReached"
-                  class="mt-2 text-xs text-gray-500 border-t border-gray-200 pt-2"
+                  class="mt-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2"
                 >
                   <p>Restore a deactivated database or upgrade your plan</p>
                 </div>
@@ -515,22 +527,6 @@ const databaseLogos = {
   SQLServer: DATABASE_ENGINES[3]?.logo || '',
   Redis: DATABASE_ENGINES[4]?.logo || '',
   Cassandra: DATABASE_ENGINES[5]?.logo || '',
-}
-
-// Contar bases de datos por motor
-const countDatabasesByEngine = () => {
-  const counts = {}
-  DATABASE_ENGINES.forEach((engine) => {
-    const numericId = getEngineNumericId(engine.id)
-    const engineDatabases = databases.value.filter(
-      (db) =>
-        db.engine?.toLowerCase() === engine.name.toLowerCase() ||
-        db.type?.toLowerCase() === engine.name.toLowerCase() ||
-        db.engineId === numericId,
-    )
-    counts[numericId] = engineDatabases.length
-  })
-  return counts
 }
 
 // Calcular cuotas según el plan real del backend
