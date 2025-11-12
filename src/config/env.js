@@ -47,9 +47,6 @@ const config = {
         check: '/api/Health',
         error: '/api/Health/error',
       },
-      plans: {
-        list: '/api/Plans',
-      },
     },
   },
   app: {
