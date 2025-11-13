@@ -4,7 +4,7 @@
   >
     <!-- Header -->
     <div
-      class="flex items-center border-b border-gray-200 dark:border-gray-700 bg-white/80 backdrop-blur-md p-4"
+      class="flex items-center border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-[#192b33] p-4"
     >
       <h1 class="text-slate-900 dark:text-white text-xl font-bold flex-1">My Profile</h1>
     </div>
@@ -20,7 +20,7 @@
       <div v-else class="space-y-6">
         <!-- User Info Card -->
         <div
-          class="bg-white/80 backdrop-blur-md rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+          class="bg-white dark:bg-[#192b33] rounded-xl p-6 border border-gray-200 dark:border-gray-700"
         >
           <div class="flex items-center gap-4">
             <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
@@ -40,7 +40,7 @@
 
         <!-- Current Plan Card -->
         <div
-          class="bg-white/80 backdrop-blur-md rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+          class="bg-white dark:bg-[#192b33] rounded-xl p-6 border border-gray-200 dark:border-gray-700"
         >
           <div class="flex items-center justify-between mb-6">
             <div>
@@ -76,7 +76,7 @@
               <div
                 v-for="engine in engineStats"
                 :key="engine.id"
-                class="bg-slate-50 dark:bg-[#0f1a21] rounded-lg p-4 border border-slate-200 dark:border-gray-700"
+                class="bg-slate-50 dark:bg-[#0f1c24] rounded-lg p-4 border border-slate-200 dark:border-gray-700"
               >
                 <div class="flex items-center justify-between mb-3">
                   <div class="flex items-center gap-3">
@@ -154,7 +154,7 @@
 
         <!-- Account Actions -->
         <div
-          class="bg-white/80 backdrop-blur-md rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+          class="bg-white dark:bg-[#192b33] rounded-xl p-6 border border-gray-200 dark:border-gray-700"
         >
           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Account Actions</h3>
           <div class="space-y-3">

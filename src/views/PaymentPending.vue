@@ -15,7 +15,7 @@
     <main class="flex flex-col items-center justify-center p-4 pb-24 sm:p-6 min-h-screen">
       <div class="mx-auto max-w-lg w-full px-4">
         <div
-          class="bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-entrance"
+          class="bg-white dark:bg-[#2d2d1a] rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-entrance"
         >
           <span class="material-symbols-outlined text-yellow-500 text-7xl mb-4">cloud_sync</span>
           <h1 class="text-3xl sm:text-4xl font-bold text-yellow-600 dark:text-yellow-400 mb-3">
