@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-12 px-4 py-8 bg-gray-100 dark:bg-gray-900/50">
+  <footer class="mt-12 px-4 py-8 bg-gray-100 dark:bg-[#0f1a21]">
     <div class="flex justify-center items-center gap-6">
       <SocialLink
         v-for="link in socialLinks"
