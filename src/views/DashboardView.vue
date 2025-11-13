@@ -25,12 +25,12 @@
           <!-- User Dropdown Menu -->
           <div
             v-if="showUserMenu"
-            class="absolute right-0 top-12 z-20 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-xl dark:border-gray-700 dark:bg-gray-800 dark:md:bg-gray-800/95"
+            class="absolute right-0 top-12 z-20 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
           >
             <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
-              <p class="font-medium">{{ userData?.fullName || 'Usuario' }}</p>
+              <p class="font-medium">{{ userData?.fullName || authStore.userName || 'Usuario' }}</p>
               <p class="text-gray-500 dark:text-gray-400 text-xs">
-                {{ userData?.email || 'example@gmail.com' }}
+                {{ userData?.email || authStore.userEmail || 'example@gmail.com' }}
               </p>
             </div>
 
@@ -84,7 +84,7 @@
         <div v-else>
           <!-- Subscription Summary Card -->
           <div
-            class="flex flex-col items-start gap-4 rounded-xl border border-gray-200/50 bg-white p-5 dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col items-start gap-4 rounded-xl border border-gray-200/50 bg-white p-5 dark:border-gray-700/50 dark:bg-gray-800/20 sm:flex-row sm:items-center sm:justify-between"
           >
             <div class="flex flex-col gap-1">
               <p class="text-base font-bold leading-tight text-gray-900 dark:text-white">
@@ -98,7 +98,7 @@
               @click="manageSubscription"
               class="flex h-9 w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#4A90E2]/10 px-4 text-sm font-medium leading-normal text-[#4A90E2] hover:bg-[#4A90E2]/20 dark:bg-[#4A90E2]/20 dark:hover:bg-[#4A90E2]/30 sm:w-auto transition-colors"
             >
-              <span class="text-white">Manage Subscription</span>
+              <span>Manage Subscription</span>
             </button>
           </div>
 
@@ -131,7 +131,7 @@
               <div
                 v-for="quota in computedQuotas"
                 :key="quota.type"
-                class="flex flex-col gap-3 rounded-xl border border-gray-200/50 bg-white p-4 dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20"
+                class="flex flex-col gap-3 rounded-xl border border-gray-200/50 bg-white p-4 dark:border-gray-700/50 dark:bg-gray-800/20"
               >
                 <!-- Header with Status -->
                 <div class="flex items-center justify-between gap-6">
@@ -215,14 +215,14 @@
                   >
                   <input
                     v-model="searchQuery"
-                    class="w-full rounded-lg border border-gray-200/50 bg-white py-2 pl-10 pr-4 text-sm focus:border-[#4A90E2] focus:ring-[#4A90E2] focus:outline-none dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20 dark:text-gray-300 dark:placeholder-gray-500"
+                    class="w-full rounded-lg border border-gray-200/50 bg-white py-2 pl-10 pr-4 text-sm focus:border-[#4A90E2] focus:ring-[#4A90E2] focus:outline-none dark:border-gray-700/50 dark:bg-gray-800/20 dark:text-gray-300 dark:placeholder-gray-500"
                     placeholder="Find a database..."
                     type="text"
                   />
                 </div>
                 <button
                   @click="refreshDatabases"
-                  class="flex items-center justify-center rounded-lg border border-gray-200/50 bg-white p-2 hover:bg-gray-50 dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20 dark:hover:bg-gray-700/30 transition-colors"
+                  class="flex items-center justify-center rounded-lg border border-gray-200/50 bg-white p-2 hover:bg-gray-50 dark:border-gray-700/50 dark:bg-gray-800/20 dark:hover:bg-gray-700/30 transition-colors"
                   :class="{ 'animate-spin': refreshing }"
                 >
                   <span class="material-symbols-outlined text-gray-600 dark:text-gray-400"
@@ -238,7 +238,7 @@
                 v-for="db in filteredDatabases"
                 :key="db.id"
                 @click="openDatabase(db)"
-                class="group flex cursor-pointer items-center gap-4 rounded-xl border border-gray-200/50 bg-white p-4 transition-all hover:border-[#4A90E2]/50 hover:shadow-sm dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20 dark:hover:border-[#4A90E2]/40"
+                class="group flex cursor-pointer items-center gap-4 rounded-xl border border-gray-200/50 bg-white p-4 transition-all hover:border-[#4A90E2]/50 hover:shadow-sm dark:border-gray-700/50 dark:bg-gray-800/20 dark:hover:border-[#4A90E2]/40"
               >
                 <div
                   class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#4A90E2]/10 dark:bg-[#4A90E2]/20"
@@ -284,7 +284,7 @@
             <!-- Empty State -->
             <div
               v-else
-              class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white p-12 text-center dark:border-gray-700 dark:bg-gray-800 dark:md:bg-gray-800/20"
+              class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white p-12 text-center dark:border-gray-700 dark:bg-gray-800/20"
             >
               <span class="material-symbols-outlined mb-4 text-5xl text-gray-400 dark:text-gray-500"
                 >database</span
@@ -458,7 +458,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
 import env from '@/config/env'
@@ -468,6 +468,7 @@ import { DATABASE_ENGINES, getEngineNumericId } from '@/utils/constants/database
 import { useMagicToast } from '@/composables/useMagicToast'
 import { useDatabaseStore } from '@/stores/databases'
 import { useAuthStore } from '@/stores/auth'
+import { getPlanLimit } from '@/utils/constants/database'
 
 // Stores
 const dbStore = useDatabaseStore()
@@ -490,6 +491,30 @@ const showUserMenu = ref(false)
 const userData = ref(null)
 const showCreateModal = ref(false)
 
+// Verificar autenticación
+const checkAuthentication = () => {
+  console.log('🔐 Checking authentication...', {
+    isAuthenticated: authStore.isAuthenticated,
+    hasToken: !!authStore.token,
+    hasUser: !!authStore.user,
+  })
+
+  if (!authStore.isAuthenticated) {
+    console.log('❌ Not authenticated, redirecting to login')
+    router.push('/login')
+    return false
+  }
+
+  console.log('✅ User is authenticated')
+  return true
+}
+
+// Límite del plan actual
+const engineLimit = computed(() => {
+  const planType = authStore.userPlan || 'free'
+  return getPlanLimit(planType)
+})
+
 // Perfil de usuario
 const userProfile = ref(null)
 const loadingProfile = ref(true)
@@ -499,18 +524,33 @@ const appName = env.app.name
 
 // Datos del plan
 const subscription = computed(() => ({
-  plan: userProfile.value?.currentPlanName || 'Free Plan',
+  plan: userProfile.value?.currentPlanName || authStore.userPlan || 'Free Plan',
   description: 'View and manage your subscription details.',
 }))
 
 // Fetch perfil del usuario
 const fetchUserProfile = async () => {
+  if (!checkAuthentication()) return
+
   try {
     const response = await api.users.getProfile()
     userProfile.value = response.data || response
-    authStore.userPlan = userProfile.value.currentPlanName
+    userData.value = userProfile.value
+
+    // Actualizar el store de auth con la información del perfil
+    if (userProfile.value && authStore.user) {
+      authStore.user = { ...authStore.user, ...userProfile.value }
+      sessionStorage.setItem('user', JSON.stringify(authStore.user))
+    }
   } catch (err) {
     console.error('Error fetching user profile:', err)
+    // Usar información del auth store como fallback
+    userProfile.value = {
+      currentPlanName: authStore.userPlan,
+      email: authStore.userEmail,
+      fullName: authStore.userName,
+    }
+    userData.value = userProfile.value
   } finally {
     loadingProfile.value = false
   }
@@ -531,10 +571,8 @@ const databaseLogos = {
 
 // Calcular cuotas según el plan real del backend
 const computedQuotas = computed(() => {
-  const limit = userProfile.value?.databaseLimitPerEngine || 0
+  const limit = userProfile.value?.databaseLimitPerEngine || engineLimit.value
   const dbs = databases.value || []
-
-  if (!limit) return []
 
   const engines = [...new Set(dbs.map((db) => db.engine))]
 
@@ -560,7 +598,7 @@ const computedQuotas = computed(() => {
 // Advertencias
 const getLimitWarningForEngine = (engineId) => {
   const quota = computedQuotas.value.find((q) => q.engineId === engineId)
-  if (quota.percentage > 70) return 'Almost at limit'
+  if (quota && quota.percentage > 70) return 'Almost at limit'
   return ''
 }
 
@@ -592,6 +630,8 @@ const deactivatedDatabases = computed(() =>
 
 // Cargar bases de datos
 const fetchDatabases = async () => {
+  if (!checkAuthentication()) return
+
   try {
     loading.value = true
     error.value = ''
@@ -600,6 +640,12 @@ const fetchDatabases = async () => {
   } catch (err) {
     error.value = err.message
     databases.value = []
+
+    // Si el error es de autenticación, redirigir
+    if (err.response?.status === 401) {
+      authStore.logout()
+      return
+    }
   } finally {
     loading.value = false
     refreshing.value = false
@@ -627,10 +673,9 @@ const getStatusColor = (status) => {
 
 // User menu
 const toggleUserMenu = () => (showUserMenu.value = !showUserMenu.value)
+
 const logout = () => {
-  localStorage.removeItem('authToken')
-  localStorage.removeItem('user')
-  router.push('/login')
+  authStore.logout()
 }
 
 // Abrir detalles
@@ -657,17 +702,14 @@ const restoreDatabaseFromList = async (db) => {
 }
 
 // Subscription
-const manageSubscription = () => router.push('/Plans')
+const manageSubscription = () => router.push('/plans')
 
 // Creación
 const handleDatabaseCreated = () => {
-  toast.spell(
-    'Database created successfully! Your credentials will be sent to your email address. ',
-    {
-      title: '🪄 Success',
-      duration: 4000,
-    },
-  )
+  toast.spell('Database created successfully! ✨', {
+    title: '🪄 Success',
+    duration: 4000,
+  })
   fetchDatabases()
 }
 
@@ -696,11 +738,29 @@ const startBackgroundMusic = async () => {
 }
 
 // Lifecycle
-onMounted(() => {
-  fetchUserProfile()
-  fetchDatabases()
+onMounted(async () => {
+  console.log('🚀 Dashboard mounted, checking auth...')
+
+  // Verificar autenticación antes de cargar datos
+  if (!checkAuthentication()) {
+    return
+  }
+
+  // Si está autenticado, cargar datos
+  await Promise.all([fetchUserProfile(), fetchDatabases()])
   startBackgroundMusic()
 })
+
+// Watcher para cambios en la autenticación
+watch(
+  () => authStore.isAuthenticated,
+  (isAuthenticated) => {
+    if (!isAuthenticated) {
+      console.log('👀 Auth state changed to not authenticated, redirecting...')
+      router.push('/login')
+    }
+  },
+)
 </script>
 
 <style scoped>
