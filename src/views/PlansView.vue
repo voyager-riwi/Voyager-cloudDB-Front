@@ -225,7 +225,7 @@ const formatCurrency = (price) => {
 }
 
 const getPlanCardClasses = (planType) => {
-  const base = 'bg-white dark:bg-gray-900 dark:md:bg-gray-900/95 border-gray-200 dark:border-gray-800 hover:shadow-xl'
+  const base = 'bg-white/80 backdrop-blur-md border-gray-200 dark:border-gray-800 hover:shadow-xl'
   if (planType === currentPlanType.value) {
     return `${base} border-[#4A90E2] dark:border-[#4A90E2]/80 shadow-2xl scale-[1.01] transform` // Reducida la escala
   }

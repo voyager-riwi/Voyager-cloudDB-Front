@@ -25,7 +25,7 @@
           <!-- User Dropdown Menu -->
           <div
             v-if="showUserMenu"
-            class="absolute right-0 top-12 z-20 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-xl dark:border-gray-700 dark:bg-gray-800 dark:md:bg-gray-800/95"
+            class="absolute right-0 top-12 z-20 w-48 rounded-lg border border-gray-200 bg-white/80 py-2 shadow-xl dark:border-gray-700 backdrop-blur-md"
           >
             <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
               <p class="font-medium">{{ userData?.fullName || 'Usuario' }}</p>
@@ -84,7 +84,7 @@
         <div v-else>
           <!-- Subscription Summary Card -->
           <div
-            class="flex flex-col items-start gap-4 rounded-xl border border-gray-200/50 bg-white p-5 dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col items-start gap-4 rounded-xl border border-gray-200/50 bg-white/10 backdrop-blur-md p-5 dark:border-gray-700/50 sm:flex-row sm:items-center sm:justify-between"
           >
             <div class="flex flex-col gap-1">
               <p class="text-base font-bold leading-tight text-gray-900 dark:text-white">
@@ -131,7 +131,7 @@
               <div
                 v-for="quota in computedQuotas"
                 :key="quota.type"
-                class="flex flex-col gap-3 rounded-xl border border-gray-200/50 bg-white p-4 dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20"
+                class="flex flex-col gap-3 rounded-xl border border-gray-200/50 bg-white/10 backdrop-blur-md p-4 dark:border-gray-700/50"
               >
                 <!-- Header with Status -->
                 <div class="flex items-center justify-between gap-6">
@@ -215,14 +215,14 @@
                   >
                   <input
                     v-model="searchQuery"
-                    class="w-full rounded-lg border border-gray-200/50 bg-white py-2 pl-10 pr-4 text-sm focus:border-[#4A90E2] focus:ring-[#4A90E2] focus:outline-none dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20 dark:text-gray-300 dark:placeholder-gray-500"
+                    class="w-full rounded-lg border border-gray-200/50 bg-white/10 backdrop-blur-md py-2 pl-10 pr-4 text-sm focus:border-[#4A90E2] focus:ring-[#4A90E2] focus:outline-none dark:border-gray-700/50 dark:text-gray-300 dark:placeholder-gray-500"
                     placeholder="Find a database..."
                     type="text"
                   />
                 </div>
                 <button
                   @click="refreshDatabases"
-                  class="flex items-center justify-center rounded-lg border border-gray-200/50 bg-white p-2 hover:bg-gray-50 dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20 dark:hover:bg-gray-700/30 transition-colors"
+                  class="flex items-center justify-center rounded-lg border border-gray-200/50 bg-white/10 backdrop-blur-md p-2 hover:bg-white/20 dark:border-gray-700/50 transition-colors"
                   :class="{ 'animate-spin': refreshing }"
                 >
                   <span class="material-symbols-outlined text-gray-600 dark:text-gray-400"
@@ -238,7 +238,7 @@
                 v-for="db in filteredDatabases"
                 :key="db.id"
                 @click="openDatabase(db)"
-                class="group flex cursor-pointer items-center gap-4 rounded-xl border border-gray-200/50 bg-white p-4 transition-all hover:border-[#4A90E2]/50 hover:shadow-sm dark:border-gray-700/50 dark:bg-gray-800 dark:md:bg-gray-800/20 dark:hover:border-[#4A90E2]/40"
+                class="group flex cursor-pointer items-center gap-4 rounded-xl border border-gray-200/50 bg-white/10 backdrop-blur-md p-4 transition-all hover:border-[#4A90E2]/50 hover:shadow-sm dark:border-gray-700/50 dark:hover:border-[#4A90E2]/40"
               >
                 <div
                   class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#4A90E2]/10 dark:bg-[#4A90E2]/20"
@@ -284,7 +284,7 @@
             <!-- Empty State -->
             <div
               v-else
-              class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white p-12 text-center dark:border-gray-700 dark:bg-gray-800 dark:md:bg-gray-800/20"
+              class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white/10 backdrop-blur-md p-12 text-center dark:border-gray-700"
             >
               <span class="material-symbols-outlined mb-4 text-5xl text-gray-400 dark:text-gray-500"
                 >database</span
@@ -332,7 +332,7 @@
               <div
                 v-for="db in deactivatedDatabases"
                 :key="db.id"
-                class="group flex items-center gap-4 rounded-xl border border-amber-200/50 bg-amber-50/30 p-4 dark:border-amber-700/30 dark:bg-amber-900/10"
+                class="group flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 rounded-xl border border-amber-200/50 bg-amber-50/30 p-4 dark:border-amber-700/30 dark:bg-amber-900/10"
               >
                 <div
                   class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500/10 dark:bg-amber-500/20 grayscale opacity-60"
@@ -341,11 +341,11 @@
                 </div>
 
                 <div class="flex-grow min-w-0">
-                  <div class="flex items-center gap-2">
-                    <p class="font-semibold text-gray-900 dark:text-white truncate w-24">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="font-semibold text-gray-900 dark:text-white truncate">
                       {{ db.engine }}
                     </p>
-                    <p class="font-semibold text-gray-700 dark:text-gray-300 truncate">
+                    <p class="font-semibold text-gray-700 dark:text-gray-300 truncate text-sm">
                       ID: {{ db.name }}
                     </p>
                     <span
@@ -363,20 +363,22 @@
                   </div>
                 </div>
 
-                <button
-                  @click="restoreDatabaseFromList(db)"
-                  class="flex items-center justify-center gap-2 rounded-lg bg-green-500/20 px-4 py-2 text-sm font-medium text-green-600 hover:bg-green-500/30 transition-colors dark:text-green-400"
-                >
-                  <span class="material-symbols-outlined text-base">restore</span>
-                  <span>Restore</span>
-                </button>
+                <div class="flex gap-2 w-full sm:w-auto sm:flex-shrink-0">
+                  <button
+                    @click="restoreDatabaseFromList(db)"
+                    class="flex items-center justify-center gap-2 rounded-lg bg-green-500/20 px-4 py-2 text-sm font-medium text-green-600 hover:bg-green-500/30 transition-colors dark:text-green-400 flex-1 sm:flex-initial"
+                  >
+                    <span class="material-symbols-outlined text-base">restore</span>
+                    <span>Restore</span>
+                  </button>
 
-                <button
-                  @click="openDatabase(db)"
-                  class="flex items-center justify-center rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-colors"
-                >
-                  <span class="material-symbols-outlined text-gray-400">chevron_right</span>
-                </button>
+                  <button
+                    @click="openDatabase(db)"
+                    class="flex items-center justify-center rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                  </button>
+                </div>
               </div>
             </div>
           </section>

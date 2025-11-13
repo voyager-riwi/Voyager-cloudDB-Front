@@ -49,7 +49,7 @@
           >
             Database Details
           </h2>
-          <div class="bg-white/90 dark:bg-[#111c22]/90 dark:md:bg-[#111c22]/95 backdrop-blur-sm rounded-xl shadow-sm">
+          <div class="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm">
             <div class="p-4 grid grid-cols-[35%_1fr] md:grid-cols-[20%_1fr] gap-x-6">
               <div
                 class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 dark:border-t-[#325567] py-5"
@@ -103,7 +103,7 @@
             Connection Credentials
           </h2>
           <div
-            class="bg-white/90 dark:bg-[#111c22]/90 dark:md:bg-[#111c22]/95 backdrop-blur-sm rounded-xl shadow-sm p-4 space-y-4"
+            class="bg-white/90 backdrop-blur-sm rounded-xl shadow-sm p-4 space-y-4"
           >
             <!-- New Credentials Notice (cuando username indica que son nuevas credenciales) -->
             <div
