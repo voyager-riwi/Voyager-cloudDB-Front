@@ -15,7 +15,7 @@
     <main class="flex flex-col items-center justify-center p-4 pb-24 sm:p-6 min-h-screen">
       <div class="mx-auto max-w-lg w-full px-4">
         <div
-          class="bg-white dark:bg-[#1a2732] rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-entrance"
+          class="bg-white dark:bg-[#192b33] dark:md:bg-[#192b33]/95 rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-entrance"
         >
           <span class="material-symbols-outlined text-[#4A90E2] text-7xl mb-4">cloud_done</span>
           <h1 class="text-3xl sm:text-4xl font-bold text-[#4A90E2] dark:text-yellow-400 mb-3">

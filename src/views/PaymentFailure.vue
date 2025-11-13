@@ -15,7 +15,7 @@
     <main class="flex flex-col items-center justify-center p-4 pb-24 sm:p-6 min-h-screen">
       <div class="mx-auto max-w-lg w-full px-4">
         <div
-          class="bg-white dark:bg-[#1a2732] rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-entrance"
+          class="bg-white dark:bg-[#331919] dark:md:bg-[#331919]/95 rounded-2xl shadow-2xl p-8 flex flex-col items-center animate-entrance"
         >
           <span class="material-symbols-outlined text-red-600 text-7xl mb-4">cloud_off</span>
           <h1 class="text-3xl sm:text-4xl font-bold text-red-600 dark:text-red-400 mb-3">

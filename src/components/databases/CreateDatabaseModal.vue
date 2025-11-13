@@ -6,7 +6,7 @@
     <!-- Contenido del modal -->
     <div class="relative min-h-screen flex items-center justify-center p-4">
       <div
-        class="relative bg-white dark:bg-[#1a2732] rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden"
+        class="relative bg-white dark:bg-[#192b33] dark:md:bg-[#192b33]/95 rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden"
       >
         <!-- Header -->
         <div class="flex items-center p-6 border-b border-slate-200 dark:border-slate-700">
@@ -74,7 +74,7 @@
                   :class="
                     selectedEngine === engine.id
                       ? 'border-primary bg-primary/10 dark:bg-primary/20 scale-105'
-                      : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 bg-white dark:bg-[#1a2732]'
+                      : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 bg-white dark:bg-[#1a2832] dark:md:bg-[#1a2832]/95'
                   "
                 >
                   <!-- Logo -->
@@ -144,7 +144,7 @@
 
         <!-- Footer -->
         <div
-          class="p-6 bg-slate-50 dark:bg-[#0f1a21] border-t border-slate-200 dark:border-slate-700"
+          class="p-6 bg-slate-50 dark:bg-[#1a2832] dark:md:bg-[#1a2832]/95 border-t border-slate-200 dark:border-slate-700"
         >
           <button
             @click="createDatabase"
