@@ -20,7 +20,7 @@
 
     <main class="flex-1 px-6 py-8 flex flex-col max-w-md mx-auto w-full z-10">
       <div class="text-center mb-10">
-        <p class="text-sm">Únete a nuestra plataforma de administración</p>
+        <p class="text-sm text-white">Únete a nuestra plataforma de administración</p>
       </div>
 
       <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
@@ -80,7 +80,7 @@
               />
               <button
                 type="button"
-                class="flex border items-center justify-center px-4 rounded-r-lg border-l-0 ho transition-colors"
+                class="flex border items-center justify-center px-4 rounded-r-lg border-l-0 ho transition-colors text-white"
                 @click="togglePasswordVisibility"
                 :disabled="isSubmitting"
               >
@@ -106,7 +106,7 @@
               />
               <button
                 type="button"
-                class="flex border items-center justify-center px-4 rounded-r-lg border-l-0 ho transition-colors"
+                class="flex border items-center justify-center px-4 rounded-r-lg border-l-0 ho transition-colors text-white"
                 @click="toggleConfirmPasswordVisibility"
                 :disabled="isSubmitting"
               >
@@ -131,7 +131,7 @@
             required
             :disabled="isSubmitting"
           />
-          <label class="text-sm" for="terms">
+          <label class="text-sm text-white" for="terms">
             Acepto los
             <a
               class="font-semibold text-gray-300 hover:underline cursor-pointer"
@@ -186,7 +186,7 @@
         </div>
       </form>
 
-      <p class="text-center text-base font-normal leading-normal pb-6 pt-4">
+      <p class="text-center text-base font-normal leading-normal pb-6 pt-4 text-white">
         ¿Ya tienes una cuenta?
         <a class="font-bold text-gray-300 hover:underline cursor-pointer" @click="navigateToLogin">
           Iniciar Sesión
