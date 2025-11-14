@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3
-      class="text-gray-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
+      class="text-gray-900 text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
     >
       Why Choose Us?
     </h3>

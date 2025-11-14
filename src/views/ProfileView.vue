@@ -1,12 +1,12 @@
 <template>
   <div
-    class="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark"
+    class="relative flex min-h-screen w-full flex-col bg-background-light bg-background-dark"
   >
     <!-- Header -->
     <div
-      class="flex items-center border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-[#192b33] p-4"
+      class="flex items-center border-b border-gray-200 border-gray-700  bg-[#192b33] md:bg-[#192b33]/95 p-4"
     >
-      <h1 class="text-slate-900 dark:text-white text-xl font-bold flex-1">My Profile</h1>
+      <h1 class="text-slate-900 text-white text-xl font-bold flex-1">My Profile</h1>
     </div>
 
     <!-- Main Content -->
@@ -20,18 +20,18 @@
       <div v-else class="space-y-6">
         <!-- User Info Card -->
         <div
-          class="bg-white dark:bg-[#192b33] rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+          class=" bg-[#192b33] md:bg-[#192b33]/95 rounded-xl p-6 border border-gray-200 border-gray-700"
         >
           <div class="flex items-center gap-4">
             <div class="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20">
               <span class="material-symbols-outlined text-3xl text-primary">person</span>
             </div>
             <div class="flex-1">
-              <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+              <h2 class="text-2xl font-bold text-slate-900 text-white">
                 {{ user.firstName }} {{ user.lastName }}
               </h2>
-              <p class="text-slate-600 dark:text-slate-400 mt-1">{{ user.email }}</p>
-              <p class="text-slate-500 dark:text-slate-500 text-sm mt-2">
+              <p class="text-slate-600 text-slate-400 mt-1">{{ user.email }}</p>
+              <p class="text-slate-500 text-slate-500 text-sm mt-2">
                 Member since {{ formatDate(user.memberSince) }}
               </p>
             </div>
@@ -40,12 +40,12 @@
 
         <!-- Current Plan Card -->
         <div
-          class="bg-white dark:bg-[#192b33] rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+          class=" bg-[#192b33] md:bg-[#192b33]/95 rounded-xl p-6 border border-gray-200 border-gray-700"
         >
           <div class="flex items-center justify-between mb-6">
             <div>
-              <h3 class="text-xl font-bold text-slate-900 dark:text-white">Current Plan</h3>
-              <p class="text-slate-600 dark:text-slate-400 text-sm mt-1">
+              <h3 class="text-xl font-bold text-slate-900 text-white">Current Plan</h3>
+              <p class="text-slate-600 text-slate-400 text-sm mt-1">
                 Manage your subscription and database limits
               </p>
             </div>
@@ -69,14 +69,14 @@
 
           <!-- Database Limits by Engine -->
           <div class="space-y-4">
-            <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
+            <h4 class="text-lg font-semibold text-slate-900 text-white mb-4">
               Database Limits by Engine
             </h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div
                 v-for="engine in engineStats"
                 :key="engine.id"
-                class="bg-slate-50 dark:bg-[#0f1c24] rounded-lg p-4 border border-slate-200 dark:border-gray-700"
+                class="bg-slate-50 bg-[#0f1a21] rounded-lg p-4 border border-slate-200 border-gray-700"
               >
                 <div class="flex items-center justify-between mb-3">
                   <div class="flex items-center gap-3">
@@ -87,8 +87,8 @@
                       <span class="text-2xl">{{ engine.icon }}</span>
                     </div>
                     <div>
-                      <p class="font-semibold text-slate-900 dark:text-white">{{ engine.name }}</p>
-                      <p class="text-xs text-slate-500 dark:text-slate-400">{{ engine.type }}</p>
+                      <p class="font-semibold text-slate-900 text-white">{{ engine.name }}</p>
+                      <p class="text-xs text-slate-500 text-slate-400">{{ engine.type }}</p>
                     </div>
                   </div>
                   <div class="text-right">
@@ -97,17 +97,17 @@
                       :class="
                         engine.used >= engine.limit
                           ? 'text-red-500'
-                          : 'text-slate-900 dark:text-white'
+                          : 'text-slate-900 text-white'
                       "
                     >
                       {{ engine.used }}
                     </p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">of {{ engine.limit }}</p>
+                    <p class="text-xs text-slate-500 text-slate-400">of {{ engine.limit }}</p>
                   </div>
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                <div class="w-full bg-slate-200 bg-slate-700 rounded-full h-2">
                   <div
                     class="h-2 rounded-full transition-all duration-300"
                     :style="{
@@ -123,7 +123,7 @@
                   :class="
                     engine.used >= engine.limit
                       ? 'text-red-500 font-medium'
-                      : 'text-slate-500 dark:text-slate-400'
+                      : 'text-slate-500 text-slate-400'
                   "
                 >
                   {{
@@ -137,13 +137,13 @@
           </div>
 
           <!-- Plan Benefits -->
-          <div class="mt-6 pt-6 border-t border-slate-200 dark:border-gray-700">
-            <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Plan Benefits</h4>
+          <div class="mt-6 pt-6 border-t border-slate-200 border-gray-700">
+            <h4 class="text-lg font-semibold text-slate-900 text-white mb-4">Plan Benefits</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div
                 v-for="benefit in planBenefits"
                 :key="benefit"
-                class="flex items-center gap-2 text-slate-700 dark:text-slate-300"
+                class="flex items-center gap-2 text-slate-700 text-slate-300"
               >
                 <span class="material-symbols-outlined text-green-500">check_circle</span>
                 <span class="text-sm">{{ benefit }}</span>
@@ -154,26 +154,26 @@
 
         <!-- Account Actions -->
         <div
-          class="bg-white dark:bg-[#192b33] rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+          class=" bg-[#192b33] md:bg-[#192b33]/95 rounded-xl p-6 border border-gray-200 border-gray-700"
         >
-          <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4">Account Actions</h3>
+          <h3 class="text-xl font-bold text-slate-900 text-white mb-4">Account Actions</h3>
           <div class="space-y-3">
             <button
               @click="changePassword"
-              class="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-slate-300 dark:border-gray-600 hover:bg-slate-50 dark:hover:bg-[#0f1c24] transition-colors"
+              class="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-slate-300  hover:bg-slate-50 hover:bg-[#0f1c24] transition-colors"
             >
               <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-slate-600 dark:text-slate-400"
+                <span class="material-symbols-outlined text-slate-600 text-slate-400"
                   >lock</span
                 >
-                <span class="text-slate-900 dark:text-white font-medium">Change Password</span>
+                <span class="text-slate-900 text-white font-medium">Change Password</span>
               </div>
               <span class="material-symbols-outlined text-slate-400">chevron_right</span>
             </button>
 
             <button
               @click="logout"
-              class="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-red-300 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-red-600 dark:text-red-400"
+              class="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-red-300 border-red-900 hover:bg-red-50 hover:bg-red-900/20 transition-colors text-red-600 text-red-400"
             >
               <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined">logout</span>
@@ -233,13 +233,13 @@ const planBadgeClass = computed(() => {
   const planType = plansStore.currentUserPlan?.planType || PLAN_TYPES.FREE
   switch (planType) {
     case PLAN_TYPES.FREE:
-      return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+      return 'bg-slate-100 bg-slate-800 text-slate-700 text-slate-300'
     case PLAN_TYPES.INTERMEDIATE:
-      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+      return 'bg-blue-100 bg-blue-900/30 text-blue-700 text-blue-300'
     case PLAN_TYPES.ADVANCED:
-      return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+      return 'bg-purple-100 bg-purple-900/30 text-purple-700 text-purple-300'
     default:
-      return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+      return 'bg-slate-100 bg-slate-800 text-slate-700 text-slate-300'
   }
 })
 

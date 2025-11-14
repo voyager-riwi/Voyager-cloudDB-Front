@@ -2,12 +2,12 @@
   <div class="flex flex-col gap-10 px-4 py-10 @container">
     <div class="flex flex-col gap-4">
       <h1
-        class="max-w-[720px] text-[32px] font-bold leading-tight tracking-light text-zinc-900 dark:text-white @[480px]:text-4xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+        class="max-w-[720px] text-[32px] font-bold leading-tight tracking-light text-zinc-900 text-white @[480px]:text-4xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
       >
         Why Choose CCD?
       </h1>
       <p
-        class="max-w-[720px] text-base font-normal leading-normal text-zinc-600 dark:text-zinc-300"
+        class="max-w-[720px] text-base font-normal leading-normal text-zinc-600 text-zinc-300"
       >
         Everything you need to manage your cloud databases efficiently and securely.
       </p>

@@ -1,19 +1,17 @@
 <template>
-  <div
-    class="relative min-h-screen w-full bg-[#F4F7FA] dashboard font-sans text-gray-800 dark:text-gray-200"
-  >
+  <div class="relative min-h-screen w-full bg-[#F4F7FA] dashboard font-sans text-gray-200">
     <header
-      class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/10 bg-[#F4F7FA]/80 p-4 backdrop-blur-sm dark:bg-[#101c22]/80"
+      class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/10 p-4 backdrop-blur-sm bg-[#101c22]/80"
     >
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-[#4A90E2] text-3xl">cloud_queue</span>
-        <h1 class="text-lg font-bold leading-tight tracking-tighter text-gray-900 dark:text-white">
+        <h1 class="text-lg font-bold leading-tight tracking-tighter text-gray-900 text-white">
           {{ appName }}
         </h1>
       </div>
       <button
         @click="goBack"
-        class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        class="text-white flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-200 text-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-300 hover:bg-gray-600 transition-colors"
       >
         <span class="material-symbols-outlined">arrow_back</span>
       </button>
@@ -22,28 +20,28 @@
     <main class="p-4 pb-24 sm:p-6">
       <div class="mx-auto max-w-6xl space-y-8 mt-16 md:mt-20">
         <div class="text-center">
-          <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+          <h2 class="text-3xl font-extrabold text-gray-900 text-white sm:text-4xl">
             Choose the Perfect Plan
           </h2>
-          <p class="mt-4 text-lg text-gray-500 dark:text-gray-400">
+          <p class="mt-4 text-lg  ">
             Scale your databases with the plan that best suits your needs
           </p>
         </div>
 
         <div v-if="loading" class="flex flex-col items-center justify-center py-20">
           <div class="animate-spin rounded-full h-12 border-b-2 border-[#4A90E2] mb-4"></div>
-          <p class="text-gray-500 dark:text-gray-400">Cargando planes disponibles...</p>
+          <p class=" ">Cargando planes disponibles...</p>
         </div>
 
         <div
           v-else-if="error"
-          class="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/20"
+          class="rounded-xl border border-red-200 bg-red-50 p-6 text-center border-red-800 bg-red-900/20"
         >
           <span class="material-symbols-outlined text-red-500 text-4xl mb-3">error</span>
-          <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+          <h3 class="text-lg font-semibold text-red-800 text-red-200 mb-2">
             Error al cargar planes
           </h3>
-          <p class="text-red-600 dark:text-red-300 mb-4">{{ error }}</p>
+          <p class="text-red-600 text-red-300 mb-4">{{ error }}</p>
           <button
             @click="fetchPlans"
             class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition-colors"
@@ -69,7 +67,7 @@
               </span>
               <h3
                 class="mt-1.5 text-2xl font-bold leading-none"
-                :class="{ 'text-[#4A90E2] dark:text-[#4A90E2]': plan.planType === 'Intermediate' }"
+                :class="{ 'text-[#4A90E2] text-[#4A90E2]': plan.planType === 'Intermediate' }"
               >
                 {{ plan.name }}
               </h3>
@@ -79,11 +77,8 @@
               <span class="text-4xl font-extrabold tracking-tight">
                 {{ formatCurrency(plan.price) }}
               </span>
-              <span class="text-lg font-medium text-gray-500 dark:text-gray-400">/month</span>
-              <p
-                v-if="plan.planType === 'Free'"
-                class="text-sm text-gray-500 dark:text-gray-400 mt-1.5"
-              >
+              <span class="text-lg font-medium  ">/month</span>
+              <p v-if="plan.planType === 'Free'" class="text-sm   mt-1.5">
                 Ideal for getting started and trying out the platform.
               </p>
             </div>
@@ -97,7 +92,7 @@
                   <template v-if="plan.databaseLimitPerEngine > 0">database</template>
                   <template v-else>close</template>
                 </span>
-                <span class="text-gray-700 dark:text-gray-300 text-sm">
+                <span class=" text-gray-300 text-sm">
                   <template v-if="plan.databaseLimitPerEngine === 1"
                     >1 Base de Datos por Motor</template
                   >
@@ -115,7 +110,7 @@
                 >
                   {{ plan.planType !== 'Free' ? 'check' : 'close' }}
                 </span>
-                <span class="text-gray-700 dark:text-gray-300 text-sm">
+                <span class=" text-gray-300 text-sm">
                   {{ plan.planType !== 'Free' ? 'Priority Support' : 'Standard Support' }}
                 </span>
               </li>
@@ -126,7 +121,7 @@
                 >
                   {{ plan.planType === 'Advanced' ? 'speed' : 'bolt' }}
                 </span>
-                <span class="text-gray-700 dark:text-gray-300 text-sm">
+                <span class=" text-gray-300 text-sm">
                   {{ plan.planType === 'Advanced' ? 'High Availability' : 'Standard Availability' }}
                 </span>
               </li>
@@ -225,18 +220,17 @@ const formatCurrency = (price) => {
 }
 
 const getPlanCardClasses = (planType) => {
-  const base = 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 hover:shadow-xl'
+  const base = ' bg-gray-900 md:bg-gray-900/95 border-gray-200 border-gray-800 hover:shadow-xl'
   if (planType === currentPlanType.value) {
-    return `${base} border-[#4A90E2] dark:border-[#4A90E2]/80 shadow-2xl scale-[1.01] transform` // Reducida la escala
+    return `${base} border-[#4A90E2] border-[#4A90E2]/80 shadow-2xl scale-[1.01] transform` // Reducida la escala
   }
   return base
 }
 
 const getBadgeClasses = (planType) => {
-  if (planType === 'Free') return 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-  if (planType === 'Intermediate')
-    return 'bg-[#4A90E2]/20 text-[#4A90E2] dark:bg-[#4A90E2]/30 font-bold'
-  if (planType === 'Advanced') return 'bg-green-500/20 text-green-500 dark:bg-green-700/30'
+  if (planType === 'Free') return 'bg-gray-200  bg-gray-700 text-gray-300'
+  if (planType === 'Intermediate') return 'bg-[#4A90E2]/20 text-[#4A90E2] bg-[#4A90E2]/30 font-bold'
+  if (planType === 'Advanced') return 'bg-green-500/20 text-green-500 bg-green-700/30'
   return ''
 }
 
@@ -254,10 +248,10 @@ const getButtonClasses = (planType) => {
 }
 
 const getFeatureIconColor = (planType) => {
-  if (planType === 'Free') return 'text-gray-400 dark:text-gray-500'
+  if (planType === 'Free') return ' '
   if (planType === 'Intermediate') return 'text-[#4A90E2]'
   if (planType === 'Advanced') return 'text-green-500'
-  return 'text-gray-400'
+  return ''
 }
 
 const selectPlan = async (plan) => {

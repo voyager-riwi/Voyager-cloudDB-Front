@@ -36,7 +36,7 @@
               @input="handleInput(index, $event)"
               @keydown="handleKeydown(index, $event)"
               @paste="handlePaste($event)"
-              class="h-14 w-12 rounded border border-gray-600 bg-[#192b33] text-center text-2xl font-semibold text-white [appearance:textfield] focus:border-blue-500 focus:ring-blue-500"
+              class="h-14 w-12 rounded border  bg-[#192b33] text-center text-2xl font-semibold text-white [appearance:textfield] focus:border-blue-500 focus:ring-blue-500"
               maxlength="1"
               type="text"
               inputmode="numeric"
@@ -68,12 +68,12 @@
 
         <!-- Meta Text / Secondary Action -->
         <div class="mt-6 text-center">
-          <p class="text-sm text-gray-400">
+          <p class="text-sm ">
             Didn't receive a code?
             <a
               @click="resendCode"
               :disabled="loading"
-              class="font-semibold text-blue-400 hover:text-blue-300 hover:underline cursor-pointer disabled:text-gray-500 disabled:cursor-not-allowed"
+              class="font-semibold text-blue-400 hover:text-blue-300 hover:underline cursor-pointer disabled: disabled:cursor-not-allowed"
             >
               Resend
             </a>

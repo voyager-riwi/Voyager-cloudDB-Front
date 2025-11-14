@@ -1,20 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth' // Asegúrate de importar tu store
-import HomeView from '../views/HomeView.vue'
-import DashboardView from '@/views/DashboardView.vue'
-import LoginView from '../views/LoginView.vue'
-import RegisterView from '../views/RegisterView.vue'
-import NotFoundView from '@/views/NotFoundView.vue'
-import ProfileView from '@/views/ProfileView.vue'
-import WebhooksView from '@/views/WebhooksView.vue'
-import ResetPasswordView from '@/views/ResetPasswordView.vue'
-import AboutView from '@/views/AboutView.vue'
-import RecoveryView from '@/views/RecoveryView.vue'
-import PlansView from '@/views/PlansView.vue'
-import MarketPayment from '@/views/MarketPayment.vue'
-import PaymentSuccess from '@/views/PaymentSuccess.vue'
-import PaymentFailure from '@/views/PaymentFailure.vue'
-import PaymentPending from '@/views/PaymentPending.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,40 +7,40 @@ const router = createRouter({
     {
       path: '/about',
       name: 'home',
-      component: HomeView,
+      component: () => import('@/views/HomeView.vue'),
     },
     {
       path: '/reset',
       name: 'reset',
-      component: ResetPasswordView,
+      component: () => import('@/views/ResetPasswordView.vue'),
     },
     {
       path: '/recovery',
       name: 'recovery',
-      component: RecoveryView,
+      component: () => import('@/views/RecoveryView.vue'),
     },
     {
       path: '/',
       name: 'about',
-      component: AboutView,
+      component: () => import('@/views/AboutView.vue'),
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView,
-      meta: { requiresAuth: true }, // ✅ Agregar esta meta
+      component: () => import('@/views/DashboardView.vue'),
+      meta: { requiresAuth: true },
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginView,
-      meta: { requiresGuest: true }, // ✅ Solo para no logueados
+      component: () => import('@/views/LoginView.vue'),
+      meta: { requiresGuest: true },
     },
     {
       path: '/register',
       name: 'register',
-      component: RegisterView,
-      meta: { requiresGuest: true }, // ✅ Solo para no logueados
+      component: () => import('@/views/RegisterView.vue'),
+      meta: { requiresGuest: true },
     },
     {
       path: '/change-password',
@@ -72,50 +57,65 @@ const router = createRouter({
     {
       path: '/plans',
       name: 'plans',
-      component: PlansView,
+      component: () => import('@/views/PlansView.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/payment/:planId',
       name: 'MarketPayment',
-      component: MarketPayment,
+      component: () => import('@/views/MarketPayment.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/payment-success',
       name: 'PaymentSuccess',
-      component: PaymentSuccess,
+      component: () => import('@/views/PaymentSuccess.vue'),
     },
     {
       path: '/payment-failure',
       name: 'PaymentFailure',
-      component: PaymentFailure,
+      component: () => import('@/views/PaymentFailure.vue'),
     },
     {
       path: '/payment-pending',
       name: 'PaymentPending',
-      component: PaymentPending,
+      component: () => import('@/views/PaymentPending.vue'),
     },
     {
       path: '/profile',
       name: 'profile',
-      component: ProfileView,
+      component: () => import('@/views/ProfileView.vue'),
       meta: { requiresAuth: true },
     },
     {
       path: '/webhooks',
       name: 'webhooks',
-      component: WebhooksView,
+      component: () => import('@/views/WebhooksView.vue'),
       meta: { requiresAuth: true },
+    },
+    // Ruta para 404 - debe ir al final
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('@/views/NotFoundView.vue'),
     },
   ],
 })
 
+// Navigation guard
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
+  console.log('🛡️ Router guard - Checking route:', to.name)
+  console.log('🛡️ Auth state:', {
+    isAuthenticated: authStore.isAuthenticated,
+    hasToken: !!authStore.token,
+    hasUser: !!authStore.user,
+  })
+
+  // Si la ruta requiere autenticación y el usuario no está autenticado
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    // Guardar la ruta que intentaba acceder
+    console.log('❌ Access denied - Redirecting to login')
     next({
       path: '/login',
       query: { redirect: to.fullPath },
@@ -123,11 +123,14 @@ router.beforeEach((to, from, next) => {
     return
   }
 
+  // Si la ruta es solo para invitados y el usuario está autenticado
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
+    console.log('✅ User is authenticated - Redirecting to dashboard')
     next('/dashboard')
     return
   }
 
+  console.log('✅ Access granted - Proceeding to route')
   next()
 })
 

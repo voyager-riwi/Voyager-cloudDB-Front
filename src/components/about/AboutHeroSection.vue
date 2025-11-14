@@ -336,6 +336,7 @@ header.hidden {
 }
 
 .about_p {
+  color: white  ;
   font-size: 1.2rem;
   max-width: 600px;
   margin-bottom: 2rem;

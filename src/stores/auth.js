@@ -1,20 +1,48 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import apiService from '@/services/api'
+import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
   // ==================== STATE ====================
   const user = ref(null)
-  const token = ref(localStorage.getItem('authToken') || null)
+  const token = ref(null)
   const loading = ref(false)
   const error = ref(null)
+  const router = useRouter()
+
+  // ==================== INITIALIZATION ====================
+
+  /**
+   * Recuperar estado de autenticación desde sessionStorage
+   */
+  const initializeAuth = () => {
+    const savedToken = sessionStorage.getItem('authToken')
+    const savedUser = sessionStorage.getItem('user')
+
+    if (savedToken && savedUser) {
+      token.value = savedToken
+      user.value = JSON.parse(savedUser)
+      console.log('🔄 Auth initialized from sessionStorage:', {
+        hasToken: !!token.value,
+        user: user.value,
+      })
+    } else {
+      console.log('🔐 No saved auth found in sessionStorage')
+    }
+  }
 
   // ==================== GETTERS (COMPUTED) ====================
 
   /**
    * Verifica si el usuario está autenticado
    */
-  const isAuthenticated = computed(() => !!token.value && !!user.value)
+  const isAuthenticated = computed(() => {
+    const hasToken = !!token.value
+    const hasUser = !!user.value
+    console.log('🔍 Auth check - Token:', hasToken, 'User:', hasUser)
+    return hasToken && hasUser
+  })
 
   /**
    * Email del usuario actual
@@ -37,27 +65,6 @@ export const useAuthStore = defineStore('auth', () => {
   const userId = computed(() => user.value?.id || null)
 
   // ==================== ACTIONS ====================
-
-  /**
-   * Inicializa el store con datos del localStorage
-   */
-  const initializeAuth = async () => {
-    const savedToken = localStorage.getItem('authToken')
-    const savedUser = localStorage.getItem('user')
-
-    if (savedToken && savedUser) {
-      token.value = savedToken
-      user.value = JSON.parse(savedUser)
-
-      try {
-        // Verificar que el token siga siendo válido
-        await fetchCurrentUser()
-      } catch {
-        // Si el token no es válido, limpiar
-        logout()
-      }
-    }
-  }
 
   /**
    * Login de usuario
@@ -89,9 +96,9 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('📦 token.value:', token.value)
       console.log('📦 user.value:', user.value)
 
-      // Guardar en localStorage
-      localStorage.setItem('authToken', token.value)
-      localStorage.setItem('user', JSON.stringify(user.value))
+      // Guardar en sessionStorage
+      sessionStorage.setItem('authToken', token.value)
+      sessionStorage.setItem('user', JSON.stringify(user.value))
 
       console.log('✅ Login successful! Returning:', { token: token.value, user: user.value })
       return { token: token.value, user: user.value }
@@ -126,9 +133,9 @@ export const useAuthStore = defineStore('auth', () => {
         planType: data.planType || 'free',
       }
 
-      // Guardar en localStorage
-      localStorage.setItem('authToken', token.value)
-      localStorage.setItem('user', JSON.stringify(user.value))
+      // Guardar en sessionStorage
+      sessionStorage.setItem('authToken', token.value)
+      sessionStorage.setItem('user', JSON.stringify(user.value))
 
       return { token: token.value, user: user.value }
     } catch (err) {
@@ -144,12 +151,16 @@ export const useAuthStore = defineStore('auth', () => {
    * Logout de usuario
    */
   const logout = () => {
+    console.log('🚪 Logging out...')
     token.value = null
     user.value = null
 
-    // Limpiar localStorage
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('user')
+    // Limpiar sessionStorage
+    sessionStorage.removeItem('authToken')
+    sessionStorage.removeItem('user')
+
+    console.log('✅ Logout completed, redirecting to login')
+    router.push('/login')
   }
 
   /**
@@ -165,8 +176,8 @@ export const useAuthStore = defineStore('auth', () => {
       const data = await apiService.users.getProfile()
       user.value = data
 
-      // Actualizar en localStorage
-      localStorage.setItem('user', JSON.stringify(user.value))
+      // Actualizar en sessionStorage
+      sessionStorage.setItem('user', JSON.stringify(user.value))
 
       return user.value
     } catch (err) {
@@ -190,8 +201,8 @@ export const useAuthStore = defineStore('auth', () => {
       const data = await apiService.users.updateProfile(userData)
       user.value = data
 
-      // Actualizar en localStorage
-      localStorage.setItem('user', JSON.stringify(user.value))
+      // Actualizar en sessionStorage
+      sessionStorage.setItem('user', JSON.stringify(user.value))
 
       return user.value
     } catch (err) {
@@ -270,7 +281,7 @@ export const useAuthStore = defineStore('auth', () => {
   const updatePlan = (planType) => {
     if (user.value) {
       user.value.planType = planType
-      localStorage.setItem('user', JSON.stringify(user.value))
+      sessionStorage.setItem('user', JSON.stringify(user.value))
     }
   }
 
@@ -290,9 +301,12 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = false
     error.value = null
 
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('user')
+    sessionStorage.removeItem('authToken')
+    sessionStorage.removeItem('user')
   }
+
+  // Inicializar automáticamente al crear el store
+  initializeAuth()
 
   return {
     // State
