@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-1 flex-col gap-3 rounded-xl border border-zinc-200  p-4 border-zinc-800 bg-zinc-900 md:bg-zinc-900/95 hover:shadow-lg transition-shadow"
+    class="flex flex-1 flex-col gap-3 rounded-xl border border-zinc-200 p-4 border-zinc-800 bg-zinc-900 md:bg-zinc-900/95 hover:shadow-lg transition-shadow"
   >
     <div class="text-primary text-primary">
       <span class="material-symbols-outlined text-3xl">{{ icon }}</span>
