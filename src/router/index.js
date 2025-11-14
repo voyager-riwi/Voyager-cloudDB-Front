@@ -106,16 +106,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
 
-  console.log('🛡️ Router guard - Checking route:', to.name)
-  console.log('🛡️ Auth state:', {
-    isAuthenticated: authStore.isAuthenticated,
-    hasToken: !!authStore.token,
-    hasUser: !!authStore.user,
-  })
 
   // Si la ruta requiere autenticación y el usuario no está autenticado
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    console.log('❌ Access denied - Redirecting to login')
     next({
       path: '/login',
       query: { redirect: to.fullPath },
@@ -125,12 +118,10 @@ router.beforeEach((to, from, next) => {
 
   // Si la ruta es solo para invitados y el usuario está autenticado
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    console.log('✅ User is authenticated - Redirecting to dashboard')
     next('/dashboard')
     return
   }
 
-  console.log('✅ Access granted - Proceeding to route')
   next()
 })
 

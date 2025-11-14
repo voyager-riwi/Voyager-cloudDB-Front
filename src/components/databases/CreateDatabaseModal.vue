@@ -205,7 +205,6 @@ onMounted(async () => {
   try {
     await fetchUserProfile()
     await dbStore.fetchDatabases()
-    console.log('✅ Perfil y bases de datos cargados correctamente')
   } catch (err) {
     console.error('❌ Error al cargar datos:', err)
   }

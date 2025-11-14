@@ -287,7 +287,6 @@ const handleLogin = async () => {
 
 // Funciones del video loading
 const handleVideoLoaded = () => {
-  console.log('Video cargado correctamente')
   videoLoading.value = false
 
   // Configurar volumen inicial
@@ -301,14 +300,12 @@ const handleVideoLoaded = () => {
 const playVideo = async () => {
   try {
     if (loadingVideoEl.value) {
-      console.log('Intentando reproducir video con audio...')
 
       // Estrategia para autoplay con audio
       const playPromise = loadingVideoEl.value.play()
 
       if (playPromise !== undefined) {
         await playPromise
-        console.log('Video reproducido exitosamente con audio')
         isPlaying.value = true
       }
     }
@@ -317,7 +314,6 @@ const playVideo = async () => {
 
     // Si falla por políticas de autoplay, intentar sin audio primero
     if (error.name === 'NotAllowedError') {
-      console.log('Autoplay bloqueado, intentando con muted...')
       if (loadingVideoEl.value) {
         loadingVideoEl.value.muted = true
         await loadingVideoEl.value.play()
@@ -358,7 +354,6 @@ const togglePlay = () => {
 }
 
 const handleVideoEnd = () => {
-  console.log('Video terminado')
   isPlaying.value = false
   fadeOutAndComplete()
 }

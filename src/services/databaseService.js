@@ -34,14 +34,7 @@ class DatabaseService {
     try {
       const database = await api.databases.get(databaseId)
 
-      console.log('🌐 RAW backend response for database details:', {
-        id: database.id,
-        name: database.name,
-        status: database.status,
-        engine: database.engine,
-        deletedAt: database.deletedAt,
-        fullResponse: database,
-      })
+   
 
       return database
     } catch (error) {
@@ -209,8 +202,6 @@ class DatabaseService {
       [ENGINE_TYPES.SQLSERVER]: 0,
     }
 
-    console.log('🔍 Counting databases by engine:')
-    console.log('📊 Total databases to count:', databases.length)
 
     databases.forEach((db) => {
       // Contar TODAS las bases de datos (activas + desactivadas)
@@ -218,16 +209,13 @@ class DatabaseService {
       // Solo se libera el slot cuando se eliminan permanentemente
       const engineId = this.getEngineIdFromName(db.engine)
 
-      console.log(
-        `  - DB: ${db.name} | Engine: ${db.engine} | EngineID: ${engineId} | Status: ${db.status}`,
-      )
+
 
       if (engineId && counts[engineId] !== undefined) {
         counts[engineId]++
       }
     })
 
-    console.log('📊 Final counts by engine:', counts)
     return counts
   }
 

@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen bg-background-light bg-background-dark font-display">
+    <DinamycNavbar />
     <div
       class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden"
     >
@@ -9,25 +10,13 @@
 </template>
 
 <script>
-import AppBar from '../components/common/AppBar.vue'
+import DinamycNavbar from '@/components/common/DinamycNavbar.vue';
 import AboutHeroSection from '../components/about/AboutHeroSection.vue'
-import OfferSection from '../components/about/OfferSection.vue'
-import ChooseUsSection from '../components/about/ChooseUsSection.vue'
-import PhilosophySection from '../components/about/PhilosophySection.vue'
-import TeamSection from '../components/about/TeamSection.vue'
-import AboutFooter from '../components/common/AppTer.vue'
-import FloatingCTA from '../components/about/FloatingCTA.vue'
 export default {
   name: 'AboutPage',
   components: {
-    AppBar,
+    DinamycNavbar,
     AboutHeroSection,
-    OfferSection,
-    ChooseUsSection,
-    PhilosophySection,
-    TeamSection,
-    AboutFooter,
-    FloatingCTA,
   },
   methods: {
     exploreFeatures() {

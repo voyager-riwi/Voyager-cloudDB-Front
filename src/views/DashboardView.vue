@@ -17,7 +17,7 @@
         <div class="relative">
           <button
             @click="toggleUserMenu"
-            class="text-flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-200 text-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-300 hover:bg-gray-600 transition-colors"
+            class="text-white flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-200 text-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-300 hover:bg-gray-600 transition-colors"
           >
             <span class="material-symbols-outlined">person</span>
           </button>
@@ -493,19 +493,13 @@ const showCreateModal = ref(false)
 
 // Verificar autenticación
 const checkAuthentication = () => {
-  console.log('🔐 Checking authentication...', {
-    isAuthenticated: authStore.isAuthenticated,
-    hasToken: !!authStore.token,
-    hasUser: !!authStore.user,
-  })
+
 
   if (!authStore.isAuthenticated) {
-    console.log('❌ Not authenticated, redirecting to login')
     router.push('/login')
     return false
   }
 
-  console.log('✅ User is authenticated')
   return true
 }
 
@@ -739,7 +733,6 @@ const startBackgroundMusic = async () => {
 
 // Lifecycle
 onMounted(async () => {
-  console.log('🚀 Dashboard mounted, checking auth...')
 
   // Verificar autenticación antes de cargar datos
   if (!checkAuthentication()) {
@@ -756,7 +749,6 @@ watch(
   () => authStore.isAuthenticated,
   (isAuthenticated) => {
     if (!isAuthenticated) {
-      console.log('👀 Auth state changed to not authenticated, redirecting...')
       router.push('/login')
     }
   },

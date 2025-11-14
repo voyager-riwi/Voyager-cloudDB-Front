@@ -191,9 +191,6 @@ const verifyCode = async () => {
     const emailFromStorage = localStorage.getItem('resetEmail')
     const verificationToken = fullCode.value
 
-    console.log('=== VERIFY CODE ===')
-    console.log('📧 Email:', emailFromStorage)
-    console.log('🔐 Code:', verificationToken)
 
     if (!emailFromStorage) {
       error.value = 'No email found. Please start over.'
@@ -203,12 +200,6 @@ const verifyCode = async () => {
     // Guardar los datos para ChangePassword
     localStorage.setItem('requiresPasswordChange', verificationToken)
     localStorage.setItem('verifiedEmail', emailFromStorage)
-
-    console.log('💾 Saved for change-password:')
-    console.log('  - Token:', verificationToken)
-    console.log('  - Email:', emailFromStorage)
-
-    console.log('✅ Code accepted, redirecting to change password...')
 
     toast.lumos('Verification successful! Please set your new password. 🔐', {
       title: '✅ Code Verified',
@@ -239,7 +230,6 @@ const resendCode = async () => {
 
   try {
     const emailFromStorage = localStorage.getItem('resetEmail')
-    console.log('📧 Email from localStorage:', emailFromStorage)
 
     if (!emailFromStorage) {
       error.value = 'No email found. Please start the process again.'
@@ -249,13 +239,11 @@ const resendCode = async () => {
       return
     }
 
-    console.log('🔄 Resending verification code to:', emailFromStorage)
 
     await api.auth.forgotPassword({
       email: emailFromStorage,
     })
 
-    console.log('✅ Resend successful')
 
     toast.lumos('Verification code has been resent to your email! 📧', {
       title: '✉️ Code Resent',
@@ -299,7 +287,6 @@ const resetCode = () => {
 // Lifecycle
 onMounted(() => {
   const emailFromStorage = localStorage.getItem('resetEmail')
-  console.log('🔍 On mounted - Email from storage:', emailFromStorage)
 
   if (!emailFromStorage) {
     error.value = 'No email found. Please start the password reset process again.'
@@ -318,6 +305,5 @@ onMounted(() => {
     codeInputs.value[0]?.focus()
   })
 
-  console.log('✅ Recovery form ready for email:', emailFromStorage)
 })
 </script>

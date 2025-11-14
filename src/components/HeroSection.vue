@@ -54,9 +54,13 @@
 
 <script>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import QrComponent from './QrComponent.vue'
 
 export default {
   name: 'HeroSection',
+  components: {
+    QrComponent,
+  },
 
   setup() {
     // Tamaños de las capas

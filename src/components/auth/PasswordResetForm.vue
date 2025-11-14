@@ -109,14 +109,12 @@ const sendRecoveryEmail = async () => {
   error.value = ''
 
   try {
-    console.log('✉️ Sending recovery email to:', email.value)
 
     // Enviar solicitud de recuperación
     const response = await api.auth.forgotPassword({
       email: email.value,
     })
 
-    console.log('✅ Recovery email response:', response.data)
 
     // Guardar el email en localStorage ANTES de redirigir
     localStorage.setItem('resetEmail', email.value)

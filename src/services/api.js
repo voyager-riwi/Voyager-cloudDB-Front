@@ -37,12 +37,10 @@ class ApiService {
       const timeoutId = setTimeout(() => controller.abort(), env.api.timeout)
       config.signal = controller.signal
 
-      console.log(`🚀 ${config.method} ${url}`)
 
       const response = await fetch(url, config)
       clearTimeout(timeoutId)
 
-      console.log(`✅ ${config.method} ${endpoint} - Status: ${response.status}`)
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({
@@ -52,7 +50,6 @@ class ApiService {
       }
 
       const data = await response.json()
-      console.log('📦 Raw backend response:', data)
       return data
     } catch (error) {
       if (error.name === 'AbortError') {

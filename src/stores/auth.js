@@ -23,10 +23,6 @@ export const useAuthStore = defineStore('auth', () => {
     if (savedToken && savedUser) {
       token.value = savedToken
       user.value = JSON.parse(savedUser)
-      console.log('🔄 Auth initialized from sessionStorage:', {
-        hasToken: !!token.value,
-        user: user.value,
-      })
     } else {
       console.log('🔐 No saved auth found in sessionStorage')
     }
@@ -40,7 +36,6 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => {
     const hasToken = !!token.value
     const hasUser = !!user.value
-    console.log('🔍 Auth check - Token:', hasToken, 'User:', hasUser)
     return hasToken && hasUser
   })
 
@@ -77,14 +72,10 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const response = await apiService.auth.login(credentials)
 
-      console.log('📦 Backend response:', response)
-      console.log('📦 Response structure:', Object.keys(response))
+      
 
       // El backend envuelve la respuesta en { succeeded, message, data, errors }
       const data = response.data || response
-      console.log('📦 Extracted data:', data)
-      console.log('📦 Token from data:', data.token)
-
       token.value = data.token
       user.value = {
         id: data.userId,
@@ -93,14 +84,10 @@ export const useAuthStore = defineStore('auth', () => {
         planType: data.planType || 'free',
       }
 
-      console.log('📦 token.value:', token.value)
-      console.log('📦 user.value:', user.value)
-
       // Guardar en sessionStorage
       sessionStorage.setItem('authToken', token.value)
       sessionStorage.setItem('user', JSON.stringify(user.value))
 
-      console.log('✅ Login successful! Returning:', { token: token.value, user: user.value })
       return { token: token.value, user: user.value }
     } catch (err) {
       error.value = err.message || 'Error al iniciar sesión'
@@ -151,7 +138,6 @@ export const useAuthStore = defineStore('auth', () => {
    * Logout de usuario
    */
   const logout = () => {
-    console.log('🚪 Logging out...')
     token.value = null
     user.value = null
 
@@ -159,7 +145,6 @@ export const useAuthStore = defineStore('auth', () => {
     sessionStorage.removeItem('authToken')
     sessionStorage.removeItem('user')
 
-    console.log('✅ Logout completed, redirecting to login')
     router.push('/login')
   }
 

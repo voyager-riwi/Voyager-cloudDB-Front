@@ -322,10 +322,6 @@ const handleResetPassword = async () => {
   const userEmail = localStorage.getItem('verifiedEmail')
   const requiresChange = localStorage.getItem('requiresPasswordChange')
 
-  console.log('=== RESET PASSWORD FLOW ===')
-  console.log('📧 Email:', userEmail)
-  console.log('🔐 Token:', requiresChange)
-
   if (!requiresChange || requiresChange === 'null' || !userEmail) {
     toast.expelliarmus('Please complete the verification process first', {
       title: '⚡ Verification Required',
@@ -343,10 +339,8 @@ const handleResetPassword = async () => {
     confirmNewPassword: form.confirmPassword,
   }
 
-  console.log('📤 Sending reset data:', resetData)
 
   const response = await api.auth.resetPassword(resetData)
-  console.log('✅ Password reset successful:', response.data)
 
   // Limpiar localStorage
   localStorage.removeItem('verifiedEmail')
@@ -370,8 +364,6 @@ const handleResetPassword = async () => {
 }
 
 const handleRegularPasswordChange = async () => {
-  console.log('=== REGULAR PASSWORD CHANGE ===')
-
   try {
     // 1. Obtener email del usuario
     const userEmail = localStorage.getItem('userEmail')
@@ -379,16 +371,10 @@ const handleRegularPasswordChange = async () => {
       throw new Error('User email not found. Please log out and log in again.')
     }
 
-    console.log('📧 User:', userEmail)
-
-    // 2. Validar contraseña actual
-    console.log('🔐 Validating current password...')
     await api.auth.login({
       email: userEmail,
       password: form.currentPassword,
     })
-
-    console.log('✅ Current password correct')
 
     // 3. Cambiar contraseña usando el endpoint correcto
     const changeData = {
@@ -397,7 +383,6 @@ const handleRegularPasswordChange = async () => {
       confirmNewPassword: form.confirmPassword,
     }
 
-    console.log('📤 Changing password via /api/Users/change-password...')
 
     // USAR FETCH DIRECTAMENTE CON EL ENDPOINT CORRECTO
     const response = await fetch(
@@ -418,7 +403,6 @@ const handleRegularPasswordChange = async () => {
     }
 
     const result = await response.json()
-    console.log('✅ Password changed successfully:', result)
 
     toast.lumos('Password changed successfully! 🎉', {
       title: '🔐 Success',
@@ -475,12 +459,8 @@ const verifyResetFlow = () => {
     const userEmail = localStorage.getItem('verifiedEmail')
     const requiresChange = localStorage.getItem('requiresPasswordChange')
 
-    console.log('🔍 Verifying reset flow:')
-    console.log('  - Email:', userEmail)
-    console.log('  - Token:', requiresChange)
 
     if (!requiresChange || requiresChange === 'null' || !userEmail) {
-      console.log('❌ Invalid reset flow - redirecting')
       toast.expelliarmus('Invalid reset password flow. Redirecting...', {
         title: '⚡ Invalid Flow',
         duration: 3000,

@@ -4,16 +4,9 @@
   >
     <div class="absolute inset-0 bg-grid-pattern opacity-10"></div>
 
-    <header class="relative w-full py-8 px-4 flex flex-col items-center justify-center">
-      <div
-        class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gray-500 to-transparent opacity-40"
-      ></div>
-      <h1 class="text-4xl font-bold text-gray-100 tracking-wider mb-3 text-center">Crear Cuenta</h1>
-      <div class="w-28 h-1 bg-gradient-to-r from-gray-500 to-gray-300 rounded-full"></div>
-    </header>
     <button
       class="absolute left-6 top-6 flex items-center justify-center z-20 rounded-full size-10 border border-gray-700/50 backdrop-blur-sm text-gray-200 transition-all hover:text-white hover:bg-gray-700/70 hover: md:left-8 md:top-8"
-      @click="goHome"
+      @click="goBack()"
     >
       <span class="material-symbols-outlined text-lg">arrow_back</span>
     </button>
@@ -260,9 +253,7 @@ const handleSubmit = async () => {
       password: form.value.password,
     }
 
-    console.log('Enviando datos de registro:', registerData)
     const response = await authStore.register(registerData)
-    console.log('Respuesta del registro:', response)
 
     toast.lumos('¡Cuenta creada con éxito! Redirigiendo al login...', {
       title: '¡Registro Completo!',
@@ -317,8 +308,8 @@ const navigateToPrivacy = () => {
   console.log('Navegar a política de privacidad')
 }
 
-const goHome = () => {
-  router.push('/about') // O a donde corresponda, ej: '/'
+const goBack = () => {
+  router.back()
 }
 </script>
 

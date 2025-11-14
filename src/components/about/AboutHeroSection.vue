@@ -91,9 +91,9 @@
               nivel.
             </p>
           </div>
-          <button class="btn-primary about-btn" @click="$router.push('/register')">
-            Registrarse
-          </button>
+          <<button class="btn-primary about-btn" @click="$router.push('/register')">
+            Registrarse</button
+          >>
         </div>
       </div>
     </section>
@@ -319,7 +319,7 @@ header.hidden {
 }
 
 .about_p {
-  color: white  ;
+  color: white;
   font-size: 1.2rem;
   max-width: 600px;
   margin-bottom: 2rem;

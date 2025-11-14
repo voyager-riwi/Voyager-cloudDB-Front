@@ -262,7 +262,6 @@ const selectPlan = async (plan) => {
   processingPlanId.value = plan.id
 
   try {
-    console.log(`Iniciando pago para el plan: ${plan.name} (${plan.id})`)
 
     // 1. Llamamos a la API. La variable 'response' contendrá el JSON que me mostraste.
     const response = await api.payments.createPreference({

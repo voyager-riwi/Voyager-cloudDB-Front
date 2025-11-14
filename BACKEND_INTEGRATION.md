@@ -294,10 +294,6 @@ const dbStore = useDatabaseStore()
 // Cargar bases de datos
 await dbStore.fetchDatabases()
 
-// Acceder a datos
-console.log(dbStore.activeDatabases) // Solo las Running
-console.log(dbStore.countByEngine)   // { 1: 2, 2: 1, 3: 0, 4: 1 }
-
 // Crear BD
 await dbStore.createDatabase(1) // PostgreSQL
 
@@ -360,11 +356,6 @@ const planStore = usePlanStore()
 
 // Cargar planes
 await planStore.fetchPlans()
-
-// Acceder a datos
-console.log(planStore.freePlan)        // Plan Free
-console.log(planStore.sortedPlans)     // [Free, Intermediate, Advanced]
-
 // Obtener info enriquecida
 const info = planStore.getPlanInfo(1)
 // {
@@ -489,10 +480,7 @@ if (!canCreate) {
 // 3. Crear BD
 const newDB = await dbStore.createDatabase(1)
 
-// 4. GUARDAR CREDENCIALES INMEDIATAMENTE
-// ⚠️ Solo se muestran una vez!
-console.log(newDB.connectionString)
-console.log(newDB.username)
+
 // newDB.password NO se incluye por seguridad (enviada por email)
 
 // 5. Notificar éxito
@@ -690,7 +678,7 @@ toast.accio('Plan actualizado! Ahora tienes más cupo.')
 ```javascript
 // 1. Verificar configuración
 const config = await api.payments.getConfigTest()
-console.log(config)
+
 // {
 //   configured: true,
 //   mode: "PRODUCTION",
@@ -699,7 +687,7 @@ console.log(config)
 
 // 2. Consultar estado de una orden
 const order = await api.payments.debugOrder(35452151330)
-console.log(order)
+
 // {
 //   orderId: 35452151330,
 //   status: "closed",
@@ -717,7 +705,6 @@ await dbStore.fetchDatabases()
 
 // 2. Ver cupo disponible
 const usage = planStore.calculateUsage(dbStore.databases, userPlanType)
-console.log(usage)
 
 // 3. Intentar crear
 const { canCreate, message } = planStore.canCreateDatabase(
