@@ -1,5 +1,22 @@
 <template>
   <div id="app">
+    <!-- Navbar mágico - visible en fase 0 y 3 -->
+    <nav class="magic-navbar" :class="{ active: currentPhase === 0 || currentPhase === 3 }">
+      <div class="navbar-content">
+        <div class="nav-logo">
+          <span class="logo-text">Potter Cloud</span>
+        </div>
+        <div class="nav-auth">
+          <button @click="$router.push('/login')" class="nav-btn btn-login">
+            <span>Iniciar Sesión</span>
+          </button>
+          <button @click="$router.push('/register')" class="nav-btn btn-register">
+            <span>Registrarse</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
     <!-- Sección parallax con background fijo y altura para scroll -->
     <section class="parallax-section" ref="parallaxSection">
       <header :class="{ hidden: currentPhase >= 1 }">
@@ -603,5 +620,210 @@ body {
 /* Indicador visual de que está animando */
 .parallax-section.animating * {
   pointer-events: none;
+}
+
+/* ============================================
+   NAVBAR MÁGICO - Estilo Potter Cloud
+   ============================================ */
+.magic-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1.2rem 3rem;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 20, 40, 0.95) 0%,
+    rgba(0, 30, 50, 0.8) 50%,
+    transparent 100%
+  );
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(218, 165, 32, 0.2);
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  pointer-events: none;
+}
+
+.magic-navbar.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.navbar-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.nav-logo {
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #daa520 0%, #ffd700 50%, #daa520 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(218, 165, 32, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logo-text:hover {
+  filter: brightness(1.2);
+  text-shadow: 0 0 30px rgba(218, 165, 32, 0.5);
+}
+
+.nav-auth {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nav-btn {
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+.btn-login {
+  background: transparent;
+  border: 2px solid rgba(218, 165, 32, 0.5);
+  color: #daa520;
+}
+
+.btn-login::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(218, 165, 32, 0.2), transparent);
+  transform: translate(-50%, -50%);
+  transition: all 0.5s ease;
+  border-radius: 50%;
+}
+
+.btn-login:hover {
+  border-color: #daa520;
+  color: #ffd700;
+  box-shadow: 0 0 20px rgba(218, 165, 32, 0.3);
+}
+
+.btn-login:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-register {
+  background: linear-gradient(135deg, #daa520 0%, #cd9a1e 100%);
+  color: #0a1628;
+  border: 2px solid transparent;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(218, 165, 32, 0.3);
+}
+
+.btn-register::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: all 0.5s ease;
+}
+
+.btn-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(218, 165, 32, 0.5);
+}
+
+.btn-register:hover::before {
+  left: 100%;
+}
+
+.btn-register:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .magic-navbar {
+    padding: 1rem 2rem;
+  }
+
+  .navbar-content {
+    gap: 1.5rem;
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+  }
+
+  .nav-btn {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .magic-navbar {
+    padding: 1rem 1.5rem;
+  }
+
+  .navbar-content {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-logo {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .nav-auth {
+    width: 100%;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .nav-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-text {
+    font-size: 1.3rem;
+  }
+
+  .nav-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+  }
 }
 </style>
