@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-1 flex-col gap-3 rounded-xl border border-gray-200 border-white/10  /5 md:/10 p-4 hover:shadow-md transition-shadow"
+    class="flex flex-1 flex-col gap-3 rounded-xl border border-gray-200 border-white/10 /5 md:/10 p-4 hover:shadow-md transition-shadow"
   >
     <div class="text-primary">
       <span class="material-symbols-outlined">{{ icon }}</span>
@@ -9,7 +9,7 @@
       <h4 class="text-base font-bold leading-tight text-gray-900 text-white">
         {{ title }}
       </h4>
-      <p class="text-sm font-normal leading-normal text-gray-600 ">
+      <p class="text-sm font-normal leading-normal text-gray-600">
         {{ description }}
       </p>
     </div>
