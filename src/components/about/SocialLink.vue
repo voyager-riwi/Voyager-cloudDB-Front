@@ -2,7 +2,7 @@
   <a
     :aria-label="ariaLabel"
     :href="href"
-    class="text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-primary transition-colors"
+    class=" hover:text-primary  hover:text-primary transition-colors"
   >
     <span v-if="type === 'icon'" class="material-symbols-outlined">{{ icon }}</span>
     <TwitterIcon v-else-if="type === 'svg' && icon === 'twitter'" />

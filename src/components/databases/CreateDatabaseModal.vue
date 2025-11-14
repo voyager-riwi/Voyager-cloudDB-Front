@@ -6,17 +6,17 @@
     <!-- Contenido del modal -->
     <div class="relative min-h-screen flex items-center justify-center p-4">
       <div
-        class="relative bg-white dark:bg-[#192b33] dark:md:bg-[#192b33]/95 rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden"
+        class="relative  bg-[#192b33] md:bg-[#192b33]/95 rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden"
       >
         <!-- Header -->
-        <div class="flex items-center p-6 border-b border-slate-200 dark:border-slate-700">
+        <div class="flex items-center p-6 border-b border-slate-200 border-slate-700">
           <button
             @click="closeModal"
-            class="text-slate-800 dark:text-white flex size-10 shrink-0 items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            class="text-slate-800 text-white flex size-10 shrink-0 items-center justify-center hover:bg-slate-100 hover:bg-slate-800 rounded-lg transition-colors"
           >
             <span class="material-symbols-outlined text-xl">close</span>
           </button>
-          <h2 class="text-slate-900 dark:text-white text-xl font-bold flex-1 text-center">
+          <h2 class="text-slate-900 text-white text-xl font-bold flex-1 text-center">
             🚀 Create New Database
           </h2>
           <div class="w-10"></div>
@@ -27,14 +27,14 @@
           <!-- Loading State -->
           <div v-if="loading" class="flex flex-col items-center justify-center py-12">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-            <p class="text-slate-600 dark:text-slate-400">Creating your database...</p>
+            <p class="text-slate-600 text-slate-400">Creating your database...</p>
           </div>
 
           <div v-else>
             <!-- Limit Warning -->
             <div
               v-if="limitWarning"
-              class="mb-4 bg-amber-500/20 border border-amber-500 text-amber-700 dark:text-amber-300 px-4 py-3 rounded-lg text-sm flex items-start gap-2"
+              class="mb-4 bg-amber-500/20 border border-amber-500 text-amber-700 text-amber-300 px-4 py-3 rounded-lg text-sm flex items-start gap-2"
             >
               <span class="material-symbols-outlined text-lg">warning</span>
               <span>{{ limitWarning }}</span>
@@ -43,7 +43,7 @@
             <!-- Limit Exceeded Error -->
             <div
               v-if="selectedEngine && !canCreateDatabase"
-              class="mb-4 bg-red-500/20 border border-red-500 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-sm flex items-start gap-2"
+              class="mb-4 bg-red-500/20 border border-red-500 text-red-700 text-red-300 px-4 py-3 rounded-lg text-sm flex items-start gap-2"
             >
               <span class="material-symbols-outlined text-lg">block</span>
               <div>
@@ -60,7 +60,7 @@
             <!-- Section: Choose Database Engine -->
             <div>
               <h3
-                class="text-slate-900 dark:text-white text-lg font-bold mb-4 flex items-center gap-2"
+                class="text-slate-900 text-white text-lg font-bold mb-4 flex items-center gap-2"
               >
                 <span class="material-symbols-outlined">dns</span>
                 Choose Database Engine
@@ -73,8 +73,8 @@
                   class="relative flex flex-col items-center gap-3 p-4 cursor-pointer rounded-xl transition-all border-2"
                   :class="
                     selectedEngine === engine.id
-                      ? 'border-primary bg-primary/10 dark:bg-primary/20 scale-105'
-                      : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 bg-white dark:bg-[#1a2832] dark:md:bg-[#1a2832]/95'
+                      ? 'border-primary bg-primary/10 bg-primary/20 scale-105'
+                      : 'border-slate-200 border-slate-700 hover:border-primary/50  bg-[#1a2832] md:bg-[#1a2832]/95'
                   "
                 >
                   <!-- Logo -->
@@ -90,12 +90,12 @@
                       :class="
                         selectedEngine === engine.id
                           ? 'text-primary'
-                          : 'text-slate-900 dark:text-white'
+                          : 'text-slate-900 text-white'
                       "
                     >
                       {{ engine.name }}
                     </p>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                    <p class="text-xs text-slate-500 text-slate-400">
                       {{ engine.type }}
                     </p>
                   </div>
@@ -105,8 +105,8 @@
                     class="text-xs font-medium px-2 py-1 rounded-full"
                     :class="
                       (dbStore.countByEngine[getEngineNumericId(engine.id)] || 0) >= engineLimit
-                        ? 'bg-red-500/20 text-red-600 dark:text-red-400'
-                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+                        ? 'bg-red-500/20 text-red-600 text-red-400'
+                        : 'bg-slate-100 bg-slate-700 text-slate-600 text-slate-400'
                     "
                   >
                     {{ dbStore.countByEngine[getEngineNumericId(engine.id)] || 0 }} /
@@ -126,11 +126,11 @@
 
             <!-- Info Note -->
             <div
-              class="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4"
+              class="mt-6 bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-4"
             >
               <div class="flex items-start gap-3">
-                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">info</span>
-                <div class="text-sm text-blue-800 dark:text-blue-300">
+                <span class="material-symbols-outlined text-blue-600 text-blue-400">info</span>
+                <div class="text-sm text-blue-800 text-blue-300">
                   <p class="font-medium mb-1">Auto-Configuration</p>
                   <p>
                     Your database will be created automatically with optimized settings. Connection
@@ -144,7 +144,7 @@
 
         <!-- Footer -->
         <div
-          class="p-6 bg-slate-50 dark:bg-[#1a2832] dark:md:bg-[#1a2832]/95 border-t border-slate-200 dark:border-slate-700"
+          class="p-6 bg-slate-50 bg-[#1a2832] md:bg-[#1a2832]/95 border-t border-slate-200 border-slate-700"
         >
           <button
             @click="createDatabase"

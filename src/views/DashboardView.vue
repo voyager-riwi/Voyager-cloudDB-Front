@@ -1,14 +1,14 @@
 <template>
   <div
-    class="relative min-h-screen w-full bg-[#F4F7FA] dashboard font-sans text-gray-800 dark:text-gray-200"
+    class="relative min-h-screen w-full bg-[#F4F7FA] dashboard font-sans  text-gray-200"
   >
     <!-- Top App Bar -->
     <header
-      class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/10 bg-[#F4F7FA]/80 p-4 backdrop-blur-sm dark:bg-[#101c22]/80"
+      class="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200/10  p-4 backdrop-blur-sm bg-[#101c22]/80"
     >
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-[#4A90E2] text-3xl">cloud_queue</span>
-        <h1 class="text-lg font-bold leading-tight tracking-tighter text-gray-900 dark:text-white">
+        <h1 class="text-lg font-bold leading-tight tracking-tighter text-gray-900 text-white">
           {{ appName }}
         </h1>
       </div>
@@ -17,7 +17,7 @@
         <div class="relative">
           <button
             @click="toggleUserMenu"
-            class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-gray-200 text-gray-600 bg-gray-700 text-gray-300 hover:bg-gray-300 hover:bg-gray-600 transition-colors"
           >
             <span class="material-symbols-outlined">person</span>
           </button>
@@ -25,11 +25,11 @@
           <!-- User Dropdown Menu -->
           <div
             v-if="showUserMenu"
-            class="absolute right-0 top-12 z-20 w-48 rounded-lg border border-gray-200 bg-white py-2 shadow-xl dark:border-gray-700 dark:bg-gray-800"
+            class="absolute right-0 top-12 z-20 w-48 rounded-lg border border-gray-200  py-2 shadow-xl border-gray-700 bg-gray-800"
           >
-            <div class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
+            <div class="px-4 py-2 text-sm  text-gray-300">
               <p class="font-medium">{{ userData?.fullName || authStore.userName || 'Usuario' }}</p>
-              <p class="text-gray-500 dark:text-gray-400 text-xs">
+              <p class="  text-xs">
                 {{ userData?.email || authStore.userEmail || 'example@gmail.com' }}
               </p>
             </div>
@@ -37,15 +37,15 @@
             <!--change password-->
             <button
               @click="showChangePasswordModal = true"
-              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+              class="flex w-full items-center gap-2 px-4 py-2 text-sm  hover:bg-gray-100 text-gray-300 hover:bg-gray-700"
             >
               <span class="material-symbols-outlined text-base">lock</span>
               Change Password
             </button>
-            <div class="border-t border-gray-200 dark:border-gray-700"></div>
+            <div class="border-t border-gray-200 border-gray-700"></div>
             <button
               @click="logout"
-              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
+              class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 text-red-400 hover:bg-gray-700"
             >
               <span class="material-symbols-outlined text-base">logout</span>
               Cerrar Sesión
@@ -59,18 +59,18 @@
       <div class="mx-auto max-w-4xl space-y-6 mt-[10vh]">
         <div v-if="loading" class="flex flex-col items-center justify-center py-12">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A90E2] mb-4"></div>
-          <p class="text-gray-500 dark:text-gray-400">Cargando bases de datos...</p>
+          <p class=" ">Cargando bases de datos...</p>
         </div>
 
         <div
           v-else-if="error"
-          class="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-900/20"
+          class="rounded-xl border border-red-200 bg-red-50 p-6 text-center border-red-800 bg-red-900/20"
         >
           <span class="material-symbols-outlined text-red-500 text-4xl mb-3">error</span>
-          <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+          <h3 class="text-lg font-semibold text-red-800 text-red-200 mb-2">
             Error al cargar datos
           </h3>
-          <p class="text-red-600 dark:text-red-300 mb-4">{{ error }}</p>
+          <p class="text-red-600 text-red-300 mb-4">{{ error }}</p>
           <button
             @click="fetchDatabases"
             class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 transition-colors"
@@ -84,19 +84,19 @@
         <div v-else>
           <!-- Subscription Summary Card -->
           <div
-            class="flex flex-col items-start gap-4 rounded-xl border border-gray-200/50 bg-white p-5 dark:border-gray-700/50 dark:bg-gray-800/20 sm:flex-row sm:items-center sm:justify-between"
+            class="flex flex-col items-start gap-4 rounded-xl border border-gray-200/50  p-5 border-gray-700/50 bg-gray-800/20 sm:flex-row sm:items-center sm:justify-between"
           >
             <div class="flex flex-col gap-1">
-              <p class="text-base font-bold leading-tight text-gray-900 dark:text-white">
+              <p class="text-base font-bold leading-tight text-gray-900 text-white">
                 Current Plan: {{ subscription.plan }}
               </p>
-              <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
+              <p class="text-sm font-normal leading-normal  ">
                 {{ subscription.description }}
               </p>
             </div>
             <button
               @click="manageSubscription"
-              class="flex h-9 w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#4A90E2]/10 px-4 text-sm font-medium leading-normal text-[#4A90E2] hover:bg-[#4A90E2]/20 dark:bg-[#4A90E2]/20 dark:hover:bg-[#4A90E2]/30 sm:w-auto transition-colors"
+              class="flex h-9 w-full min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-[#4A90E2]/10 px-4 text-sm font-medium leading-normal text-[#4A90E2] hover:bg-[#4A90E2]/20 bg-[#4A90E2]/20 hover:bg-[#4A90E2]/30 sm:w-auto transition-colors"
             >
               <span>Manage Subscription</span>
             </button>
@@ -105,7 +105,7 @@
           <!-- Database Quota Section -->
           <section>
             <h2
-              class="px-1 pb-3 pt-2 text-xl font-bold leading-tight text-gray-900 dark:text-white"
+              class="px-1 pb-3 pt-2 text-xl font-bold leading-tight text-gray-900 text-white"
             >
               Database Quota
             </h2>
@@ -113,7 +113,7 @@
             <!-- Limit Information Banner -->
             <div
               v-if="computedQuotas.some((q) => q.isLimitReached)"
-              class="mb-4 bg-amber-500/20 border border-amber-500 text-amber-700 dark:text-amber-300 px-4 py-3 rounded-lg text-sm"
+              class="mb-4 bg-amber-500/20 border border-amber-500 text-amber-700 text-amber-300 px-4 py-3 rounded-lg text-sm"
             >
               <div class="flex items-start gap-2">
                 <div>
@@ -131,22 +131,22 @@
               <div
                 v-for="quota in computedQuotas"
                 :key="quota.type"
-                class="flex flex-col gap-3 rounded-xl border border-gray-200/50 bg-white p-4 dark:border-gray-700/50 dark:bg-gray-800/20"
+                class="flex flex-col gap-3 rounded-xl border border-gray-200/50  p-4 border-gray-700/50 bg-gray-800/20"
               >
                 <!-- Header with Status -->
                 <div class="flex items-center justify-between gap-6">
                   <div class="flex items-center gap-2">
-                    <p class="text-base font-medium leading-normal text-gray-900 dark:text-white">
+                    <p class="text-base font-medium leading-normal text-gray-900 text-white">
                       {{ quota.type }}
                     </p>
                   </div>
-                  <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
+                  <p class="text-sm font-normal leading-normal  ">
                     {{ quota.used }} of {{ quota.total }} used
                   </p>
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+                <div class="h-2 w-full rounded-full bg-gray-200 bg-gray-700">
                   <div
                     class="h-2 rounded-full transition-all duration-500"
                     :class="quota.color"
@@ -156,21 +156,21 @@
 
                 <!-- Status Information -->
                 <div class="flex justify-between items-center">
-                  <p class="text-sm font-normal leading-normal text-gray-500 dark:text-gray-400">
+                  <p class="text-sm font-normal leading-normal  ">
                     {{ quota.remaining }} remaining
                   </p>
 
                   <!-- Warning Message -->
                   <div
                     v-if="getLimitWarningForEngine(quota.engineId)"
-                    class="text-xs text-amber-600 dark:text-amber-400"
+                    class="text-xs text-amber-600 text-amber-400"
                   >
                     {{ getLimitWarningForEngine(quota.engineId) }}
                   </div>
                   <!-- Limit Reached Message -->
                   <div
                     v-if="quota.isLimitReached"
-                    class="text-xs text-red-600 dark:text-red-400 font-medium"
+                    class="text-xs text-red-600 text-red-400 font-medium"
                   >
                     Limit reached
                   </div>
@@ -179,7 +179,7 @@
                 <!-- Additional Info -->
                 <div
                   v-if="quota.isLimitReached"
-                  class="mt-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-2"
+                  class="mt-2 text-xs   border-t border-gray-200 border-gray-700 pt-2"
                 >
                   <p>Restore a deactivated database or upgrade your plan</p>
                 </div>
@@ -188,7 +188,7 @@
 
             <!-- Plan Information -->
             <div class="mt-4 text-center">
-              <p class="text-sm text-gray-500 dark:text-gray-400">
+              <p class="text-sm  ">
                 Current plan:
                 <span class="font-medium capitalize">{{ authStore.userPlan || 'free' }}</span> •
                 Limit: {{ engineLimit }} databases per engine
@@ -201,31 +201,31 @@
             <div
               class="flex flex-col gap-3 px-1 pb-3 pt-2 sm:flex-row sm:items-center sm:justify-between"
             >
-              <h2 class="text-xl font-bold leading-tight text-gray-900 dark:text-white">
+              <h2 class="text-xl font-bold leading-tight text-gray-900 text-white">
                 Your Databases
-                <span class="text-sm font-normal text-gray-500 ml-2"
+                <span class="text-sm font-normal  ml-2"
                   >({{ filteredDatabases.length }})</span
                 >
               </h2>
               <div class="flex gap-3">
                 <div class="relative w-full sm:max-w-xs">
                   <span
-                    class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 "
                     >search</span
                   >
                   <input
                     v-model="searchQuery"
-                    class="w-full rounded-lg border border-gray-200/50 bg-white py-2 pl-10 pr-4 text-sm focus:border-[#4A90E2] focus:ring-[#4A90E2] focus:outline-none dark:border-gray-700/50 dark:bg-gray-800/20 dark:text-gray-300 dark:placeholder-gray-500"
+                    class="w-full rounded-lg border border-gray-200/50  py-2 pl-10 pr-4 text-sm focus:border-[#4A90E2] focus:ring-[#4A90E2] focus:outline-none border-gray-700/50 bg-gray-800/20 text-gray-300 "
                     placeholder="Find a database..."
                     type="text"
                   />
                 </div>
                 <button
                   @click="refreshDatabases"
-                  class="flex items-center justify-center rounded-lg border border-gray-200/50 bg-white p-2 hover:bg-gray-50 dark:border-gray-700/50 dark:bg-gray-800/20 dark:hover:bg-gray-700/30 transition-colors"
+                  class="flex items-center justify-center rounded-lg border border-gray-200/50  p-2 hover:bg-gray-50 border-gray-700/50 bg-gray-800/20 hover:bg-gray-700/30 transition-colors"
                   :class="{ 'animate-spin': refreshing }"
                 >
-                  <span class="material-symbols-outlined text-gray-600 dark:text-gray-400"
+                  <span class="material-symbols-outlined text-gray-600 "
                     >refresh</span
                   >
                 </button>
@@ -238,19 +238,19 @@
                 v-for="db in filteredDatabases"
                 :key="db.id"
                 @click="openDatabase(db)"
-                class="group flex cursor-pointer items-center gap-4 rounded-xl border border-gray-200/50 bg-white p-4 transition-all hover:border-[#4A90E2]/50 hover:shadow-sm dark:border-gray-700/50 dark:bg-gray-800/20 dark:hover:border-[#4A90E2]/40"
+                class="group flex cursor-pointer items-center gap-4 rounded-xl border border-gray-200/50  p-4 transition-all hover:border-[#4A90E2]/50 hover:shadow-sm border-gray-700/50 bg-gray-800/20 hover:border-[#4A90E2]/40"
               >
                 <div
-                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#4A90E2]/10 dark:bg-[#4A90E2]/20"
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#4A90E2]/10 bg-[#4A90E2]/20"
                 >
                   <img :alt="`${db.engine} logo`" :src="getDatabaseLogo(db.engine)" />
                 </div>
                 <div class="flex-grow min-w-0">
                   <div class="flex items-center gap-2">
-                    <p class="font-semibold text-gray-900 dark:text-white truncate w-24">
+                    <p class="font-semibold text-gray-900 text-white truncate w-24">
                       {{ db.engine }}
                     </p>
-                    <p class="font-semibold text-gray-900 dark:text-white truncate">
+                    <p class="font-semibold text-gray-900 text-white truncate">
                       ID: {{ db.name }}
                     </p>
 
@@ -263,19 +263,19 @@
                     </span>
                   </div>
                   <div
-                    class="flex flex-wrap items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
+                    class="flex flex-wrap items-center gap-2 text-sm  "
                   >
                     <div class="flex items-center gap-1">
                       <div class="h-2 w-2 rounded-full" :class="getStatusColor(db.status)"></div>
                       <span>{{ db.status }}</span>
                     </div>
-                    <span class="text-gray-300 dark:text-gray-600 hidden xs:inline">|</span>
+                    <span class="text-gray-300 text-gray-600 hidden xs:inline">|</span>
                     <span class="hidden xs:inline">{{ db.region }} / {{ db.ram }}</span>
                     <span class="xs:hidden text-xs">{{ db.ram }}</span>
                   </div>
                 </div>
                 <span
-                  class="material-symbols-outlined text-gray-400 flex-shrink-0 transition-transform group-hover:translate-x-0.5"
+                  class="material-symbols-outlined  flex-shrink-0 transition-transform group-hover:translate-x-0.5"
                   >chevron_right</span
                 >
               </div>
@@ -284,15 +284,15 @@
             <!-- Empty State -->
             <div
               v-else
-              class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white p-12 text-center dark:border-gray-700 dark:bg-gray-800/20"
+              class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300  p-12 text-center border-gray-700 bg-gray-800/20"
             >
-              <span class="material-symbols-outlined mb-4 text-5xl text-gray-400 dark:text-gray-500"
+              <span class="material-symbols-outlined mb-4 text-5xl  "
                 >database</span
               >
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 class="text-lg font-semibold text-gray-900 text-white">
                 {{ searchQuery ? 'No databases found' : 'No databases yet' }}
               </h3>
-              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p class="mt-1 text-sm  ">
                 {{
                   searchQuery
                     ? 'Try a different search term.'
@@ -314,15 +314,15 @@
           <section v-if="deactivatedDatabases.length > 0" class="mt-8">
             <div class="flex flex-col gap-3 px-1 pb-3 pt-2">
               <h2
-                class="text-xl font-bold leading-tight text-gray-900 dark:text-white flex items-center gap-2"
+                class="text-xl font-bold leading-tight text-gray-900 text-white flex items-center gap-2"
               >
                 <span class="material-symbols-outlined text-amber-500">warning</span>
                 Deactivated Databases
-                <span class="text-sm font-normal text-gray-500 ml-2"
+                <span class="text-sm font-normal  ml-2"
                   >({{ deactivatedDatabases.length }})</span
                 >
               </h2>
-              <p class="text-sm text-gray-600 dark:text-gray-400">
+              <p class="text-sm text-gray-600 ">
                 These databases are scheduled for permanent deletion after 30 days. Restore them to
                 reactivate with new credentials.
               </p>
@@ -332,31 +332,31 @@
               <div
                 v-for="db in deactivatedDatabases"
                 :key="db.id"
-                class="group flex items-center gap-4 rounded-xl border border-amber-200/50 bg-amber-50/30 p-4 dark:border-amber-700/30 dark:bg-amber-900/10"
+                class="group flex items-center gap-4 rounded-xl border border-amber-200/50 bg-amber-50/30 p-4 border-amber-700/30 bg-amber-900/10"
               >
                 <div
-                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500/10 dark:bg-amber-500/20 grayscale opacity-60"
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-500/10 bg-amber-500/20 grayscale opacity-60"
                 >
                   <img :alt="`${db.engine} logo`" :src="getDatabaseLogo(db.engine)" />
                 </div>
 
                 <div class="flex-grow min-w-0">
                   <div class="flex items-center gap-2">
-                    <p class="font-semibold text-gray-900 dark:text-white truncate w-24">
+                    <p class="font-semibold text-gray-900 text-white truncate w-24">
                       {{ db.engine }}
                     </p>
-                    <p class="font-semibold text-gray-700 dark:text-gray-300 truncate">
+                    <p class="font-semibold  text-gray-300 truncate">
                       ID: {{ db.name }}
                     </p>
                     <span
-                      class="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-1 text-xs font-medium text-amber-700 dark:text-amber-400"
+                      class="inline-flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-1 text-xs font-medium text-amber-700 text-amber-400"
                     >
                       <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
                       Deactivated
                     </span>
                   </div>
                   <div
-                    class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1"
+                    class="flex items-center gap-2 text-sm   mt-1"
                   >
                     <span class="material-symbols-outlined text-xs">schedule</span>
                     <span>Grace period: 30 days remaining</span>
@@ -365,7 +365,7 @@
 
                 <button
                   @click="restoreDatabaseFromList(db)"
-                  class="flex items-center justify-center gap-2 rounded-lg bg-green-500/20 px-4 py-2 text-sm font-medium text-green-600 hover:bg-green-500/30 transition-colors dark:text-green-400"
+                  class="flex items-center justify-center gap-2 rounded-lg bg-green-500/20 px-4 py-2 text-sm font-medium text-green-600 hover:bg-green-500/30 transition-colors text-green-400"
                 >
                   <span class="material-symbols-outlined text-base">restore</span>
                   <span>Restore</span>
@@ -373,9 +373,9 @@
 
                 <button
                   @click="openDatabase(db)"
-                  class="flex items-center justify-center rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700/30 transition-colors"
+                  class="flex items-center justify-center rounded-lg p-2 hover:bg-gray-100 hover:bg-gray-700/30 transition-colors"
                 >
-                  <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                  <span class="material-symbols-outlined ">chevron_right</span>
                 </button>
               </div>
             </div>

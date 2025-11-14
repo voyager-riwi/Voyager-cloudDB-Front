@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-12 px-4 py-8 bg-gray-100 dark:bg-gray-900/50 dark:md:bg-gray-900/70">
+  <footer class="mt-12 px-4 py-8 bg-gray-100 bg-gray-900/50 md:bg-gray-900/70">
     <div class="flex justify-center items-center gap-6">
       <SocialLink
         v-for="link in socialLinks"
@@ -10,7 +10,7 @@
         :type="link.type"
       />
     </div>
-    <p class="text-center text-xs text-gray-500 dark:text-gray-500 mt-6">
+    <p class="text-center text-xs   mt-6">
       © 2024 CrudCloudDb. All rights reserved.
     </p>
   </footer>

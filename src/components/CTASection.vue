@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col items-center gap-6 p-4 py-16 text-center">
-    <h2 class="max-w-md text-3xl font-bold leading-tight text-zinc-900 dark:text-white">
+    <h2 class="max-w-md text-3xl font-bold leading-tight text-zinc-900 text-white">
       Ready to Streamline Your Database Workflow?
     </h2>
     <button

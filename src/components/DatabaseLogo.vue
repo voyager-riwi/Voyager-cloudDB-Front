@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-3">
     <div
-      class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat p-4 bg-white"
+      class="aspect-square w-full rounded-xl bg-cover bg-center bg-no-repeat p-4 "
       :style="{
         backgroundImage: `url('${image}')`,
         backgroundSize: '70%',

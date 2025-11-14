@@ -7,7 +7,7 @@
     >
       <button
         @click="goBack"
-        class="flex size-10 shrink-0 items-center justify-center rounded-full text-white hover:bg-white/10"
+        class="flex size-10 shrink-0 items-center justify-center rounded-full text-white hover:/10"
       >
         <span class="material-symbols-outlined text-2xl">arrow_back</span>
       </button>
@@ -27,7 +27,7 @@
           <h1 class="text-2xl font-bold leading-tight tracking-tight text-white mb-2">
             Update Password
           </h1>
-          <p class="text-gray-400 text-sm">Create a new strong password for your account</p>
+          <p class=" text-sm">Create a new strong password for your account</p>
         </div>
 
         <div class="space-y-6">
@@ -38,7 +38,7 @@
               <input
                 v-model="form.currentPassword"
                 :type="showCurrentPassword ? 'text' : 'password'"
-                class="h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-600 bg-[#192b33] p-3 text-base font-normal leading-normal text-white placeholder:text-gray-400 focus:border-blue-500 focus:outline-0 focus:ring-2 focus:ring-blue-500/20"
+                class="h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border  bg-[#192b33] p-3 text-base font-normal leading-normal text-white placeholder: focus:border-blue-500 focus:outline-0 focus:ring-2 focus:ring-blue-500/20"
                 placeholder="Enter your current password"
                 :class="{ 'border-red-500': errors.currentPassword }"
               />
@@ -46,7 +46,7 @@
                 <button
                   type="button"
                   @click="showCurrentPassword = !showCurrentPassword"
-                  class="text-gray-400 hover:text-white"
+                  class=" hover:text-white"
                 >
                   <span class="material-symbols-outlined text-2xl">
                     {{ showCurrentPassword ? 'visibility' : 'visibility_off' }}
@@ -66,7 +66,7 @@
               <input
                 v-model="form.newPassword"
                 :type="showNewPassword ? 'text' : 'password'"
-                class="h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-600 bg-[#192b33] p-3 text-base font-normal leading-normal text-white placeholder:text-gray-400 focus:border-blue-500 focus:outline-0 focus:ring-2 focus:ring-blue-500/20"
+                class="h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border  bg-[#192b33] p-3 text-base font-normal leading-normal text-white placeholder: focus:border-blue-500 focus:outline-0 focus:ring-2 focus:ring-blue-500/20"
                 placeholder="Enter your new password"
                 :class="{ 'border-red-500': errors.newPassword }"
                 @input="validatePassword"
@@ -75,7 +75,7 @@
                 <button
                   type="button"
                   @click="showNewPassword = !showNewPassword"
-                  class="text-gray-400 hover:text-white"
+                  class=" hover:text-white"
                 >
                   <span class="material-symbols-outlined text-2xl">
                     {{ showNewPassword ? 'visibility' : 'visibility_off' }}
@@ -95,7 +95,7 @@
               <input
                 v-model="form.confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
-                class="h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border border-gray-600 bg-[#192b33] p-3 text-base font-normal leading-normal text-white placeholder:text-gray-400 focus:border-blue-500 focus:outline-0 focus:ring-2 focus:ring-blue-500/20"
+                class="h-12 w-full flex-1 resize-none overflow-hidden rounded-lg border  bg-[#192b33] p-3 text-base font-normal leading-normal text-white placeholder: focus:border-blue-500 focus:outline-0 focus:ring-2 focus:ring-blue-500/20"
                 placeholder="Confirm your new password"
                 :class="{ 'border-red-500': errors.confirmPassword }"
                 @input="validatePassword"
@@ -104,7 +104,7 @@
                 <button
                   type="button"
                   @click="showConfirmPassword = !showConfirmPassword"
-                  class="text-gray-400 hover:text-white"
+                  class=" hover:text-white"
                 >
                   <span class="material-symbols-outlined text-2xl">
                     {{ showConfirmPassword ? 'visibility' : 'visibility_off' }}
@@ -126,7 +126,7 @@
           <ul class="space-y-2 text-sm text-gray-300">
             <li
               class="flex items-center"
-              :class="passwordRequirements.minLength ? 'text-green-400' : 'text-gray-400'"
+              :class="passwordRequirements.minLength ? 'text-green-400' : ''"
             >
               <span class="material-symbols-outlined mr-2 text-base">
                 {{ passwordRequirements.minLength ? 'check_circle' : 'radio_button_unchecked' }}
@@ -135,7 +135,7 @@
             </li>
             <li
               class="flex items-center"
-              :class="passwordRequirements.upperLower ? 'text-green-400' : 'text-gray-400'"
+              :class="passwordRequirements.upperLower ? 'text-green-400' : ''"
             >
               <span class="material-symbols-outlined mr-2 text-base">
                 {{ passwordRequirements.upperLower ? 'check_circle' : 'radio_button_unchecked' }}
@@ -144,7 +144,7 @@
             </li>
             <li
               class="flex items-center"
-              :class="passwordRequirements.number ? 'text-green-400' : 'text-gray-400'"
+              :class="passwordRequirements.number ? 'text-green-400' : ''"
             >
               <span class="material-symbols-outlined mr-2 text-base">
                 {{ passwordRequirements.number ? 'check_circle' : 'radio_button_unchecked' }}
@@ -153,7 +153,7 @@
             </li>
             <li
               class="flex items-center"
-              :class="passwordRequirements.specialChar ? 'text-green-400' : 'text-gray-400'"
+              :class="passwordRequirements.specialChar ? 'text-green-400' : ''"
             >
               <span class="material-symbols-outlined mr-2 text-base">
                 {{ passwordRequirements.specialChar ? 'check_circle' : 'radio_button_unchecked' }}
@@ -182,7 +182,7 @@
             v-if="!isStandalone"
             @click="$emit('cancel')"
             :disabled="loading"
-            class="flex h-12 w-full items-center justify-center rounded-lg border border-gray-600 px-6 text-base font-bold text-gray-300 transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+            class="flex h-12 w-full items-center justify-center rounded-lg border  px-6 text-base font-bold text-gray-300 transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>

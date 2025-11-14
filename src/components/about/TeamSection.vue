@@ -1,7 +1,7 @@
 <template>
   <!-- Meet the Team Section -->
   <h3
-    class="text-gray-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
+    class="text-gray-900 text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
   >
     Meet the Team
   </h3>
@@ -20,8 +20,8 @@
           :alt="member.alt"
         />
         <div class="text-center">
-          <p class="font-bold text-sm text-gray-900 dark:text-white">{{ member.name }}</p>
-          <p class="text-xs text-gray-600 dark:text-gray-400">{{ member.position }}</p>
+          <p class="font-bold text-sm text-gray-900 text-white">{{ member.name }}</p>
+          <p class="text-xs text-gray-600 ">{{ member.position }}</p>
         </div>
       </div>
     </div>

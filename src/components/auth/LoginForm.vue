@@ -95,7 +95,7 @@
 
     <!-- Contenedor Principal del Login -->
     <div
-      class="login-container min-h-screen flex items-center justify-center p-4 font-display bg-black dark:bg-background-dark font-display"
+      class="login-container min-h-screen flex items-center justify-center p-4 font-display bg-black bg-background-dark font-display"
     >
       <div class="w-full max-w-md">
         <!-- Logo y título -->
@@ -110,9 +110,9 @@
 
           <!-- Título con elementos decorativos -->
           <div class="flex items-center justify-center gap-3 mb-4">
-            <img src="@/assets/images/diamonds.svg" alt="" class="text-gray-500 w-5 h-5" />
+            <img src="@/assets/images/diamonds.svg" alt="" class=" w-5 h-5" />
             <h2 class="text-2xl text-white text-7xl tracking-wide">INICIAR SESION</h2>
-            <img src="@/assets/images/diamonds.svg" alt="" class="text-gray-500 w-5 h-5" />
+            <img src="@/assets/images/diamonds.svg" alt="" class=" w-5 h-5" />
           </div>
         </div>
 
@@ -128,7 +128,7 @@
               type="email"
               required
               placeholder="Ingresa tu correo electrónico"
-              class="w-full bg-transparent border border-gray-600 text-white px-4 py-4 rounded-none focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-500"
+              class="w-full bg-transparent border  text-white px-4 py-4 rounded-none focus:outline-none focus:border-gray-400 transition-colors "
               :disabled="loading"
             />
           </div>
@@ -144,7 +144,7 @@
                 :type="showPassword ? 'text' : 'password'"
                 required
                 placeholder="Ingresa tu contraseña"
-                class="w-full font-sans bg-transparent border border-gray-600 text-white px-4 py-4 pr-12 rounded-none focus:outline-none focus:border-gray-400 transition-colors placeholder-gray-500"
+                class="w-full font-sans bg-transparent border  text-white px-4 py-4 pr-12 rounded-none focus:outline-none focus:border-gray-400 transition-colors "
                 :disabled="loading"
               />
               <button
@@ -198,10 +198,10 @@
 
         <!-- Enlace de registro -->
         <div class="text-center">
-          <p class="text-gray-400 text-base mb-4">¿No tienes una cuenta?</p>
+          <p class=" text-base mb-4">¿No tienes una cuenta?</p>
           <button
             @click="$router.push('/register')"
-            class="w-full bg-transparent border border-white rounded-full py-3 px-11 text-white text-sm font-black uppercase tracking-[1.63px] leading-[14px] text-center transition-all duration-100 ease-in hover:bg-white hover:text-black focus:outline-none relative box-border"
+            class="w-full bg-transparent border border-white rounded-full py-3 px-11 text-white text-sm font-black uppercase tracking-[1.63px] leading-[14px] text-center transition-all duration-100 ease-in hover: hover:text-black focus:outline-none relative box-border"
           >
             Regístrate aquí
           </button>

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#192b33] dark:bg-background-dark font-display">
+  <div class="min-h-screen bg-[#192b33] bg-background-dark font-display">
     <main>
       <HeroSection />
       <FeatureSection />

@@ -4,22 +4,22 @@
     :style="backgroundStyle"
   >
     <!-- Overlay para mejorar legibilidad del texto -->
-    <div class="absolute inset-0 bg-black/20 dark:bg-black/40 z-0"></div>
+    <div class="absolute inset-0 bg-black/20 bg-black/40 z-0"></div>
 
     <!-- Contenido principal con z-index superior -->
     <div class="relative z-10">
       <!-- TopAppBar -->
       <div
-        class="flex items-center bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm p-4 pb-2 justify-between sticky top-0 z-20 border-b border-white/5"
+        class="flex items-center bg-background-light/80 bg-background-dark/80 backdrop-blur-sm p-4 pb-2 justify-between sticky top-0 z-20 border-b border-white/5"
       >
         <button
           @click="goBack"
-          class="text-slate-800 dark:text-white flex size-12 shrink-0 items-center justify-center hover:bg-white/10 rounded-full transition-colors"
+          class="text-slate-800 text-white flex size-12 shrink-0 items-center justify-center hover:/10 rounded-full transition-colors"
         >
           <span class="material-symbols-outlined text-2xl">arrow_back</span>
         </button>
         <h1
-          class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center"
+          class="text-slate-900 text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center"
         >
           {{ database.name }}
         </h1>
@@ -45,49 +45,49 @@
         <!-- Database Details Card -->
         <section>
           <h2
-            class="text-slate-900 dark:text-white tracking-light text-[28px] font-bold leading-tight text-left pb-3"
+            class="text-slate-900 text-white tracking-light text-[28px] font-bold leading-tight text-left pb-3"
           >
             Database Details
           </h2>
-          <div class="bg-white/90 dark:bg-[#111c22]/90 dark:md:bg-[#111c22]/95 backdrop-blur-sm rounded-xl shadow-sm">
+          <div class="/90 bg-[#111c22]/90 md:bg-[#111c22]/95 backdrop-blur-sm rounded-xl shadow-sm">
             <div class="p-4 grid grid-cols-[35%_1fr] md:grid-cols-[20%_1fr] gap-x-6">
               <div
-                class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 dark:border-t-[#325567] py-5"
+                class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 border-t-[#325567] py-5"
               >
-                <p class="text-slate-500 dark:text-[#92b7c9] text-sm font-normal leading-normal">
+                <p class="text-slate-500 text-[#92b7c9] text-sm font-normal leading-normal">
                   Region
                 </p>
-                <p class="text-slate-900 dark:text-white text-sm font-normal leading-normal">
+                <p class="text-slate-900 text-white text-sm font-normal leading-normal">
                   {{ database.region }}
                 </p>
               </div>
               <div
-                class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 dark:border-t-[#325567] py-5"
+                class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 border-t-[#325567] py-5"
               >
-                <p class="text-slate-500 dark:text-[#92b7c9] text-sm font-normal leading-normal">
+                <p class="text-slate-500 text-[#92b7c9] text-sm font-normal leading-normal">
                   Motor & Version
                 </p>
-                <p class="text-slate-900 dark:text-white text-sm font-normal leading-normal">
+                <p class="text-slate-900 text-white text-sm font-normal leading-normal">
                   {{ database.engine }} {{ database.version }}
                 </p>
               </div>
               <div
-                class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 dark:border-t-[#325567] py-5"
+                class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 border-t-[#325567] py-5"
               >
-                <p class="text-slate-500 dark:text-[#92b7c9] text-sm font-normal leading-normal">
+                <p class="text-slate-500 text-[#92b7c9] text-sm font-normal leading-normal">
                   Plan
                 </p>
-                <p class="text-slate-900 dark:text-white text-sm font-normal leading-normal">
+                <p class="text-slate-900 text-white text-sm font-normal leading-normal">
                   {{ database.plan }}
                 </p>
               </div>
               <div
-                class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 dark:border-t-[#325567] py-5"
+                class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 border-t-[#325567] py-5"
               >
-                <p class="text-slate-500 dark:text-[#92b7c9] text-sm font-normal leading-normal">
+                <p class="text-slate-500 text-[#92b7c9] text-sm font-normal leading-normal">
                   Creation Date
                 </p>
-                <p class="text-slate-900 dark:text-white text-sm font-normal leading-normal">
+                <p class="text-slate-900 text-white text-sm font-normal leading-normal">
                   {{ formatDate(database.createdAt) }}
                 </p>
               </div>
@@ -98,12 +98,12 @@
         <!-- Connection Credentials Card -->
         <section>
           <h2
-            class="text-slate-900 dark:text-white tracking-light text-[28px] font-bold leading-tight text-left pb-3"
+            class="text-slate-900 text-white tracking-light text-[28px] font-bold leading-tight text-left pb-3"
           >
             Connection Credentials
           </h2>
           <div
-            class="bg-white/90 dark:bg-[#111c22]/90 dark:md:bg-[#111c22]/95 backdrop-blur-sm rounded-xl shadow-sm p-4 space-y-4"
+            class="/90 bg-[#111c22]/90 md:bg-[#111c22]/95 backdrop-blur-sm rounded-xl shadow-sm p-4 space-y-4"
           >
             <!-- New Credentials Notice (cuando username indica que son nuevas credenciales) -->
             <div
@@ -123,16 +123,16 @@
                 >
               </div>
               <div class="max-w-md">
-                <h3 class="text-green-600 dark:text-green-400 text-lg font-bold mb-2">
+                <h3 class="text-green-600 text-green-400 text-lg font-bold mb-2">
                   ✨ Database Restored Successfully!
                 </h3>
-                <p class="text-green-600/80 dark:text-green-400/80 text-sm mb-3">
+                <p class="text-green-600/80 text-green-400/80 text-sm mb-3">
                   Your database has been restored with <strong>brand new credentials</strong>.
                 </p>
-                <div class="bg-white/50 dark:bg-black/20 rounded-lg p-3 text-left space-y-2">
+                <div class="/50 bg-black/20 rounded-lg p-3 text-left space-y-2">
                   <div class="flex items-start gap-2">
                     <span class="material-symbols-outlined text-blue-500 text-sm mt-0.5">mail</span>
-                    <p class="text-slate-700 dark:text-slate-300 text-xs">
+                    <p class="text-slate-700 text-slate-300 text-xs">
                       Check your <strong>email inbox</strong> for the new username and password
                     </p>
                   </div>
@@ -140,7 +140,7 @@
                     <span class="material-symbols-outlined text-amber-500 text-sm mt-0.5"
                       >lock</span
                     >
-                    <p class="text-slate-700 dark:text-slate-300 text-xs">
+                    <p class="text-slate-700 text-slate-300 text-xs">
                       Old credentials are no longer valid for security reasons
                     </p>
                   </div>
@@ -148,7 +148,7 @@
                     <span class="material-symbols-outlined text-purple-500 text-sm mt-0.5"
                       >refresh</span
                     >
-                    <p class="text-slate-700 dark:text-slate-300 text-xs">
+                    <p class="text-slate-700 text-slate-300 text-xs">
                       Refresh this page after checking your email to see the connection details
                     </p>
                   </div>
@@ -156,7 +156,7 @@
               </div>
               <button
                 @click="fetchDatabaseDetails"
-                class="mt-2 flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 text-green-600 dark:text-green-400 hover:bg-green-500/30 transition-colors font-medium text-sm"
+                class="mt-2 flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 text-green-600 text-green-400 hover:bg-green-500/30 transition-colors font-medium text-sm"
               >
                 <span class="material-symbols-outlined text-base">refresh</span>
                 Refresh Details
@@ -172,7 +172,7 @@
               class="flex items-start gap-3 p-3 rounded-lg bg-amber-500/10"
             >
               <span class="material-symbols-outlined text-amber-500 mt-0.5">warning</span>
-              <p class="text-amber-700 dark:text-amber-400 text-sm">
+              <p class="text-amber-700 text-amber-400 text-sm">
                 Handle credentials securely. The password can only be revealed once per session for
                 security reasons.
               </p>
@@ -185,23 +185,23 @@
             >
               <div class="relative">
                 <div
-                  class="absolute inset-0 bg-slate-400/20 dark:bg-slate-600/20 rounded-full blur-xl"
+                  class="absolute inset-0 bg-slate-400/20 bg-slate-600/20 rounded-full blur-xl"
                 ></div>
                 <span
-                  class="material-symbols-outlined text-slate-400 dark:text-slate-600 text-7xl relative"
+                  class="material-symbols-outlined text-slate-400 text-slate-600 text-7xl relative"
                   >lock</span
                 >
               </div>
               <div class="max-w-sm">
-                <h3 class="text-slate-600 dark:text-slate-400 text-base font-semibold mb-2">
+                <h3 class="text-slate-600 text-slate-400 text-base font-semibold mb-2">
                   Credentials Not Available
                 </h3>
-                <p class="text-slate-500 dark:text-slate-500 text-sm mb-4">
+                <p class="text-slate-500 text-slate-500 text-sm mb-4">
                   The connection credentials for this database are not currently visible in this
                   interface.
                 </p>
-                <div class="bg-slate-100 dark:bg-slate-800/50 rounded-lg p-3 text-left">
-                  <p class="text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
+                <div class="bg-slate-100 bg-slate-800/50 rounded-lg p-3 text-left">
+                  <p class="text-slate-600 text-slate-400 text-xs leading-relaxed">
                     💡 <strong>Tip:</strong> If you recently created or restored this database,
                     check your email for the credentials. They were sent for security purposes.
                   </p>
@@ -215,18 +215,18 @@
                 credentials.username &&
                 !credentials.username.includes('[New credentials sent to email]')
               "
-              class="grid grid-cols-1 divide-y divide-slate-200 dark:divide-[#325567]"
+              class="grid grid-cols-1 divide-y divide-slate-200 divide-[#325567]"
             >
               <!-- Host -->
               <div class="flex justify-between items-center py-4">
-                <span class="text-slate-500 dark:text-[#92b7c9] text-sm">Host</span>
+                <span class="text-slate-500 text-[#92b7c9] text-sm">Host</span>
                 <div class="flex items-center gap-2">
-                  <p class="text-slate-900 dark:text-white text-sm font-mono">
+                  <p class="text-slate-900 text-white text-sm font-mono">
                     {{ credentials.host }}
                   </p>
                   <button
                     @click="copyToClipboard(credentials.host)"
-                    class="text-slate-500 dark:text-[#92b7c9] hover:text-primary transition-colors"
+                    class="text-slate-500 text-[#92b7c9] hover:text-primary transition-colors"
                   >
                     <span class="material-symbols-outlined text-base">content_copy</span>
                   </button>
@@ -235,14 +235,14 @@
 
               <!-- Port -->
               <div class="flex justify-between items-center py-4">
-                <span class="text-slate-500 dark:text-[#92b7c9] text-sm">Port</span>
+                <span class="text-slate-500 text-[#92b7c9] text-sm">Port</span>
                 <div class="flex items-center gap-2">
-                  <p class="text-slate-900 dark:text-white text-sm font-mono">
+                  <p class="text-slate-900 text-white text-sm font-mono">
                     {{ credentials.port }}
                   </p>
                   <button
                     @click="copyToClipboard(credentials.port.toString())"
-                    class="text-slate-500 dark:text-[#92b7c9] hover:text-primary transition-colors"
+                    class="text-slate-500 text-[#92b7c9] hover:text-primary transition-colors"
                   >
                     <span class="material-symbols-outlined text-base">content_copy</span>
                   </button>
@@ -251,14 +251,14 @@
 
               <!-- Username -->
               <div class="flex justify-between items-center py-4">
-                <span class="text-slate-500 dark:text-[#92b7c9] text-sm">Username</span>
+                <span class="text-slate-500 text-[#92b7c9] text-sm">Username</span>
                 <div class="flex items-center gap-2">
-                  <p class="text-slate-900 dark:text-white text-sm font-mono">
+                  <p class="text-slate-900 text-white text-sm font-mono">
                     {{ credentials.username }}
                   </p>
                   <button
                     @click="copyToClipboard(credentials.username)"
-                    class="text-slate-500 dark:text-[#92b7c9] hover:text-primary transition-colors"
+                    class="text-slate-500 text-[#92b7c9] hover:text-primary transition-colors"
                   >
                     <span class="material-symbols-outlined text-base">content_copy</span>
                   </button>
@@ -267,14 +267,14 @@
 
               <!-- Database Name -->
               <div class="flex justify-between items-center py-4">
-                <span class="text-slate-500 dark:text-[#92b7c9] text-sm">DB Name</span>
+                <span class="text-slate-500 text-[#92b7c9] text-sm">DB Name</span>
                 <div class="flex items-center gap-2">
-                  <p class="text-slate-900 dark:text-white text-sm font-mono">
+                  <p class="text-slate-900 text-white text-sm font-mono">
                     {{ credentials.databaseName }}
                   </p>
                   <button
                     @click="copyToClipboard(credentials.databaseName)"
-                    class="text-slate-500 dark:text-[#92b7c9] hover:text-primary transition-colors"
+                    class="text-slate-500 text-[#92b7c9] hover:text-primary transition-colors"
                   >
                     <span class="material-symbols-outlined text-base">content_copy</span>
                   </button>
@@ -283,9 +283,9 @@
 
               <!-- Password -->
               <div class="flex justify-between items-center py-4">
-                <span class="text-slate-500 dark:text-[#92b7c9] text-sm">Password</span>
+                <span class="text-slate-500 text-[#92b7c9] text-sm">Password</span>
                 <div class="flex items-center gap-2">
-                  <p class="text-slate-900 dark:text-white text-sm font-mono tracking-widest">
+                  <p class="text-slate-900 text-white text-sm font-mono tracking-widest">
                     {{ showPassword ? credentials.password : '••••••••••••••••' }}
                   </p>
                   <button
@@ -309,14 +309,14 @@
           <div class="flex items-start gap-3 p-4 rounded-lg bg-red-500/10 border border-red-500/20">
             <span class="material-symbols-outlined text-red-500 mt-0.5">warning</span>
             <div class="flex-1">
-              <p class="text-red-600 dark:text-red-400 text-sm font-semibold mb-1">
+              <p class="text-red-600 text-red-400 text-sm font-semibold mb-1">
                 ⚠️ Database Scheduled for Deletion
               </p>
-              <p class="text-red-600/80 dark:text-red-400/80 text-sm">
+              <p class="text-red-600/80 text-red-400/80 text-sm">
                 This database is marked for deletion. You have
                 <strong>{{ daysRemaining }} days</strong> to restore it before permanent deletion.
               </p>
-              <p class="text-red-600/70 dark:text-red-400/70 text-xs mt-2">
+              <p class="text-red-600/70 text-red-400/70 text-xs mt-2">
                 Grace period: 30 days from deletion date
               </p>
             </div>
@@ -330,7 +330,7 @@
             v-if="isDeleted"
             @click="restoreDatabase"
             :disabled="loading"
-            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-green-500/20 text-green-600 dark:bg-green-500/20 dark:text-green-400 hover:bg-green-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
+            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-green-500/20 text-green-600 bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
           >
             <span class="material-symbols-outlined">restore</span>
             {{ loading ? 'Restoring...' : 'Restore Database' }}
@@ -341,7 +341,7 @@
             v-if="!isDeleted"
             @click="resetPassword"
             :disabled="loading"
-            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-[#1193d4]/20 text-[#1193d4] dark:bg-[#1193d4]/20 dark:text-[#1193d4] hover:bg-[#1193d4]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
+            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-[#1193d4]/20 text-[#1193d4] bg-[#1193d4]/20 text-[#1193d4] hover:bg-[#1193d4]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
           >
             <span class="material-symbols-outlined">lock_reset</span>
             {{ loading ? 'Resetting...' : 'Reset Password' }}
@@ -352,7 +352,7 @@
             v-if="!isDeleted"
             @click="rotateCredentials"
             :disabled="loading"
-            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-purple-500/20 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400 hover:bg-purple-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
+            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-purple-500/20 text-purple-600 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
           >
             <span class="material-symbols-outlined">refresh</span>
             {{ loading ? 'Rotating...' : 'Rotate Credentials' }}
@@ -363,7 +363,7 @@
             v-if="!isDeleted"
             @click="deleteDatabase"
             :disabled="loading"
-            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400 hover:bg-red-500/20 dark:hover:bg-red-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
+            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-red-500/10 text-red-600 bg-red-500/20 text-red-400 hover:bg-red-500/20 hover:bg-red-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
           >
             <span class="material-symbols-outlined">delete</span>
             {{ loading ? 'Deleting...' : 'Delete Database' }}
@@ -461,13 +461,13 @@ const statusClasses = computed(() => {
   const status = database.value.status?.toLowerCase()
   switch (status) {
     case 'active':
-      return 'bg-green-500/20 dark:bg-[#233c48]'
+      return 'bg-green-500/20 bg-[#233c48]'
     case 'pending':
-      return 'bg-amber-500/20 dark:bg-amber-500/20'
+      return 'bg-amber-500/20 bg-amber-500/20'
     case 'error':
-      return 'bg-red-500/20 dark:bg-red-500/20'
+      return 'bg-red-500/20 bg-red-500/20'
     default:
-      return 'bg-gray-500/20 dark:bg-gray-500/20'
+      return 'bg-gray-500/20 bg-gray-500/20'
   }
 })
 
@@ -475,13 +475,13 @@ const statusIconClasses = computed(() => {
   const status = database.value.status?.toLowerCase()
   switch (status) {
     case 'active':
-      return 'text-green-500 dark:text-white'
+      return 'text-green-500 text-white'
     case 'pending':
-      return 'text-amber-500 dark:text-amber-400'
+      return 'text-amber-500 text-amber-400'
     case 'error':
-      return 'text-red-500 dark:text-red-400'
+      return 'text-red-500 text-red-400'
     default:
-      return 'text-gray-500 dark:text-gray-400'
+      return ' '
   }
 })
 
@@ -489,13 +489,13 @@ const statusTextClasses = computed(() => {
   const status = database.value.status?.toLowerCase()
   switch (status) {
     case 'active':
-      return 'text-green-700 dark:text-white'
+      return 'text-green-700 text-white'
     case 'pending':
-      return 'text-amber-700 dark:text-amber-400'
+      return 'text-amber-700 text-amber-400'
     case 'error':
-      return 'text-red-700 dark:text-red-400'
+      return 'text-red-700 text-red-400'
     default:
-      return 'text-gray-700 dark:text-gray-400'
+      return ' '
   }
 })
 

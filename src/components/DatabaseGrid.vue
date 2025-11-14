@@ -1,7 +1,7 @@
 <template>
   <div>
     <h4
-      class="px-4 py-2 text-center text-sm font-bold leading-normal tracking-[0.015em] text-zinc-600 dark:text-zinc-300"
+      class="px-4 py-2 text-center text-sm font-bold leading-normal tracking-[0.015em] text-zinc-600 text-zinc-300"
     >
       Connect Your Favorite Databases
     </h4>

@@ -12,7 +12,7 @@
       <div class="w-28 h-1 bg-gradient-to-r from-gray-500 to-gray-300 rounded-full"></div>
     </header>
     <button
-      class="absolute left-6 top-6 flex items-center justify-center z-20 rounded-full size-10 bg-gray-800/60 border border-gray-700/50 backdrop-blur-sm text-gray-200 transition-all hover:text-white hover:bg-gray-700/70 hover:border-gray-600 md:left-8 md:top-8"
+      class="absolute left-6 top-6 flex items-center justify-center z-20 rounded-full size-10 border border-gray-700/50 backdrop-blur-sm text-gray-200 transition-all hover:text-white hover:bg-gray-700/70 hover: md:left-8 md:top-8"
       @click="goHome"
     >
       <span class="material-symbols-outlined text-lg">arrow_back</span>
@@ -20,7 +20,7 @@
 
     <main class="flex-1 px-6 py-8 flex flex-col max-w-md mx-auto w-full z-10">
       <div class="text-center mb-10">
-        <p class="text-gray-400 text-sm">Únete a nuestra plataforma de administración</p>
+        <p class="text-sm">Únete a nuestra plataforma de administración</p>
       </div>
 
       <form @submit.prevent="handleSubmit" class="flex flex-col gap-6">
@@ -31,7 +31,7 @@
               <input
                 v-model="form.firstName"
                 autocomplete="given-name"
-                class="w-full rounded-lg bg-gray-800/60 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder:text-gray-500 p-4 text-base font-normal transition-all"
+                class="w-full rounded-lg border text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder: p-4 text-base font-normal transition-all"
                 placeholder="Ej: Juan"
                 type="text"
                 required
@@ -44,7 +44,7 @@
               <input
                 v-model="form.lastName"
                 autocomplete="family-name"
-                class="w-full rounded-lg bg-gray-800/60 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder:text-gray-500 p-4 text-base font-normal transition-all"
+                class="w-full rounded-lg border text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder: p-4 text-base font-normal transition-all"
                 placeholder="Ej: Pérez"
                 type="text"
                 required
@@ -58,7 +58,7 @@
             <input
               v-model="form.email"
               autocomplete="email"
-              class="w-full rounded-lg bg-gray-800/60 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder:text-gray-500 p-4 text-base font-normal transition-all"
+              class="w-full rounded-lg border text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder: p-4 text-base font-normal transition-all"
               placeholder="juan.perez@ejemplo.com"
               type="email"
               required
@@ -73,14 +73,14 @@
                 v-model="form.password"
                 :type="showPassword ? 'text' : 'password'"
                 autocomplete="new-password"
-                class="flex w-full rounded-l-lg bg-gray-800/60 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder:text-gray-500 p-4 border-r-0 text-base font-normal transition-all"
+                class="flex w-full rounded-l-lg border text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder: p-4 border-r-0 text-base font-normal transition-all"
                 placeholder="8+ caracteres, una mayúscula, un número"
                 required
                 :disabled="isSubmitting"
               />
               <button
                 type="button"
-                class="text-gray-400 flex border border-gray-600 bg-gray-800/60 items-center justify-center px-4 rounded-r-lg border-l-0 hover:bg-gray-700/60 transition-colors"
+                class="flex border items-center justify-center px-4 rounded-r-lg border-l-0 ho transition-colors"
                 @click="togglePasswordVisibility"
                 :disabled="isSubmitting"
               >
@@ -99,14 +99,14 @@
                 v-model="form.confirmPassword"
                 :type="showConfirmPassword ? 'text' : 'password'"
                 autocomplete="new-password"
-                class="flex w-full rounded-l-lg bg-gray-800/60 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder:text-gray-500 p-4 border-r-0 text-base font-normal transition-all"
+                class="flex w-full rounded-l-lg border text-white focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 h-12 placeholder: p-4 border-r-0 text-base font-normal transition-all"
                 placeholder="Vuelve a escribir tu contraseña"
                 required
                 :disabled="isSubmitting"
               />
               <button
                 type="button"
-                class="text-gray-400 flex border border-gray-600 bg-gray-800/60 items-center justify-center px-4 rounded-r-lg border-l-0 hover:bg-gray-700/60 transition-colors"
+                class="flex border items-center justify-center px-4 rounded-r-lg border-l-0 ho transition-colors"
                 @click="toggleConfirmPasswordVisibility"
                 :disabled="isSubmitting"
               >
@@ -131,7 +131,7 @@
             required
             :disabled="isSubmitting"
           />
-          <label class="text-gray-400 text-sm" for="terms">
+          <label class="text-sm" for="terms">
             Acepto los
             <a
               class="font-semibold text-gray-300 hover:underline cursor-pointer"
@@ -186,7 +186,7 @@
         </div>
       </form>
 
-      <p class="text-center text-gray-400 text-base font-normal leading-normal pb-6 pt-4">
+      <p class="text-center text-base font-normal leading-normal pb-6 pt-4">
         ¿Ya tienes una cuenta?
         <a class="font-bold text-gray-300 hover:underline cursor-pointer" @click="navigateToLogin">
           Iniciar Sesión

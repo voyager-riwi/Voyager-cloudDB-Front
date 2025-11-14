@@ -31,7 +31,6 @@ body {
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--background-light);
-  color: #0f172a;
 }
 
 @font-face {
