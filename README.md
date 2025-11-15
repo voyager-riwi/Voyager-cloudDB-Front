@@ -10,7 +10,7 @@
 
 **Interfaz mágica para gestionar bases de datos en la nube** ✨
 
-[Ver Demo](https://voyager.andrescortes.dev) • [Backend API](https://service.voyager.andrescortes.dev) • [Documentación](#documentación)
+[Frontend](https://voyager.andrescortes.dev) •[Backend API](https://service.voyager.andrescortes.dev) 
 
 </div>
 
