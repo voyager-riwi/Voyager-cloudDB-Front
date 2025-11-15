@@ -2,11 +2,13 @@
 
 <div align="center">
 
-![PotterCloud](https://img.shields.io/badge/PotterCloud-Frontend-7B68EE?style=for-the-badge&logo=vue.js)
+![PotterCloud](https://img.shields.io/badge/PotterCloud-Frontend-7B68EE?style=for-the-badge&logo=vue.js&logoColor=white)
 ![Vue 3](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white)
+![Vue-Router](https://img.shields.io/badge/Vue_Router-4.x-42B883?style=for-the-badge&logo=vue.js&logoColor=white)
+![Pinia](https://img.shields.io/badge/Pinia-2.x-DC2626?style=for-the-badge&logo=pinia&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-Automation-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 
 **Interfaz mágica para gestionar bases de datos en la nube** ✨
 
