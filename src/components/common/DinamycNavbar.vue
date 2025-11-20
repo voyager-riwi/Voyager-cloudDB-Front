@@ -12,7 +12,7 @@
             class="text-lg md:text-xl lg:text-2xl font-bold cursor-pointer transition-all duration-300 bg-gradient-to-r from-[#daa520] via-[#ffd700] to-[#daa520] bg-clip-text text-transparent"
             @click="router.push('/Dashboard')"
           >
-            Dashboard
+            PotterCloud
           </span>
         </div>
 
@@ -90,7 +90,7 @@
           </div>
 
           <!-- Botones del menú móvil -->
-          <div class="p-6 space-y-4">
+          <div class="p-6 space-y-4 bg-[#00000078]">
             <button
               @click="navigateTo('/login')"
               class="w-full relative overflow-hidden rounded-xl font-semibold transition-all duration-300 border-2 py-4 px-6 text-base bg-transparent border-[#daa520]/30 text-[#daa520] hover:border-[#daa520] hover:text-[#ffd700] hover:bg-[#daa520]/5 font-cinzel tracking-wide"

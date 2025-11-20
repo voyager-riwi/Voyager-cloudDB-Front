@@ -74,9 +74,7 @@
               <div
                 class="col-span-2 grid grid-cols-subgrid border-t border-slate-200 border-t-[#325567] py-5"
               >
-                <p class="text-slate-500 text-[#92b7c9] text-sm font-normal leading-normal">
-                  Plan
-                </p>
+                <p class="text-slate-500 text-[#92b7c9] text-sm font-normal leading-normal">Plan</p>
                 <p class="text-slate-900 text-white text-sm font-normal leading-normal">
                   {{ database.plan }}
                 </p>
@@ -341,21 +339,10 @@
             v-if="!isDeleted"
             @click="resetPassword"
             :disabled="loading"
-            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-[#1193d4]/20 text-[#1193d4] bg-[#1193d4]/20 text-[#1193d4] hover:bg-[#1193d4]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
+            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-[#1193d4]/20 text-[#1193d4] bg-[#1193d4]/20 text-white hover:bg-[#1193d4]/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
           >
             <span class="material-symbols-outlined">lock_reset</span>
             {{ loading ? 'Resetting...' : 'Reset Password' }}
-          </button>
-
-          <!-- Rotate Credentials Button (solo si NO está eliminada) -->
-          <button
-            v-if="!isDeleted"
-            @click="rotateCredentials"
-            :disabled="loading"
-            class="w-full flex items-center justify-center gap-2 h-12 px-6 font-semibold rounded-lg bg-purple-500/20 text-purple-600 bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm"
-          >
-            <span class="material-symbols-outlined">refresh</span>
-            {{ loading ? 'Rotating...' : 'Rotate Credentials' }}
           </button>
 
           <!-- Delete Button (solo si NO está eliminada) -->
